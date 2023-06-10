@@ -1,22 +1,21 @@
 import SwiftDiagnostics
 
-enum SpyableDiagnostic: String, DiagnosticMessage {
-    case unknown
+enum SpyableDiagnostic: String, DiagnosticMessage, Error {
+    case onlyApplicablToProtocol
 
     var message: String {
         switch self {
-        case .unknown: "Unknown error"
+        case .onlyApplicablToProtocol: "`@Spyable` can be apply only to protocol"
         }
     }
     
     var diagnosticID: MessageID {
-        MessageID(domain: "AutoSpyMacro", id: rawValue)
+        MessageID(domain: "SpyableMacro", id: rawValue)
     }
     
-    var severity: SwiftDiagnostics.DiagnosticSeverity {
+    var severity: DiagnosticSeverity {
         switch self {
-        case .unknown: .error
+        case .onlyApplicablToProtocol: .error
         }
     }
 }
-

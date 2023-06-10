@@ -4,25 +4,19 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import SwiftDiagnostics
 
-public struct SpyableMacro: PeerMacro {
+public enum SpyableMacro: PeerMacro {
+    private static let extractor = Extractor()
+    private static let builder = Builder()
+    
     public static func expansion<Context: MacroExpansionContext, Declaration: DeclSyntaxProtocol>(
         of node: AttributeSyntax,
         providingPeersOf declaration: Declaration,
         in context: Context
     ) throws -> [DeclSyntax] {
-        guard let protocolDeclaration = declaration.as(ProtocolDeclSyntax.self) else {
-            let diagnostic = Diagnostic(node: Syntax(node), message: SpyableDiagnostic.unknown)
-            context.diagnose(diagnostic)
-            return []
-        }
+        let protocolDeclaration = try extractor.extractProtocolDeclaration(from: declaration)
         
-        let identifier = TokenSyntax.identifier(protocolDeclaration.identifier.text + "Spy")
-    
-        let structDeclaration = StructDeclSyntax(
-            identifier: identifier,
-            memberBlock: MemberDeclBlockSyntax(stringLiteral: "{}")
-        )
-         
-        return [DeclSyntax(structDeclaration)]
+        let spyClassDeclaration = try builder.spyClass(for: protocolDeclaration)
+        
+        return [DeclSyntax(spyClassDeclaration)]
     }
 }
