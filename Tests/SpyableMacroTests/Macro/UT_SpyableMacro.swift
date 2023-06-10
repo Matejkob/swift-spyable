@@ -26,12 +26,12 @@ final class UT_SpyableMacro: XCTestCase {
             """,
             expandedSource:
             """
-            
+
             \(protocolDeclaration)
             class FooSpy {
-                var fooWithValueCallsCount = 1
+                var fooWithValueCallsCount = 0
                     func foo(value: String) -> Int {
-                    let name = 1
+                    fooWithValueCallsCount += 1
                 }
             }
             """,
