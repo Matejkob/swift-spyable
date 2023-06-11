@@ -27,6 +27,9 @@ struct SpyDeclarationsBuilder {
         
         return ClassDeclSyntax(
             identifier: identifier,
+            inheritanceClause: TypeInheritanceClauseSyntax {
+                InheritedTypeSyntax(typeName: SimpleTypeIdentifierSyntax(name: protocolDeclaration.identifier))
+            },
             memberBlockBuilder: {
                 for functionDeclaration in functionsDeclarations {
                     let variablePrefix = spyPropertyDescription(for: functionDeclaration)
