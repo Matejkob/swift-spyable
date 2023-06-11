@@ -9,13 +9,7 @@ final class UT_SpyableMacro: XCTestCase {
     func test_foo() {
         let protocolDeclaration = """
         public protocol Foo {
-            var number: Int {
-                get
-            }
             func foo(value: String) -> Int
-            var text: String {
-                get
-            }
         }
         """
 
@@ -30,8 +24,10 @@ final class UT_SpyableMacro: XCTestCase {
             \(protocolDeclaration)
             class FooSpy {
                 var fooWithValueCallsCount = 0
+                var fooWithValueReturnValue: Int!
                     func foo(value: String) -> Int {
                     fooWithValueCallsCount += 1
+                    return fooWithValueReturnValue
                 }
             }
             """,

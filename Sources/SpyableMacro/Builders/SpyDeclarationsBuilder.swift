@@ -4,14 +4,21 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
 private enum Const {
-    static let spySufix = "Spy"
+    static let spySuffix = "Spy"
 
     enum CallsCount {
-        static let variableSufix = "CallsCount"
+        static let variableSuffix = "CallsCount"
+    }
+
+    enum ReturnValue {
+        static let variableSuffix = "ReturnValue"
     }
 }
 
 struct SpyDeclarationsBuilder {
+
+    // MARK: - Class Declaration
+
     func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) throws -> ClassDeclSyntax {
         let identifier = classIdentifier(from: protocolDeclaration.identifier)
 
@@ -30,23 +37,16 @@ struct SpyDeclarationsBuilder {
                     callsCountVariableDeclaration(withPrefix: variablePrefix)
 
                     /*
-                     func foo() { ... }
+                     var fooReturnValue: String!
                      */
-                    FunctionDeclSyntax(
-                        attributes: functionDeclaration.attributes,
-                        modifiers: functionDeclaration.modifiers,
-                        funcKeyword: functionDeclaration.funcKeyword,
-                        identifier: functionDeclaration.identifier,
-                        genericParameterClause: functionDeclaration.genericParameterClause,
-                        signature: functionDeclaration.signature,
-                        genericWhereClause: functionDeclaration.genericWhereClause,
-                        bodyBuilder: {
-                            /*
-                             fooCallsCount += 1
-                             */
-                            incrementCallsCountExpresion(withPrefix: variablePrefix)
-                        }
-                    )
+                    if let returnType = functionDeclaration.signature.output?.returnType {
+                        returnValueVariableDeclaration(ofType: returnType, withPrefix: variablePrefix)
+                    }
+
+                    /*
+                     func foo() -> String { ... }
+                     */
+                    implementedFunction(with: functionDeclaration, and: variablePrefix)
                 }
             }
         )
@@ -55,7 +55,38 @@ struct SpyDeclarationsBuilder {
     // MARK: - Class Identifier
 
     func classIdentifier(from protocolDeclarationIdentifier: TokenSyntax) -> TokenSyntax {
-        TokenSyntax.identifier(protocolDeclarationIdentifier.text + Const.spySufix)
+        TokenSyntax.identifier(protocolDeclarationIdentifier.text + Const.spySuffix)
+    }
+
+    // MARK: - Implemented Function
+
+    func implementedFunction(
+            with functionDeclaration: FunctionDeclSyntax,
+            and variablePrefix: String
+    ) -> FunctionDeclSyntax {
+        FunctionDeclSyntax(
+            attributes: functionDeclaration.attributes,
+            modifiers: functionDeclaration.modifiers,
+            funcKeyword: functionDeclaration.funcKeyword,
+            identifier: functionDeclaration.identifier,
+            genericParameterClause: functionDeclaration.genericParameterClause,
+            signature: functionDeclaration.signature,
+            genericWhereClause: functionDeclaration.genericWhereClause,
+            bodyBuilder: {
+                /*
+                 fooCallsCount += 1
+                 */
+                incrementCallsCountExpression(withPrefix: variablePrefix)
+
+                /*
+                 return fooReturnValue
+                 */
+                if functionDeclaration.signature.output != nil {
+                    returnValueStatement(withPrefix: variablePrefix)
+                }
+            }
+        )
+
     }
 
     // MARK: - Calls Count
@@ -66,7 +97,7 @@ struct SpyDeclarationsBuilder {
             bindingsBuilder: {
                 PatternBindingSyntax(
                     pattern: IdentifierPatternSyntax(
-                        identifier: .identifier(prefix + Const.CallsCount.variableSufix)
+                        identifier: .identifier(prefix + Const.CallsCount.variableSuffix)
                     ),
                     initializer: InitializerClauseSyntax(
                         value: IntegerLiteralExprSyntax(digits: .integerLiteral("0"))
@@ -76,9 +107,9 @@ struct SpyDeclarationsBuilder {
         )
     }
 
-    func incrementCallsCountExpresion(withPrefix prefix: String) -> SequenceExprSyntax {
+    func incrementCallsCountExpression(withPrefix prefix: String) -> SequenceExprSyntax {
         SequenceExprSyntax {
-            IdentifierExprSyntax(identifier: .identifier(prefix + Const.CallsCount.variableSufix))
+            IdentifierExprSyntax(identifier: .identifier(prefix + Const.CallsCount.variableSuffix))
             BinaryOperatorExprSyntax(operatorToken: .binaryOperator("+="))
             IntegerLiteralExprSyntax(digits: .integerLiteral("1"))
         }
@@ -86,19 +117,29 @@ struct SpyDeclarationsBuilder {
 
     // MARK: - Return Value
 
-    func returnValueVariableDeclaration(withPrefix prefix: String) -> VariableDeclSyntax {
+    func returnValueVariableDeclaration(
+        ofType type: TypeSyntax,
+        withPrefix prefix: String
+    ) -> VariableDeclSyntax {
         VariableDeclSyntax(
             bindingKeyword: .keyword(.var),
             bindingsBuilder: {
                 PatternBindingSyntax(
                     pattern: IdentifierPatternSyntax(
-                        identifier: .identifier(prefix + Const.CallsCount.variableSufix)
+                        identifier: .identifier(prefix + Const.ReturnValue.variableSuffix)
                     ),
-                    initializer: InitializerClauseSyntax(
-                        value: IntegerLiteralExprSyntax(digits: .integerLiteral("0"))
+                    typeAnnotation: TypeAnnotationSyntax(
+                        type: ImplicitlyUnwrappedOptionalTypeSyntax(wrappedType: type)
                     )
                 )
             }
+        )
+    }
+
+    func returnValueStatement(withPrefix prefix: String) -> ReturnStmtSyntax {
+        ReturnStmtSyntax(
+            returnKeyword: .keyword(.return),
+            expression: IdentifierExprSyntax(identifier: .identifier(prefix + Const.ReturnValue.variableSuffix))
         )
     }
 
