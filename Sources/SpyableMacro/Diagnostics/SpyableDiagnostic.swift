@@ -1,11 +1,11 @@
 import SwiftDiagnostics
 
 enum SpyableDiagnostic: String, DiagnosticMessage, Error {
-    case onlyApplicablToProtocol
+    case onlyApplicableToProtocol
 
     var message: String {
         switch self {
-        case .onlyApplicablToProtocol: "`@Spyable` can be apply only to protocol"
+        case .onlyApplicableToProtocol: "'@Spyable' can only be applied to a 'protocol'"
         }
     }
     
@@ -15,7 +15,7 @@ enum SpyableDiagnostic: String, DiagnosticMessage, Error {
     
     var severity: DiagnosticSeverity {
         switch self {
-        case .onlyApplicablToProtocol: .error
+        case .onlyApplicableToProtocol: .error
         }
     }
 }

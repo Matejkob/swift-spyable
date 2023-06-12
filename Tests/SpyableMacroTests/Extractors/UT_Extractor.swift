@@ -3,38 +3,29 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_Extractor: XCTestCase {
-    private var sut: Extractor!
-    
-    override func setUp() {
-        super.setUp()
-        sut = Extractor()
-    }
-    
-    func test_extractProtocolDeclaration_sucessfully() throws {
-        let expected = ProtocolDeclSyntax(
-            identifier: .identifier("Foo"),
-            memberBlock: "{}"
+    func testExtractProtocolDeclarationSuccessfully() throws {
+        let declaration = DeclSyntax(
+            """
+            protocol Foo {}
+            """
         )
-        
-        let declaration: DeclSyntax = """
-        protocol Foo {}
-        """
-        
-        let resived = try sut.extractProtocolDeclaration(from: declaration)
 
-        // TODO: assert expected and resived
+        XCTAssertNoThrow(_ = try Extractor().extractProtocolDeclaration(from: declaration))
     }
 
     func test_extractProtocolDeclaration_fails() throws {
-        var resivedError: Error?
+        var receivedError: Error?
 
-        let declaration: DeclSyntax = """
-        struct Foo {}
-        """
+        let declaration = DeclSyntax(
+            """
+            struct Foo {}
+            """
+        )
 
-        XCTAssertThrowsError(try sut.extractProtocolDeclaration(from: declaration)) { resivedError = $0 }
-        let unwrapedRecivedError = try XCTUnwrap(resivedError as? SpyableDiagnostic)
-        XCTAssertEqual(unwrapedRecivedError, .onlyApplicablToProtocol)
+        XCTAssertThrowsError(_ = try Extractor().extractProtocolDeclaration(from: declaration)) {
+            receivedError = $0
+        }
+        let unwrappedReceivedError = try XCTUnwrap(receivedError as? SpyableDiagnostic)
+        XCTAssertEqual(unwrappedReceivedError, .onlyApplicableToProtocol)
     }
 }
-
