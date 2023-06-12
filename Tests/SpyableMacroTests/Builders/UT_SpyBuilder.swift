@@ -40,6 +40,9 @@ final class UT_SpyBuilder: XCTestCase {
             """
             class ServiceSpy: Service {
                 var fetchCallsCount = 0
+                var fetchCalled: Bool {
+                    return fetchCallsCount > 0
+                }
                 func fetch() {
                     fetchCallsCount += 1
                 }
@@ -65,6 +68,9 @@ final class UT_SpyBuilder: XCTestCase {
             """
             class ViewModelProtocolSpy: ViewModelProtocol {
                 var fooWithTextCountCallsCount = 0
+                var fooWithTextCountCalled: Bool {
+                    return fooWithTextCountCallsCount > 0
+                }
                 var fooWithTextCountReceivedArguments: (text: String, count: Int)?
                 var fooWithTextCountReceivedInvocations: [(text: String, count: Int)] = []
                 func foo(text: String, count: Int) {
@@ -95,6 +101,9 @@ final class UT_SpyBuilder: XCTestCase {
             """
             class BarSpy: Bar {
                 var printCallsCount = 0
+                var printCalled: Bool {
+                    return printCallsCount > 0
+                }
                 var printReturnValue: (text: String, tuple: (count: Int?, Date))!
                 func print() -> (text: String, tuple: (count: Int?, Date)) {
                     printCallsCount += 1

@@ -3,6 +3,7 @@ import SwiftSyntaxBuilder
 
 struct SpyBuilder {
     private let callsCountBuilder = CallsCountBuilder()
+    private let calledBuilder = CalledBuilder()
     private let receivedArgumentsBuilder = ReceivedArgumentsBuilder()
     private let receivedInvocationsBuilder = ReceivedInvocationsBuilder()
     private let returnValueBuilder = ReturnValueBuilder()
@@ -27,6 +28,7 @@ struct SpyBuilder {
                     let parameterList = functionDeclaration.signature.input.parameterList
 
                     callsCountBuilder.variableDeclaration(variablePrefix: variablePrefix)
+                    calledBuilder.variableDeclaration(variablePrefix: variablePrefix)
 
                     if !parameterList.isEmpty {
                         receivedArgumentsBuilder.variableDeclaration(
