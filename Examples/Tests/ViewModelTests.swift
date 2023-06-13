@@ -11,15 +11,32 @@ final class ViewModelTests: XCTestCase {
         sut = ViewModel(service: serviceSpy)
     }
 
-    func testFetchData() {
-        let expectedData = (productName: "iPhone", count: UInt(4))
+    func testInitializeService() {
+        let serviceName = "service_name"
 
-        serviceSpy.executeNetworkingRequestWithQueryReturnValue = expectedData
+        sut.initializeService(with: serviceName)
 
-        sut.fetchData()
+        XCTAssertTrue(serviceSpy.initializeWithNameSecondNameCalled)
+        XCTAssertEqual(serviceSpy.initializeWithNameSecondNameReceivedArguments?.name, serviceName)
+    }
 
-        XCTAssertEqual(sut.receivedData?.productName, expectedData.productName)
-        XCTAssertEqual(sut.receivedData?.count, expectedData.count)
-        XCTAssertEqual(serviceSpy.executeNetworkingRequestWithQueryCallsCount, 1)
+    func testSaveConfig() async throws {
+        let expectedConfig: [String: String] = ["key": "value"]
+
+        serviceSpy.fetchConfigWithArgReturnValue = expectedConfig
+
+        try await sut.saveConfig()
+
+        XCTAssertEqual(sut.config, expectedConfig)
+
+        XCTAssertEqual(serviceSpy.fetchConfigWithArgCallsCount, 1)
+        XCTAssertEqual(serviceSpy.fetchConfigWithArgReceivedInvocations, [1])
+
+        try await sut.saveConfig()
+
+        XCTAssertTrue(sut.config.isEmpty)
+
+        XCTAssertEqual(serviceSpy.fetchConfigWithArgCallsCount, 2)
+        XCTAssertEqual(serviceSpy.fetchConfigWithArgReceivedInvocations, [1, 2])
     }
 }
