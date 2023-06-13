@@ -1,7 +1,7 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-struct CallsCountBuilder {
+struct CallsCountFactory {
     func variableDeclaration(variablePrefix: String) -> VariableDeclSyntax {
         VariableDeclSyntax(
             bindingKeyword: .keyword(.var),

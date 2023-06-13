@@ -1,12 +1,12 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-struct FunctionImplementationBuilder {
-    private let callsCountBuilder = CallsCountBuilder()
-    private let receivedArgumentsBuilder = ReceivedArgumentsBuilder()
-    private let receivedInvocationsBuilder = ReceivedInvocationsBuilder()
-    private let closureBuilder = ClosureBuilder()
-    private let returnValueBuilder = ReturnValueBuilder()
+struct FunctionImplementationFactory {
+    private let callsCountFactory = CallsCountFactory()
+    private let receivedArgumentsFactory = ReceivedArgumentsFactory()
+    private let receivedInvocationsFactory = ReceivedInvocationsFactory()
+    private let closureFactory = ClosureFactory()
+    private let returnValueFactory = ReturnValueFactory()
 
     func declaration(
         variablePrefix: String,
@@ -23,21 +23,21 @@ struct FunctionImplementationBuilder {
             bodyBuilder: {
                 let parameterList = protocolFunctionDeclaration.signature.input.parameterList
 
-                callsCountBuilder.incrementVariableExpression(variablePrefix: variablePrefix)
+                callsCountFactory.incrementVariableExpression(variablePrefix: variablePrefix)
 
                 if !parameterList.isEmpty {
-                    receivedArgumentsBuilder.assignValueToVariableExpression(
+                    receivedArgumentsFactory.assignValueToVariableExpression(
                         variablePrefix: variablePrefix,
                         parameterList: parameterList
                     )
-                    receivedInvocationsBuilder.appendValueToVariableExpression(
+                    receivedInvocationsFactory.appendValueToVariableExpression(
                         variablePrefix: variablePrefix,
                         parameterList: parameterList
                     )
                 }
 
                 if protocolFunctionDeclaration.signature.output == nil {
-                    closureBuilder.callExpression(
+                    closureFactory.callExpression(
                         variablePrefix: variablePrefix,
                         functionSignature: protocolFunctionDeclaration.signature
                     )
@@ -69,12 +69,12 @@ struct FunctionImplementationBuilder {
             elseKeyword: .keyword(.else),
             elseBody: .codeBlock(
                 CodeBlockSyntax {
-                    returnValueBuilder.returnStatement(variablePrefix: variablePrefix)
+                    returnValueFactory.returnStatement(variablePrefix: variablePrefix)
                 }
             ),
             bodyBuilder: {
                 ReturnStmtSyntax(
-                    expression: closureBuilder.callExpression(
+                    expression: closureFactory.callExpression(
                         variablePrefix: variablePrefix,
                         functionSignature: protocolFunctionDeclaration.signature
                     )

@@ -2,13 +2,13 @@ import XCTest
 @testable import SpyableMacro
 import SwiftSyntax
 
-final class UT_VariablesImplementationBuilder: XCTestCase {
+final class UT_VariablesImplementationFactory: XCTestCase {
     func testVariablesDeclarations() throws {
         let declaration = DeclSyntax("var point: (x: Int, y: Int?, (Int, Int)) { get }")
 
         let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
 
-        let result = VariablesImplementationBuilder().variablesDeclarations(
+        let result = VariablesImplementationFactory().variablesDeclarations(
             protocolVariableDeclaration: protocolVariableDeclaration
         )
 
@@ -33,7 +33,7 @@ final class UT_VariablesImplementationBuilder: XCTestCase {
 
         let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
 
-        let result = VariablesImplementationBuilder().variablesDeclarations(
+        let result = VariablesImplementationFactory().variablesDeclarations(
             protocolVariableDeclaration: protocolVariableDeclaration
         )
 
@@ -50,7 +50,7 @@ final class UT_VariablesImplementationBuilder: XCTestCase {
 
         let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
 
-        let result = VariablesImplementationBuilder().variablesDeclarations(
+        let result = VariablesImplementationFactory().variablesDeclarations(
             protocolVariableDeclaration: protocolVariableDeclaration
         )
 

@@ -2,14 +2,14 @@ import XCTest
 @testable import SpyableMacro
 import SwiftSyntax
 
-final class UT_ReceivedArgumentsBuilder: XCTestCase {
+final class UT_ReceivedArgumentsFactory: XCTestCase {
     func testVariableDeclarationSingleArgument() throws {
         let variablePrefix = "foo"
         let functionDeclaration = try FunctionDeclSyntax(
             "func foo(bar: String)"
         ) {}
 
-        let result = ReceivedArgumentsBuilder().variableDeclaration(
+        let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -28,7 +28,7 @@ final class UT_ReceivedArgumentsBuilder: XCTestCase {
             "func foo(_ price: Decimal?)"
         ) {}
 
-        let result = ReceivedArgumentsBuilder().variableDeclaration(
+        let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -47,7 +47,7 @@ final class UT_ReceivedArgumentsBuilder: XCTestCase {
             "func foo(firstName secondName: (String, Int))"
         ) {}
 
-        let result = ReceivedArgumentsBuilder().variableDeclaration(
+        let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -66,7 +66,7 @@ final class UT_ReceivedArgumentsBuilder: XCTestCase {
             "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)"
         ) {}
 
-        let result = ReceivedArgumentsBuilder().variableDeclaration(
+        let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -85,7 +85,7 @@ final class UT_ReceivedArgumentsBuilder: XCTestCase {
             "func foo(text: String)"
         ) {}
 
-        let result = ReceivedArgumentsBuilder().assignValueToVariableExpression(
+        let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -104,7 +104,7 @@ final class UT_ReceivedArgumentsBuilder: XCTestCase {
             "func foo(_ count: Int?)"
         ) {}
 
-        let result = ReceivedArgumentsBuilder().assignValueToVariableExpression(
+        let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -123,7 +123,7 @@ final class UT_ReceivedArgumentsBuilder: XCTestCase {
             "func foo(first second: Data)"
         ) {}
 
-        let result = ReceivedArgumentsBuilder().assignValueToVariableExpression(
+        let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -142,7 +142,7 @@ final class UT_ReceivedArgumentsBuilder: XCTestCase {
             "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)"
         ) {}
 
-        let result = ReceivedArgumentsBuilder().assignValueToVariableExpression(
+        let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )

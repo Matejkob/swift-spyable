@@ -1,15 +1,15 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-struct SpyBuilder {
-    private let variablesImplementationBuilder = VariablesImplementationBuilder()
-    private let callsCountBuilder = CallsCountBuilder()
-    private let calledBuilder = CalledBuilder()
-    private let receivedArgumentsBuilder = ReceivedArgumentsBuilder()
-    private let receivedInvocationsBuilder = ReceivedInvocationsBuilder()
-    private let returnValueBuilder = ReturnValueBuilder()
-    private let closureBuilder = ClosureBuilder()
-    private let functionImplementationBuilder = FunctionImplementationBuilder()
+struct SpyFactory {
+    private let variablesImplementationFactory = VariablesImplementationFactory()
+    private let callsCountFactory = CallsCountFactory()
+    private let calledFactory = CalledFactory()
+    private let receivedArgumentsFactory = ReceivedArgumentsFactory()
+    private let receivedInvocationsFactory = ReceivedInvocationsFactory()
+    private let returnValueFactory = ReturnValueFactory()
+    private let closureFactory = ClosureFactory()
+    private let functionImplementationFactory = FunctionImplementationFactory()
 
     func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) -> ClassDeclSyntax {
         let identifier = TokenSyntax.identifier(protocolDeclaration.identifier.text + "Spy")
@@ -29,7 +29,7 @@ struct SpyBuilder {
             },
             memberBlockBuilder: {
                 for variableDeclaration in variablesDeclarations {
-                    variablesImplementationBuilder.variablesDeclarations(
+                    variablesImplementationFactory.variablesDeclarations(
                         protocolVariableDeclaration: variableDeclaration
                     )
                 }
@@ -38,33 +38,33 @@ struct SpyBuilder {
                     let variablePrefix = spyPropertyDescription(for: functionDeclaration)
                     let parameterList = functionDeclaration.signature.input.parameterList
 
-                    callsCountBuilder.variableDeclaration(variablePrefix: variablePrefix)
-                    calledBuilder.variableDeclaration(variablePrefix: variablePrefix)
+                    callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
+                    calledFactory.variableDeclaration(variablePrefix: variablePrefix)
 
                     if !parameterList.isEmpty {
-                        receivedArgumentsBuilder.variableDeclaration(
+                        receivedArgumentsFactory.variableDeclaration(
                             variablePrefix: variablePrefix,
                             parameterList: parameterList
                         )
-                        receivedInvocationsBuilder.variableDeclaration(
+                        receivedInvocationsFactory.variableDeclaration(
                             variablePrefix: variablePrefix,
                             parameterList: parameterList
                         )
                     }
 
                     if let returnType = functionDeclaration.signature.output?.returnType {
-                        returnValueBuilder.variableDeclaration(
+                        returnValueFactory.variableDeclaration(
                             variablePrefix: variablePrefix,
                             functionReturnType: returnType
                         )
                     }
 
-                    closureBuilder.variableDeclaration(
+                    closureFactory.variableDeclaration(
                         variablePrefix: variablePrefix,
                         functionSignature: functionDeclaration.signature
                     )
 
-                    functionImplementationBuilder.declaration(
+                    functionImplementationFactory.declaration(
                         variablePrefix: variablePrefix,
                         protocolFunctionDeclaration: functionDeclaration
                     )

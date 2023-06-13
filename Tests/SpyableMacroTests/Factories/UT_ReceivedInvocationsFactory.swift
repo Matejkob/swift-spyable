@@ -2,14 +2,14 @@ import XCTest
 @testable import SpyableMacro
 import SwiftSyntax
 
-final class UT_ReceivedInvocationsBuilder: XCTestCase {
+final class UT_ReceivedInvocationsFactory: XCTestCase {
     func testVariableDeclarationSingleArgument() throws {
         let variablePrefix = "foo"
         let functionDeclaration = try FunctionDeclSyntax(
             "func foo(bar: String?)"
         ) {}
 
-        let result = ReceivedInvocationsBuilder().variableDeclaration(
+        let result = ReceivedInvocationsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -28,7 +28,7 @@ final class UT_ReceivedInvocationsBuilder: XCTestCase {
             "func foo(_ tuple: (text: String, (Decimal?, date: Date))?)"
         ) {}
 
-        let result = ReceivedInvocationsBuilder().variableDeclaration(
+        let result = ReceivedInvocationsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -47,7 +47,7 @@ final class UT_ReceivedInvocationsBuilder: XCTestCase {
             "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)"
         ) {}
 
-        let result = ReceivedInvocationsBuilder().variableDeclaration(
+        let result = ReceivedInvocationsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -66,7 +66,7 @@ final class UT_ReceivedInvocationsBuilder: XCTestCase {
             "func foo(bar: String?)"
         ) {}
 
-        let result = ReceivedInvocationsBuilder().appendValueToVariableExpression(
+        let result = ReceivedInvocationsFactory().appendValueToVariableExpression(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -85,7 +85,7 @@ final class UT_ReceivedInvocationsBuilder: XCTestCase {
             "func foo(_ tuple: (text: String, (Decimal?, date: Date))?)"
         ) {}
 
-        let result = ReceivedInvocationsBuilder().appendValueToVariableExpression(
+        let result = ReceivedInvocationsFactory().appendValueToVariableExpression(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )
@@ -104,7 +104,7 @@ final class UT_ReceivedInvocationsBuilder: XCTestCase {
             "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)"
         ) {}
 
-        let result = ReceivedInvocationsBuilder().appendValueToVariableExpression(
+        let result = ReceivedInvocationsFactory().appendValueToVariableExpression(
             variablePrefix: variablePrefix,
             parameterList: functionDeclaration.signature.input.parameterList
         )

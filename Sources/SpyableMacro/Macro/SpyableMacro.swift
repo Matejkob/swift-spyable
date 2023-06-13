@@ -6,7 +6,7 @@ import SwiftDiagnostics
 
 public enum SpyableMacro: PeerMacro {
     private static let extractor = Extractor()
-    private static let spyBuilder = SpyBuilder()
+    private static let spyFactory = SpyFactory()
 
     public static func expansion<Context: MacroExpansionContext, Declaration: DeclSyntaxProtocol>(
         of node: AttributeSyntax,
@@ -15,7 +15,7 @@ public enum SpyableMacro: PeerMacro {
     ) throws -> [DeclSyntax] {
         let protocolDeclaration = try extractor.extractProtocolDeclaration(from: declaration)
         
-        let spyClassDeclaration = spyBuilder.classDeclaration(for: protocolDeclaration)
+        let spyClassDeclaration = spyFactory.classDeclaration(for: protocolDeclaration)
 
         return [DeclSyntax(spyClassDeclaration)]
     }

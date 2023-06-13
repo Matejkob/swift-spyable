@@ -2,7 +2,7 @@ import XCTest
 @testable import SpyableMacro
 import SwiftSyntax
 
-final class UT_FunctionImplementationBuilder: XCTestCase {
+final class UT_FunctionImplementationFactory: XCTestCase {
     func testDeclaration() throws {
         let variablePrefix = "functionName"
 
@@ -10,7 +10,7 @@ final class UT_FunctionImplementationBuilder: XCTestCase {
             "func foo()"
         ) {}
 
-        let result = FunctionImplementationBuilder().declaration(
+        let result = FunctionImplementationFactory().declaration(
             variablePrefix: variablePrefix,
             protocolFunctionDeclaration: protocolFunctionDeclaration
         )
@@ -33,7 +33,7 @@ final class UT_FunctionImplementationBuilder: XCTestCase {
             "func foo(text: String, count: Int)"
         ) {}
 
-        let result = FunctionImplementationBuilder().declaration(
+        let result = FunctionImplementationFactory().declaration(
             variablePrefix: variablePrefix,
             protocolFunctionDeclaration: protocolFunctionDeclaration
         )
@@ -58,7 +58,7 @@ final class UT_FunctionImplementationBuilder: XCTestCase {
             "func foo() -> (text: String, tuple: (count: Int?, Date))"
         ) {}
 
-        let result = FunctionImplementationBuilder().declaration(
+        let result = FunctionImplementationFactory().declaration(
             variablePrefix: variablePrefix,
             protocolFunctionDeclaration: protocolFunctionDeclaration
         )
@@ -85,7 +85,7 @@ final class UT_FunctionImplementationBuilder: XCTestCase {
             "func foo(_ bar: String) async throws -> (text: String, tuple: (count: Int?, Date))"
         ) {}
 
-        let result = FunctionImplementationBuilder().declaration(
+        let result = FunctionImplementationFactory().declaration(
             variablePrefix: variablePrefix,
             protocolFunctionDeclaration: protocolFunctionDeclaration
         )

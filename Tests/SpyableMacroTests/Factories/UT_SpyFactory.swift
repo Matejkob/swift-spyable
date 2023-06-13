@@ -3,7 +3,7 @@ import SwiftSyntax
 @testable import SpyableMacro
 import SwiftSyntaxBuilder
 
-final class UT_SpyBuilder: XCTestCase {
+final class UT_SpyFactory: XCTestCase {
     func testDeclarationEmptyProtocol() throws {
         let declaration = DeclSyntax(
             """
@@ -12,7 +12,7 @@ final class UT_SpyBuilder: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -33,7 +33,7 @@ final class UT_SpyBuilder: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -63,7 +63,7 @@ final class UT_SpyBuilder: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -98,7 +98,7 @@ final class UT_SpyBuilder: XCTestCase {
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
 
-        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -133,7 +133,7 @@ final class UT_SpyBuilder: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -172,7 +172,7 @@ final class UT_SpyBuilder: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -211,7 +211,7 @@ final class UT_SpyBuilder: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -242,7 +242,7 @@ final class UT_SpyBuilder: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -265,7 +265,7 @@ final class UT_SpyBuilder: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,

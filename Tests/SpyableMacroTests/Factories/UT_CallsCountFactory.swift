@@ -2,11 +2,11 @@ import XCTest
 @testable import SpyableMacro
 import SwiftSyntax
 
-final class UT_CallsCountBuilder: XCTestCase {
+final class UT_CallsCountFactory: XCTestCase {
     func testVariableDeclaration() {
         let variablePrefix = "functionName"
 
-        let result = CallsCountBuilder().variableDeclaration(variablePrefix: variablePrefix)
+        let result = CallsCountFactory().variableDeclaration(variablePrefix: variablePrefix)
 
         assertBuildResult(
             result,
@@ -19,7 +19,7 @@ final class UT_CallsCountBuilder: XCTestCase {
     func testIncrementVariableExpression() {
         let variablePrefix = "function_name"
 
-        let result = CallsCountBuilder().incrementVariableExpression(variablePrefix: variablePrefix)
+        let result = CallsCountFactory().incrementVariableExpression(variablePrefix: variablePrefix)
 
         assertBuildResult(
             result,

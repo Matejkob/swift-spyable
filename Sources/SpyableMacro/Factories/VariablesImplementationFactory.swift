@@ -1,7 +1,7 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-struct VariablesImplementationBuilder {
+struct VariablesImplementationFactory {
     private let accessorRemovalVisitor = AccessorRemovalVisitor()
     
     @MemberDeclListBuilder

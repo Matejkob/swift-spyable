@@ -2,12 +2,12 @@ import XCTest
 @testable import SpyableMacro
 import SwiftSyntax
 
-final class UT_ReturnValueBuilder: XCTestCase {
+final class UT_ReturnValueFactory: XCTestCase {
     func testVariableDeclaration() {
         let variablePrefix = "function_name"
         let functionReturnType = TypeSyntax("(text: String, count: UInt)")
 
-        let result = ReturnValueBuilder().variableDeclaration(
+        let result = ReturnValueFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             functionReturnType: functionReturnType
         )
@@ -24,7 +24,7 @@ final class UT_ReturnValueBuilder: XCTestCase {
         let variablePrefix = "functionName"
         let functionReturnType = TypeSyntax("String?")
 
-        let result = ReturnValueBuilder().variableDeclaration(
+        let result = ReturnValueFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             functionReturnType: functionReturnType
         )
@@ -40,7 +40,7 @@ final class UT_ReturnValueBuilder: XCTestCase {
     func testReturnStatement() {
         let variablePrefix = "function_name"
 
-        let result = ReturnValueBuilder().returnStatement(variablePrefix: variablePrefix)
+        let result = ReturnValueFactory().returnStatement(variablePrefix: variablePrefix)
 
         assertBuildResult(
             result,

@@ -1,7 +1,7 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-struct ReceivedArgumentsBuilder {
+struct ReceivedArgumentsFactory {
     func variableDeclaration(variablePrefix: String, parameterList: FunctionParameterListSyntax) -> VariableDeclSyntax {
         let identifier = variableIdentifier(variablePrefix: variablePrefix, parameterList: parameterList)
         let type = variableType(parameterList: parameterList)

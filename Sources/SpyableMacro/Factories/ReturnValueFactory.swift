@@ -1,7 +1,7 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-struct ReturnValueBuilder {
+struct ReturnValueFactory {
     func variableDeclaration(variablePrefix: String, functionReturnType: TypeSyntax) -> VariableDeclSyntax {
         VariableDeclSyntax(
             bindingKeyword: .keyword(.var),

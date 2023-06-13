@@ -2,7 +2,7 @@ import XCTest
 @testable import SpyableMacro
 import SwiftSyntax
 
-final class UT_ClosureBuilder: XCTestCase {
+final class UT_ClosureFactory: XCTestCase {
     func testVariableDeclaration() throws {
         let variablePrefix = "foo"
 
@@ -12,7 +12,7 @@ final class UT_ClosureBuilder: XCTestCase {
             """
         ) {}
 
-        let result = ClosureBuilder().variableDeclaration(
+        let result = ClosureFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             functionSignature: protocolFunctionDeclaration.signature
         )
@@ -34,7 +34,7 @@ final class UT_ClosureBuilder: XCTestCase {
             """
         ) {}
 
-        let result = ClosureBuilder().variableDeclaration(
+        let result = ClosureFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             functionSignature: protocolFunctionDeclaration.signature
         )
@@ -56,7 +56,7 @@ final class UT_ClosureBuilder: XCTestCase {
             """
         ) {}
 
-        let result = ClosureBuilder().variableDeclaration(
+        let result = ClosureFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             functionSignature: protocolFunctionDeclaration.signature
         )
@@ -78,7 +78,7 @@ final class UT_ClosureBuilder: XCTestCase {
             """
         ) {}
 
-        let result = ClosureBuilder().variableDeclaration(
+        let result = ClosureFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             functionSignature: protocolFunctionDeclaration.signature
         )
@@ -100,7 +100,7 @@ final class UT_ClosureBuilder: XCTestCase {
             """
         ) {}
 
-        let result = ClosureBuilder().variableDeclaration(
+        let result = ClosureFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             functionSignature: protocolFunctionDeclaration.signature
         )
@@ -127,7 +127,7 @@ final class UT_ClosureBuilder: XCTestCase {
             """
         ) {}
 
-        let result = ClosureBuilder().variableDeclaration(
+        let result = ClosureFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             functionSignature: protocolFunctionDeclaration.signature
         )
@@ -149,7 +149,7 @@ final class UT_ClosureBuilder: XCTestCase {
             """
         ) {}
 
-        let result = ClosureBuilder().callExpression(
+        let result = ClosureFactory().callExpression(
             variablePrefix: variablePrefix,
             functionSignature: protocolFunctionDeclaration.signature
         )
@@ -171,7 +171,7 @@ final class UT_ClosureBuilder: XCTestCase {
             """
         ) {}
 
-        let result = ClosureBuilder().callExpression(
+        let result = ClosureFactory().callExpression(
             variablePrefix: variablePrefix,
             functionSignature: protocolFunctionDeclaration.signature
         )
@@ -193,7 +193,7 @@ final class UT_ClosureBuilder: XCTestCase {
             """
         ) {}
 
-        let result = ClosureBuilder().callExpression(
+        let result = ClosureFactory().callExpression(
             variablePrefix: variablePrefix,
             functionSignature: protocolFunctionDeclaration.signature
         )
@@ -215,7 +215,7 @@ final class UT_ClosureBuilder: XCTestCase {
             """
         ) {}
 
-        let result = ClosureBuilder().callExpression(
+        let result = ClosureFactory().callExpression(
             variablePrefix: variablePrefix,
             functionSignature: protocolFunctionDeclaration.signature
         )
@@ -237,7 +237,7 @@ final class UT_ClosureBuilder: XCTestCase {
             """
         ) {}
 
-        let result = ClosureBuilder().callExpression(
+        let result = ClosureFactory().callExpression(
             variablePrefix: variablePrefix,
             functionSignature: protocolFunctionDeclaration.signature
         )

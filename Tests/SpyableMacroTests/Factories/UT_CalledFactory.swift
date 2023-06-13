@@ -2,11 +2,11 @@ import XCTest
 @testable import SpyableMacro
 import SwiftSyntax
 
-final class UT_CalledBuilder: XCTestCase {
+final class UT_CalledFactory: XCTestCase {
     func testVariableDeclaration() {
         let variablePrefix = "functionName"
 
-        let result = CalledBuilder().variableDeclaration(variablePrefix: variablePrefix)
+        let result = CalledFactory().variableDeclaration(variablePrefix: variablePrefix)
 
         assertBuildResult(
             result,

@@ -1,7 +1,7 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-struct ClosureBuilder {
+struct ClosureFactory {
     func variableDeclaration(variablePrefix: String, functionSignature: FunctionSignatureSyntax) -> VariableDeclSyntax {
         let elements = TupleTypeElementListSyntax {
             TupleTypeElementSyntax(
