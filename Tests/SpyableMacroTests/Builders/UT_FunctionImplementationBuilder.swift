@@ -69,7 +69,7 @@ final class UT_FunctionImplementationBuilder: XCTestCase {
             func foo() -> (text: String, tuple: (count: Int?, Date)) {
                 funcNameCallsCount += 1
                 if funcNameClosure != nil {
-                    return funcNameClosure?()
+                    return funcNameClosure!()
                 } else {
                     return funcNameReturnValue
                 }
@@ -98,7 +98,7 @@ final class UT_FunctionImplementationBuilder: XCTestCase {
                 fooReceivedBar = (bar)
                 fooReceivedInvocations.append((bar))
                 if fooClosure != nil {
-                    return try await fooClosure?(bar)
+                    return try await fooClosure!(bar)
                 } else {
                     return fooReturnValue
                 }

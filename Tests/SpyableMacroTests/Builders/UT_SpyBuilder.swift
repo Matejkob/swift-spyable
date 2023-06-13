@@ -113,7 +113,7 @@ final class UT_SpyBuilder: XCTestCase {
                 func print() -> (text: String, tuple: (count: Int?, Date)) {
                     printCallsCount += 1
                     if printClosure != nil {
-                        return printClosure?()
+                        return printClosure!()
                     } else {
                         return printReturnValue
                     }
@@ -152,7 +152,7 @@ final class UT_SpyBuilder: XCTestCase {
                     fooWithTextCountReceivedArguments = (text, count)
                     fooWithTextCountReceivedInvocations.append((text, count))
                     if fooWithTextCountClosure != nil {
-                        return await fooWithTextCountClosure?(text, count)
+                        return await fooWithTextCountClosure!(text, count)
                     } else {
                         return fooWithTextCountReturnValue
                     }
@@ -191,7 +191,7 @@ final class UT_SpyBuilder: XCTestCase {
                     fooWithAddedReceivedAdded = (added)
                     fooWithAddedReceivedInvocations.append((added))
                     if fooWithAddedClosure != nil {
-                        return try fooWithAddedClosure?(added)
+                        return try fooWithAddedClosure!(added)
                     } else {
                         return fooWithAddedReturnValue
                     }

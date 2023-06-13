@@ -245,7 +245,7 @@ final class UT_ClosureBuilder: XCTestCase {
         assertBuildResult(
             result,
             """
-            try await fooClosure?(text, product, added, removed)
+            try await fooClosure!(text, product, added, removed)
             """
         )
     }

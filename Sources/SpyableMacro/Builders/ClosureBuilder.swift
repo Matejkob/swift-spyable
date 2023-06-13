@@ -46,12 +46,24 @@ struct ClosureBuilder {
     }
 
     func callExpression(variablePrefix: String, functionSignature: FunctionSignatureSyntax) -> ExprSyntaxProtocol {
-        var expression: ExprSyntaxProtocol = FunctionCallExprSyntax(
-            calledExpression: ForcedValueExprSyntax(
+        let calledExpression: ExprSyntaxProtocol
+
+        if functionSignature.output == nil {
+            calledExpression = OptionalChainingExprSyntax(
                 expression: IdentifierExprSyntax(
                     identifier: variableIdentifier(variablePrefix: variablePrefix)
                 )
-            ),
+            )
+        } else {
+            calledExpression = ForcedValueExprSyntax(
+                expression: IdentifierExprSyntax(
+                    identifier: variableIdentifier(variablePrefix: variablePrefix)
+                )
+            )
+        }
+
+        var expression: ExprSyntaxProtocol = FunctionCallExprSyntax(
+            calledExpression: calledExpression,
             leftParen: .leftParenToken(),
             argumentList: TupleExprElementListSyntax {
                 for parameter in functionSignature.input.parameterList {
