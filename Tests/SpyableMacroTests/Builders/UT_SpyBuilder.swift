@@ -200,4 +200,88 @@ final class UT_SpyBuilder: XCTestCase {
             """
         )
     }
+
+    func testDeclarationVariable() throws {
+        let declaration = DeclSyntax(
+            """
+            protocol ServiceProtocol {
+                var data: Data { get }
+            }
+            """
+        )
+        let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
+
+        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+
+        assertBuildResult(
+            result,
+            """
+            class ServiceProtocolSpy: ServiceProtocol {
+                var data: Data {
+                    get {
+                        underlyingData
+                    }
+                    set {
+                        underlyingData = newValue
+                    }
+                }
+                var underlyingData: (Data )!
+            }
+            """
+        )
+    }
+
+
+    func testDeclarationOptionalVariable() throws {
+        let declaration = DeclSyntax(
+            """
+            protocol ServiceProtocol {
+                var data: Data? { get set }
+            }
+            """
+        )
+        let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
+
+        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+
+        assertBuildResult(
+            result,
+            """
+            class ServiceProtocolSpy: ServiceProtocol {
+                var data: Data?
+            }
+            """
+        )
+    }
+
+
+    func testDeclarationClosureVariable() throws {
+        let declaration = DeclSyntax(
+            """
+            protocol ServiceProtocol {
+                var completion: () -> Void { get set }
+            }
+            """
+        )
+        let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
+
+        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+
+        assertBuildResult(
+            result,
+            """
+            class ServiceProtocolSpy: ServiceProtocol {
+                var completion: () -> Void {
+                    get {
+                        underlyingCompletion
+                    }
+                    set {
+                        underlyingCompletion = newValue
+                    }
+                }
+                var underlyingCompletion: (() -> Void )!
+            }
+            """
+        )
+    }
 }

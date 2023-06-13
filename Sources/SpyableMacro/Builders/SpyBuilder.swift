@@ -2,6 +2,7 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 
 struct SpyBuilder {
+    private let variablesImplementationBuilder = VariablesImplementationBuilder()
     private let callsCountBuilder = CallsCountBuilder()
     private let calledBuilder = CalledBuilder()
     private let receivedArgumentsBuilder = ReceivedArgumentsBuilder()
@@ -12,6 +13,9 @@ struct SpyBuilder {
 
     func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) -> ClassDeclSyntax {
         let identifier = TokenSyntax.identifier(protocolDeclaration.identifier.text + "Spy")
+
+        let variablesDeclarations = protocolDeclaration.memberBlock.members
+            .compactMap { $0.decl.as(VariableDeclSyntax.self) }
 
         let functionsDeclarations = protocolDeclaration.memberBlock.members
             .compactMap { $0.decl.as(FunctionDeclSyntax.self) }
@@ -24,6 +28,12 @@ struct SpyBuilder {
                 )
             },
             memberBlockBuilder: {
+                for variableDeclaration in variablesDeclarations {
+                    variablesImplementationBuilder.variablesDeclarations(
+                        protocolVariableDeclaration: variableDeclaration
+                    )
+                }
+
                 for functionDeclaration in functionsDeclarations {
                     let variablePrefix = spyPropertyDescription(for: functionDeclaration)
                     let parameterList = functionDeclaration.signature.input.parameterList
