@@ -7,6 +7,7 @@ struct SpyBuilder {
     private let receivedArgumentsBuilder = ReceivedArgumentsBuilder()
     private let receivedInvocationsBuilder = ReceivedInvocationsBuilder()
     private let returnValueBuilder = ReturnValueBuilder()
+    private let closureBuilder = ClosureBuilder()
     private let functionImplementationBuilder = FunctionImplementationBuilder()
 
     func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) -> ClassDeclSyntax {
@@ -47,6 +48,11 @@ struct SpyBuilder {
                             functionReturnType: returnType
                         )
                     }
+
+                    closureBuilder.variableDeclaration(
+                        variablePrefix: variablePrefix,
+                        functionSignature: functionDeclaration.signature
+                    )
 
                     functionImplementationBuilder.declaration(
                         variablePrefix: variablePrefix,

@@ -43,8 +43,10 @@ final class UT_SpyBuilder: XCTestCase {
                 var fetchCalled: Bool {
                     return fetchCallsCount > 0
                 }
+                var fetchClosure: (() -> Void)?
                 func fetch() {
                     fetchCallsCount += 1
+                    fetchClosure?()
                 }
             }
             """
@@ -73,10 +75,12 @@ final class UT_SpyBuilder: XCTestCase {
                 }
                 var fooWithTextCountReceivedArguments: (text: String, count: Int)?
                 var fooWithTextCountReceivedInvocations: [(text: String, count: Int)] = []
+                var fooWithTextCountClosure: ((String, Int) -> Void)?
                 func foo(text: String, count: Int) {
                     fooWithTextCountCallsCount += 1
                     fooWithTextCountReceivedArguments = (text, count)
                     fooWithTextCountReceivedInvocations.append((text, count))
+                    fooWithTextCountClosure?(text, count)
                 }
             }
             """
@@ -105,9 +109,92 @@ final class UT_SpyBuilder: XCTestCase {
                     return printCallsCount > 0
                 }
                 var printReturnValue: (text: String, tuple: (count: Int?, Date))!
+                var printClosure: (() -> (text: String, tuple: (count: Int?, Date)))?
                 func print() -> (text: String, tuple: (count: Int?, Date)) {
                     printCallsCount += 1
-                    return printReturnValue
+                    if printClosure != nil {
+                        return printClosure?()
+                    } else {
+                        return printReturnValue
+                    }
+                }
+            }
+            """
+        )
+    }
+
+    func testDeclarationAsync() throws {
+        let declaration = DeclSyntax(
+            """
+            protocol ServiceProtocol {
+            func foo(text: String, count: Int) async -> Decimal
+            }
+            """
+        )
+        let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
+
+        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+
+        assertBuildResult(
+            result,
+            """
+            class ServiceProtocolSpy: ServiceProtocol {
+                var fooWithTextCountCallsCount = 0
+                var fooWithTextCountCalled: Bool {
+                    return fooWithTextCountCallsCount > 0
+                }
+                var fooWithTextCountReceivedArguments: (text: String, count: Int)?
+                var fooWithTextCountReceivedInvocations: [(text: String, count: Int)] = []
+                var fooWithTextCountReturnValue: Decimal!
+                var fooWithTextCountClosure: ((String, Int) async -> Decimal)?
+                func foo(text: String, count: Int) async -> Decimal {
+                    fooWithTextCountCallsCount += 1
+                    fooWithTextCountReceivedArguments = (text, count)
+                    fooWithTextCountReceivedInvocations.append((text, count))
+                    if fooWithTextCountClosure != nil {
+                        return await fooWithTextCountClosure?(text, count)
+                    } else {
+                        return fooWithTextCountReturnValue
+                    }
+                }
+            }
+            """
+        )
+    }
+
+    func testDeclarationThrows() throws {
+        let declaration = DeclSyntax(
+            """
+            protocol ServiceProtocol {
+            func foo(_ added: ((text: String) -> Void)?) throws -> (() -> Int)?
+            }
+            """
+        )
+        let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
+
+        let result = SpyBuilder().classDeclaration(for: protocolDeclaration)
+
+        assertBuildResult(
+            result,
+            """
+            class ServiceProtocolSpy: ServiceProtocol {
+                var fooWithAddedCallsCount = 0
+                var fooWithAddedCalled: Bool {
+                    return fooWithAddedCallsCount > 0
+                }
+                var fooWithAddedReceivedAdded: ((text: String) -> Void)?
+                var fooWithAddedReceivedInvocations: [((text: String) -> Void)?] = []
+                var fooWithAddedReturnValue: (() -> Int)?
+                var fooWithAddedClosure: ((((text: String) -> Void)?) throws -> (() -> Int)?)?
+                func foo(_ added: ((text: String) -> Void)?) throws -> (() -> Int)? {
+                    fooWithAddedCallsCount += 1
+                    fooWithAddedReceivedAdded = (added)
+                    fooWithAddedReceivedInvocations.append((added))
+                    if fooWithAddedClosure != nil {
+                        return try fooWithAddedClosure?(added)
+                    } else {
+                        return fooWithAddedReturnValue
+                    }
                 }
             }
             """

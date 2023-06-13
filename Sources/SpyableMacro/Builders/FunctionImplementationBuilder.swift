@@ -5,6 +5,7 @@ struct FunctionImplementationBuilder {
     private let callsCountBuilder = CallsCountBuilder()
     private let receivedArgumentsBuilder = ReceivedArgumentsBuilder()
     private let receivedInvocationsBuilder = ReceivedInvocationsBuilder()
+    private let closureBuilder = ClosureBuilder()
     private let returnValueBuilder = ReturnValueBuilder()
 
     func declaration(
@@ -35,9 +36,49 @@ struct FunctionImplementationBuilder {
                     )
                 }
 
-                if protocolFunctionDeclaration.signature.output != nil {
+                if protocolFunctionDeclaration.signature.output == nil {
+                    closureBuilder.callExpression(
+                        variablePrefix: variablePrefix,
+                        functionSignature: protocolFunctionDeclaration.signature
+                    )
+                } else {
+                    returnExpression(
+                        variablePrefix: variablePrefix,
+                        protocolFunctionDeclaration: protocolFunctionDeclaration
+                    )
+                }
+            }
+        )
+    }
+
+    private func returnExpression(variablePrefix: String, protocolFunctionDeclaration: FunctionDeclSyntax) -> IfExprSyntax {
+        return IfExprSyntax(
+            conditions: ConditionElementListSyntax {
+                ConditionElementSyntax(
+                    condition: .expression(
+                        ExprSyntax(
+                            SequenceExprSyntax {
+                                IdentifierExprSyntax(identifier: .identifier(variablePrefix + "Closure"))
+                                BinaryOperatorExprSyntax(operatorToken: .binaryOperator("!="))
+                                NilLiteralExprSyntax()
+                            }
+                        )
+                    )
+                )
+            },
+            elseKeyword: .keyword(.else),
+            elseBody: .codeBlock(
+                CodeBlockSyntax {
                     returnValueBuilder.returnStatement(variablePrefix: variablePrefix)
                 }
+            ),
+            bodyBuilder: {
+                ReturnStmtSyntax(
+                    expression: closureBuilder.callExpression(
+                        variablePrefix: variablePrefix,
+                        functionSignature: protocolFunctionDeclaration.signature
+                    )
+                )
             }
         )
     }
