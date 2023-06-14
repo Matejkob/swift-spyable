@@ -32,7 +32,7 @@ struct ReceivedArgumentsFactory {
             let tupleElements = TupleTypeElementListSyntax {
                 for parameter in parameterList {
                     TupleTypeElementSyntax(
-                        name: (parameter.secondName != nil ? parameter.secondName : parameter.firstName),
+                        name: parameter.secondName ?? parameter.firstName,
                         colon: .colonToken(),
                         type: parameter.type
                     )
@@ -55,11 +55,9 @@ struct ReceivedArgumentsFactory {
             AssignmentExprSyntax()
             TupleExprSyntax {
                 for parameter in parameterList {
-                    let identifier = if let secondName = parameter.secondName { secondName } else { parameter.firstName }
-
                     TupleExprElementSyntax(
                         expression: IdentifierExprSyntax(
-                            identifier: identifier
+                            identifier: parameter.secondName ?? parameter.firstName
                         )
                     )
                 }
@@ -69,7 +67,7 @@ struct ReceivedArgumentsFactory {
 
     private func variableIdentifier(variablePrefix: String, parameterList: FunctionParameterListSyntax) -> TokenSyntax {
         if parameterList.count == 1, let onlyParameter = parameterList.first {
-             let parameterNameToken = if let secondName = onlyParameter.secondName { secondName } else { onlyParameter.firstName }
+             let parameterNameToken = onlyParameter.secondName ?? onlyParameter.firstName
              let parameterNameText = parameterNameToken.text
              let capitalizedParameterName = parameterNameText.prefix(1).uppercased() + parameterNameText.dropFirst()
 

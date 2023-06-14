@@ -66,12 +66,10 @@ struct ClosureFactory {
             calledExpression: calledExpression,
             leftParen: .leftParenToken(),
             argumentList: TupleExprElementListSyntax {
-                for parameter in functionSignature.input.parameterList {
-                    let identifier = if let secondName = parameter.secondName { secondName } else { parameter.firstName }
-                    
+                for parameter in functionSignature.input.parameterList {                    
                     TupleExprElementSyntax(
                         expression: IdentifierExprSyntax(
-                            identifier: identifier
+                            identifier: parameter.secondName ?? parameter.firstName
                         )
                     )
                 }

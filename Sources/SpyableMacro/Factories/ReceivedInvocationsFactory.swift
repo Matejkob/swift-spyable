@@ -31,7 +31,7 @@ struct ReceivedInvocationsFactory {
             let tupleElements = TupleTypeElementListSyntax {
                 for parameter in parameterList {
                     TupleTypeElementSyntax(
-                        name: (parameter.secondName != nil ? parameter.secondName : parameter.firstName),
+                        name: parameter.secondName ?? parameter.firstName,
                         colon: .colonToken(),
                         type: parameter.type
                     )
@@ -64,11 +64,9 @@ struct ReceivedInvocationsFactory {
         let tupleArgument = TupleExprSyntax(
             elementListBuilder: {
                 for parameter in parameterList {
-                    let identifier = if let secondName = parameter.secondName { secondName } else { parameter.firstName }
-
                     TupleExprElementSyntax(
                         expression: IdentifierExprSyntax(
-                            identifier: identifier
+                            identifier: parameter.secondName ?? parameter.firstName
                         )
                     )
                 }
