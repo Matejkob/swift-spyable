@@ -1,8 +1,37 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
+/// The `ClosureFactory` is designed to generate a representation of a Swift
+/// variable declaration for a closure, as well as the invocation of this closure.
+///
+/// The generated variable represents a closure that corresponds to a given function
+/// signature. The name of the variable is constructed by appending the word "Closure"
+/// to the `variablePrefix` parameter.
+///
+/// The factory also generates a call expression that executes the closure using the names
+/// of the parameters from the function signature.
+///
+/// The following code:
+/// ```swift
+/// var fooClosure: ((String, Int) async throws -> Data)?
+///
+/// try await fooClosure!(text, count)
+/// ```
+/// would be generated for a function like this:
+/// ```swift
+/// func foo(text: String, count: Int) async throws -> Data
+/// ```
+/// and an argument `variablePrefix` equal to `foo`.
+///
+/// - Note: The `ClosureFactory` is useful in scenarios where you need to mock the
+///         behavior of a function, particularly for testing purposes. You can use it to define
+///         the behavior of the function under different conditions, and validate that your code
+///         interacts correctly with the function.
 struct ClosureFactory {
-    func variableDeclaration(variablePrefix: String, functionSignature: FunctionSignatureSyntax) -> VariableDeclSyntax {
+    func variableDeclaration(
+        variablePrefix: String,
+        functionSignature: FunctionSignatureSyntax
+    ) -> VariableDeclSyntax {
         let elements = TupleTypeElementListSyntax {
             TupleTypeElementSyntax(
                 type: FunctionTypeSyntax(

@@ -1,6 +1,40 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
+/// The `ReceivedArgumentsFactory` is designed to generate a representation of a Swift
+/// variable declaration to keep track of the arguments that are passed to a certain function.
+///
+/// The resulting variable's type is either the same as the type of the single parameter of the function,
+/// or a tuple type of all parameters' types if the function has multiple parameters.
+/// The variable is of optional type, and its name is constructed by appending the word "Received"
+/// and the parameter name (with the first letter capitalized) to the `variablePrefix` parameter.
+/// If the function has multiple parameters, "Arguments" is appended instead.
+///
+/// The factory also generates an expression that assigns a tuple of parameter identifiers to the variable.
+///
+/// The following code:
+/// ```swift
+/// var fooReceivedText: String?
+///
+/// fooReceivedText = text
+/// ```
+/// would be generated for a function like this:
+/// ```swift
+/// func foo(text: String)
+/// ```
+/// and an argument `variablePrefix` equal to `foo`.
+///
+/// For a function with multiple parameters, the factory generates a tuple:
+/// ```swift
+/// var barReceivedArguments: (text: String, count: Int)?
+///
+/// barReceivedArguments = (text, count)
+/// ```
+/// for a function like this:
+/// ```swift
+/// func bar(text: String, count: Int)
+/// ```
+/// and an argument `variablePrefix` equal to `bar`.
 struct ReceivedArgumentsFactory {
     func variableDeclaration(variablePrefix: String, parameterList: FunctionParameterListSyntax) -> VariableDeclSyntax {
         let identifier = variableIdentifier(variablePrefix: variablePrefix, parameterList: parameterList)
