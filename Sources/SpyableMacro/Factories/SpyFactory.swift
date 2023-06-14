@@ -2,6 +2,7 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 
 struct SpyFactory {
+    private let variablePrefixFactory = VariablePrefixFactory()
     private let variablesImplementationFactory = VariablesImplementationFactory()
     private let callsCountFactory = CallsCountFactory()
     private let calledFactory = CalledFactory()
@@ -14,10 +15,10 @@ struct SpyFactory {
     func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) -> ClassDeclSyntax {
         let identifier = TokenSyntax.identifier(protocolDeclaration.identifier.text + "Spy")
 
-        let variablesDeclarations = protocolDeclaration.memberBlock.members
+        let variableDeclarations = protocolDeclaration.memberBlock.members
             .compactMap { $0.decl.as(VariableDeclSyntax.self) }
 
-        let functionsDeclarations = protocolDeclaration.memberBlock.members
+        let functionDeclarations = protocolDeclaration.memberBlock.members
             .compactMap { $0.decl.as(FunctionDeclSyntax.self) }
         
         return ClassDeclSyntax(
@@ -28,14 +29,14 @@ struct SpyFactory {
                 )
             },
             memberBlockBuilder: {
-                for variableDeclaration in variablesDeclarations {
+                for variableDeclaration in variableDeclarations {
                     variablesImplementationFactory.variablesDeclarations(
                         protocolVariableDeclaration: variableDeclaration
                     )
                 }
 
-                for functionDeclaration in functionsDeclarations {
-                    let variablePrefix = spyPropertyDescription(for: functionDeclaration)
+                for functionDeclaration in functionDeclarations {
+                    let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
                     let parameterList = functionDeclaration.signature.input.parameterList
 
                     callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
@@ -71,51 +72,5 @@ struct SpyFactory {
                 }
             }
         )
-    }
-
-    // MARK: - Helpers
-
-    func spyPropertyDescription(for functionDeclaration: FunctionDeclSyntax) -> String {
-        /*
-         Sourcery doesn't destingiush
-         ```
-         func foo()
-         ```
-         from
-         ```
-         func foo() -> String
-         ```
-
-         I think that the best way to deal with it would be generate basic nameing and
-         If the colision would happend then deal with it some how
-         Mayby I can use `(declaration.as(FunctionDeclSyntax.self))?.signature.input.description`
-         */
-
-        var parts: [String] = []
-
-        parts.append(functionDeclaration.identifier.text)
-
-        let parameterList = functionDeclaration.signature.input.parameterList
-
-        if !parameterList.isEmpty {
-            parts.append("With")
-        }
-
-        let parameters = parameterList
-            .reduce([String]()) { partialResult, parameter in
-                var partialResult = partialResult
-                partialResult.append(parameter.firstName.text)
-
-                if let secondNameText = parameter.secondName?.text {
-                    partialResult.append(secondNameText)
-                }
-                return partialResult
-            }
-            .filter { $0 != "_" }
-            .map { $0.prefix(1).uppercased() + $0.dropFirst() }
-
-        parts.append(contentsOf: parameters)
-
-        return parts.joined(separator: "")
     }
 }

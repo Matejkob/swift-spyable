@@ -5,7 +5,9 @@ struct VariablesImplementationFactory {
     private let accessorRemovalVisitor = AccessorRemovalVisitor()
     
     @MemberDeclListBuilder
-    func variablesDeclarations(protocolVariableDeclaration: VariableDeclSyntax) -> MemberDeclListSyntax {
+    func variablesDeclarations(
+        protocolVariableDeclaration: VariableDeclSyntax
+    ) -> MemberDeclListSyntax {
         if let binding = protocolVariableDeclaration.bindings.first {
             if let variableType = binding.typeAnnotation?.type, variableType.is(OptionalTypeSyntax.self) {
                 accessorRemovalVisitor.visit(protocolVariableDeclaration)
@@ -15,10 +17,12 @@ struct VariablesImplementationFactory {
                 underlyingVariableDeclaration(binding: binding)
             }
         }
-        // TODO: Thing about throwing diagnostic here
+        // TODO: Consider throwing diagnostic warning/error here
     }
 
-    private func protocolVariableDeclarationWithGetterAndSetter(binding: PatternBindingListSyntax.Element) -> VariableDeclSyntax {
+    private func protocolVariableDeclarationWithGetterAndSetter(
+        binding: PatternBindingListSyntax.Element
+    ) -> VariableDeclSyntax {
         let underlyingVariableName = underlyingVariableName(binding: binding)
         
         return VariableDeclSyntax(
@@ -41,7 +45,9 @@ struct VariablesImplementationFactory {
         )
     }
 
-    private func underlyingVariableDeclaration(binding: PatternBindingListSyntax.Element) -> VariableDeclSyntax {
+    private func underlyingVariableDeclaration(
+        binding: PatternBindingListSyntax.Element
+    ) -> VariableDeclSyntax {
         VariableDeclSyntax(
             bindingKeyword: .keyword(.var),
             bindingsBuilder: {
@@ -56,7 +62,7 @@ struct VariablesImplementationFactory {
                                     if let type = binding.typeAnnotation?.type {
                                         TupleTypeElementSyntax(type: type)
                                     }
-                                    // TODO: Thing about throwing diagnostic here
+                                    // Consider throwing diagnostic warning/error here
                                 }
                             )
                         )
@@ -68,7 +74,7 @@ struct VariablesImplementationFactory {
 
     private func underlyingVariableName(binding: PatternBindingListSyntax.Element) -> String {
         guard let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
-            return "" // TODO: Thins about throwing diagnostic here
+            return "" // TODO: Consider throwing diagnostic warning/error here
         }
         let identifierText = identifierPattern.identifier.text
 

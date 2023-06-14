@@ -28,7 +28,7 @@ final class UT_SpyableMacro: XCTestCase {
                 set
             }
 
-            func initialize(name: String, _ secondName: String?)
+            func initialize(name: String, secondName: String?)
             func fetchConfig() async throws -> [String: String]
             func fetchData(_ name: (String, count: Int)) async -> (() -> Void)
         }
@@ -72,19 +72,19 @@ final class UT_SpyableMacro: XCTestCase {
                 }
                 var underlyingAdded: (() -> Void )!
                     var removed: (() -> Void)?
-                var initializeWithNameSecondNameCallsCount = 0
-                var initializeWithNameSecondNameCalled: Bool {
-                    return initializeWithNameSecondNameCallsCount > 0
+                var initializeNameSecondNameCallsCount = 0
+                var initializeNameSecondNameCalled: Bool {
+                    return initializeNameSecondNameCallsCount > 0
                 }
-                var initializeWithNameSecondNameReceivedArguments: (name: String, secondName: String?)?
-                var initializeWithNameSecondNameReceivedInvocations: [(name: String, secondName: String?)] = []
-                var initializeWithNameSecondNameClosure: ((String, String?) -> Void)?
+                var initializeNameSecondNameReceivedArguments: (name: String, secondName: String?)?
+                var initializeNameSecondNameReceivedInvocations: [(name: String, secondName: String?)] = []
+                var initializeNameSecondNameClosure: ((String, String?) -> Void)?
 
-                    func initialize(name: String, _ secondName: String?) {
-                    initializeWithNameSecondNameCallsCount += 1
-                    initializeWithNameSecondNameReceivedArguments = (name, secondName)
-                    initializeWithNameSecondNameReceivedInvocations.append((name, secondName))
-                    initializeWithNameSecondNameClosure?(name, secondName)
+                    func initialize(name: String, secondName: String?) {
+                    initializeNameSecondNameCallsCount += 1
+                    initializeNameSecondNameReceivedArguments = (name, secondName)
+                    initializeNameSecondNameReceivedInvocations.append((name, secondName))
+                    initializeNameSecondNameClosure?(name, secondName)
                 }
                 var fetchConfigCallsCount = 0
                 var fetchConfigCalled: Bool {
@@ -100,22 +100,22 @@ final class UT_SpyableMacro: XCTestCase {
                         return fetchConfigReturnValue
                     }
                 }
-                var fetchDataWithNameCallsCount = 0
-                var fetchDataWithNameCalled: Bool {
-                    return fetchDataWithNameCallsCount > 0
+                var fetchDataCallsCount = 0
+                var fetchDataCalled: Bool {
+                    return fetchDataCallsCount > 0
                 }
-                var fetchDataWithNameReceivedName: (String, count: Int)?
-                var fetchDataWithNameReceivedInvocations: [(String, count: Int)] = []
-                var fetchDataWithNameReturnValue: (() -> Void)!
-                var fetchDataWithNameClosure: (((String, count: Int)) async -> (() -> Void))?
+                var fetchDataReceivedName: (String, count: Int)?
+                var fetchDataReceivedInvocations: [(String, count: Int)] = []
+                var fetchDataReturnValue: (() -> Void)!
+                var fetchDataClosure: (((String, count: Int)) async -> (() -> Void))?
                     func fetchData(_ name: (String, count: Int)) async -> (() -> Void) {
-                    fetchDataWithNameCallsCount += 1
-                    fetchDataWithNameReceivedName = (name)
-                    fetchDataWithNameReceivedInvocations.append((name))
-                    if fetchDataWithNameClosure != nil {
-                        return await fetchDataWithNameClosure!(name)
+                    fetchDataCallsCount += 1
+                    fetchDataReceivedName = (name)
+                    fetchDataReceivedInvocations.append((name))
+                    if fetchDataClosure != nil {
+                        return await fetchDataClosure!(name)
                     } else {
-                        return fetchDataWithNameReturnValue
+                        return fetchDataReturnValue
                     }
                 }
             }
