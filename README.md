@@ -34,7 +34,7 @@ The Spyable macro provides the following functionality:
 
 ## Quick start
 
-To get started, annotate your protocol with `@Spyable`:
+To get started, import Spyable: `import Spyable`, annotate your protocol with `@Spyable`:
 
 ```swift
 @Spyable
