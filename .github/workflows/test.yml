@@ -5,6 +5,8 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+env:
+  DEVELOPER_DIR: /Applications/Xcode_14.3.app
 
 jobs:
   test:
@@ -12,17 +14,23 @@ jobs:
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v3
+      - name: Swift Version
+        id: swift-version
+        run: echo "SWIFT_VERSION=$(cat .swift-version)" >> "$GITHUB_OUTPUT"
       - name: Install Swift
         uses: slashmo/install-swift@v0.4.0
         with:
-          version: swift-5.9-DEVELOPMENT-SNAPSHOT-2023-06-05-a
+          version: ${{ steps.swift-version.outputs.SWIFT_VERSION }}
       - name: Build
         run: |
           export TOOLCHAINS=swift
+          swift -version
           swift build
       - name: Run tests
         run: |
+          swift -version
           swift test -Xswiftc -Xfrontend -Xswiftc -dump-macro-expansions --enable-code-coverage
+
       - name: Gather code coverage
         run: |
           BUILD_PATH=$(swift build --show-bin-path)
