@@ -1,5 +1,10 @@
 # Spyable
 
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/Matejkob/swift-spyable/test.yml?label=CI&logo=GitHub)
+![Codecov](https://img.shields.io/codecov/c/github/Matejkob/swift-spyable?token=YRMM1BDQ85)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FMatejkob%2Fswift-spyable%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/Matejkob/swift-spyable)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FMatejkob%2Fswift-spyable%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/Matejkob/swift-spyable)
+
 A powerful tool for Swift that simplifies and automates the process of creating spies
 for testing. Using the `@Spyable` annotation on a protocol, the macro generates
 a spy class that implements the same interface as the protocol and keeps track of 
