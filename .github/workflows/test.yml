@@ -14,13 +14,10 @@ jobs:
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v3
-      - name: Swift Version
-        id: swift-version
-        run: echo "SWIFT_VERSION=$(swift-5.9-DEVELOPMENT-SNAPSHOT-2023-06-05-a)" >> "$GITHUB_OUTPUT"
       - name: Install Swift
         uses: slashmo/install-swift@v0.4.0
         with:
-          version: ${{ steps.swift-version.outputs.SWIFT_VERSION }}
+          version: swift-5.9-DEVELOPMENT-SNAPSHOT-2023-06-05-a
       - name: Build
         run: |
           export TOOLCHAINS=swift
