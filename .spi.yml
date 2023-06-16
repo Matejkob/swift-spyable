@@ -1,13 +1,4 @@
 version: 1
 builder:
-  configs:
-  - platform: ios
-    scheme: Spyable
-  - platform: macos
-    scheme: Spyable
-  - platform: tvos
-    scheme: Spyable
-  - platform: watchos
-    scheme: Spyable
   - documentation_targets: [Spyable]
     swift_version: 5.9
