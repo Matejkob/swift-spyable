@@ -1,0 +1,3 @@
+version: 1
+builder:
+  - documentation_targets: [Spyable]
