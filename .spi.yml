@@ -1,4 +1,3 @@
 version: 1
 builder:
   - documentation_targets: [Spyable]
-    swift_version: 5.9
