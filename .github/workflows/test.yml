@@ -18,6 +18,7 @@ jobs:
           version: swift-5.9-DEVELOPMENT-SNAPSHOT-2023-06-16-a
       - name: Build
         run: |
+          export TOOLCHAINS=swift
           swift build
       - name: Run tests
         run: |
