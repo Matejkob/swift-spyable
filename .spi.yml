@@ -1,5 +1,5 @@
 version: 1
 builder:
   configs:
-  - documentation_targets: [Spyable]
+  - documentation_targets: [Spyable, SpyableMacro]
     swift_version: 5.9
