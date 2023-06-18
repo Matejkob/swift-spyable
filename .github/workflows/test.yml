@@ -7,7 +7,7 @@ on:
     branches: ["main"]
 env:
   DEVELOPER_DIR: /Applications/Xcode_14.3.1.app
-
+  
 jobs:
   test:
     runs-on: macos-13
@@ -17,15 +17,13 @@ jobs:
       - name: Install Swift
         uses: slashmo/install-swift@v0.4.0
         with:
-          version: swift-5.9-DEVELOPMENT-SNAPSHOT-2023-06-05-a
+          version: swift-5.9-DEVELOPMENT-SNAPSHOT-2023-06-16-a
       - name: Build
         run: |
           export TOOLCHAINS=swift
-          swift -version
           swift build
       - name: Run tests
         run: |
-          swift -version
           swift test -Xswiftc -Xfrontend -Xswiftc -dump-macro-expansions --enable-code-coverage
       - name: Gather code coverage
         run: |
@@ -42,6 +40,5 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: fail
           files: ./coverage_report.lcov
           verbose: true
