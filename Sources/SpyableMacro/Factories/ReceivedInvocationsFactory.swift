@@ -64,15 +64,25 @@ struct ReceivedInvocationsFactory {
     private func arrayElementType(parameterList: FunctionParameterListSyntax) -> TypeSyntaxProtocol {
         let arrayElementType: TypeSyntaxProtocol
 
-        if parameterList.count == 1, let onlyParameter = parameterList.first {
-            arrayElementType = onlyParameter.type
+        if parameterList.count == 1, var onlyParameterType = parameterList.first?.type {
+            if let attributedType = onlyParameterType.as(AttributedTypeSyntax.self) {
+                onlyParameterType = attributedType.baseType
+            }
+
+            arrayElementType = onlyParameterType
         } else {
             let tupleElements = TupleTypeElementListSyntax {
                 for parameter in parameterList {
                     TupleTypeElementSyntax(
                         name: parameter.secondName ?? parameter.firstName,
                         colon: .colonToken(),
-                        type: parameter.type
+                        type: {
+                            if let attributedType = parameter.type.as(AttributedTypeSyntax.self) {
+                                return attributedType.baseType
+                            } else {
+                                return parameter.type
+                            }
+                        }()
                     )
                 }
             }

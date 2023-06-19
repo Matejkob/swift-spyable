@@ -56,11 +56,27 @@ struct ReceivedArgumentsFactory {
     private func variableType(parameterList: FunctionParameterListSyntax) -> TypeSyntaxProtocol {
         let variableType: TypeSyntaxProtocol
 
-        if parameterList.count == 1, let onlyParameter = parameterList.first {
-            if onlyParameter.type.is(OptionalTypeSyntax.self) {
-                variableType = onlyParameter.type
+        if parameterList.count == 1, var onlyParameterType = parameterList.first?.type {
+            if let attributedType = onlyParameterType.as(AttributedTypeSyntax.self) {
+                onlyParameterType = attributedType.baseType
+            }
+
+            if onlyParameterType.is(OptionalTypeSyntax.self) {
+                variableType = onlyParameterType
+            } else if onlyParameterType.is(FunctionTypeSyntax.self) {
+                variableType = OptionalTypeSyntax(
+                    wrappedType: TupleTypeSyntax(
+                        elements: TupleTypeElementListSyntax {
+                            TupleTypeElementSyntax(type: onlyParameterType)
+                        }
+                    ),
+                    questionMark: .postfixQuestionMarkToken()
+                )
             } else {
-                variableType = OptionalTypeSyntax(wrappedType: onlyParameter.type, questionMark: .postfixQuestionMarkToken())
+                variableType = OptionalTypeSyntax(
+                    wrappedType: onlyParameterType,
+                    questionMark: .postfixQuestionMarkToken()
+                )
             }
         } else {
             let tupleElements = TupleTypeElementListSyntax {
@@ -68,7 +84,13 @@ struct ReceivedArgumentsFactory {
                     TupleTypeElementSyntax(
                         name: parameter.secondName ?? parameter.firstName,
                         colon: .colonToken(),
-                        type: parameter.type
+                        type: {
+                            if let attributedType = parameter.type.as(AttributedTypeSyntax.self) {
+                                return attributedType.baseType
+                            } else {
+                                return parameter.type
+                            }
+                        }()
                     )
                 }
             }

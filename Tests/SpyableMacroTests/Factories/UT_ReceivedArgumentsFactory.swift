@@ -3,6 +3,9 @@ import XCTest
 import SwiftSyntax
 
 final class UT_ReceivedArgumentsFactory: XCTestCase {
+
+    // MARK: - Variable Declaration
+
     func testVariableDeclarationSingleArgument() throws {
         let variablePrefix = "foo"
         let functionDeclaration = try FunctionDeclSyntax(
@@ -64,6 +67,25 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
         let variablePrefix = "foo"
         let functionDeclaration = try FunctionDeclSyntax(
             "func foo(completion: @escaping () -> Void)"
+        ) {}
+
+        let result = ReceivedArgumentsFactory().variableDeclaration(
+            variablePrefix: variablePrefix,
+            parameterList: functionDeclaration.signature.input.parameterList
+        )
+
+        assertBuildResult(
+            result,
+            """
+            var fooReceivedCompletion: (() -> Void)?
+            """
+        )
+    }
+
+    func testVariableDeclarationSingleArgumentWithEscapingAttributeAndTuple() throws {
+        let variablePrefix = "foo"
+        let functionDeclaration = try FunctionDeclSyntax(
+            "func foo(completion: @escaping (() -> Void))"
         ) {}
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
@@ -192,6 +214,8 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
             """
         )
     }
+
+    // MARK: - Assign Value To Variable Expression
 
     func testAssignValueToVariableExpressionSingleArgumentFirstParameterName() throws {
         let variablePrefix = "funcName"
