@@ -3,6 +3,9 @@ import XCTest
 import SwiftSyntax
 
 final class UT_ReceivedArgumentsFactory: XCTestCase {
+
+    // MARK: - Variable Declaration
+
     func testVariableDeclarationSingleArgument() throws {
         let variablePrefix = "foo"
         let functionDeclaration = try FunctionDeclSyntax(
@@ -60,6 +63,82 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
         )
     }
 
+    func testVariableDeclarationSingleArgumentWithEscapingAttribute() throws {
+        let variablePrefix = "foo"
+        let functionDeclaration = try FunctionDeclSyntax(
+            "func foo(completion: @escaping () -> Void)"
+        ) {}
+
+        let result = ReceivedArgumentsFactory().variableDeclaration(
+            variablePrefix: variablePrefix,
+            parameterList: functionDeclaration.signature.input.parameterList
+        )
+
+        assertBuildResult(
+            result,
+            """
+            var fooReceivedCompletion: (() -> Void)?
+            """
+        )
+    }
+
+    func testVariableDeclarationSingleArgumentWithEscapingAttributeAndTuple() throws {
+        let variablePrefix = "foo"
+        let functionDeclaration = try FunctionDeclSyntax(
+            "func foo(completion: @escaping (() -> Void))"
+        ) {}
+
+        let result = ReceivedArgumentsFactory().variableDeclaration(
+            variablePrefix: variablePrefix,
+            parameterList: functionDeclaration.signature.input.parameterList
+        )
+
+        assertBuildResult(
+            result,
+            """
+            var fooReceivedCompletion: (() -> Void)?
+            """
+        )
+    }
+
+    func testVariableDeclarationSingleClosureArgument() throws {
+        let variablePrefix = "foo"
+        let functionDeclaration = try FunctionDeclSyntax(
+            "func foo(completion: () -> Void)"
+        ) {}
+
+        let result = ReceivedArgumentsFactory().variableDeclaration(
+            variablePrefix: variablePrefix,
+            parameterList: functionDeclaration.signature.input.parameterList
+        )
+
+        assertBuildResult(
+            result,
+            """
+            var fooReceivedCompletion: (() -> Void)?
+            """
+        )
+    }
+
+    func testVariableDeclarationSingleOptionalClosureArgument() throws {
+        let variablePrefix = "foo"
+        let functionDeclaration = try FunctionDeclSyntax(
+            "func foo(completion: (() -> Void)?)"
+        ) {}
+
+        let result = ReceivedArgumentsFactory().variableDeclaration(
+            variablePrefix: variablePrefix,
+            parameterList: functionDeclaration.signature.input.parameterList
+        )
+
+        assertBuildResult(
+            result,
+            """
+            var fooReceivedCompletion: (() -> Void)?
+            """
+        )
+    }
+
     func testVariableDeclarationMultiArguments() throws {
         let variablePrefix = "foo"
         let functionDeclaration = try FunctionDeclSyntax(
@@ -78,6 +157,65 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
             """
         )
     }
+
+    func testVariableDeclarationMultiArgumentsWithEscapingAttribute() throws {
+        let variablePrefix = "foo"
+        let functionDeclaration = try FunctionDeclSyntax(
+            "func foo(completion: @escaping () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)"
+        ) {}
+
+        let result = ReceivedArgumentsFactory().variableDeclaration(
+            variablePrefix: variablePrefix,
+            parameterList: functionDeclaration.signature.input.parameterList
+        )
+
+        assertBuildResult(
+            result,
+            """
+            var fooReceivedArguments: (completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)?
+            """
+        )
+    }
+
+    func testVariableDeclarationMultiArgumentsWithSomeClosureArgument() throws {
+        let variablePrefix = "foo"
+        let functionDeclaration = try FunctionDeclSyntax(
+            "func foo(completion: () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)"
+        ) {}
+
+        let result = ReceivedArgumentsFactory().variableDeclaration(
+            variablePrefix: variablePrefix,
+            parameterList: functionDeclaration.signature.input.parameterList
+        )
+
+        assertBuildResult(
+            result,
+            """
+            var fooReceivedArguments: (completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)?
+            """
+        )
+    }
+
+    func testVariableDeclarationMultiArgumentsWithSomeOptionalClosureArgument() throws {
+        let variablePrefix = "foo"
+        let functionDeclaration = try FunctionDeclSyntax(
+            "func foo(completion: (() -> Void)?, _ count: (x: Int, UInt?)?, final price: Decimal?)"
+        ) {}
+
+        let result = ReceivedArgumentsFactory().variableDeclaration(
+            variablePrefix: variablePrefix,
+            parameterList: functionDeclaration.signature.input.parameterList
+        )
+
+        assertBuildResult(
+            result,
+            """
+            var fooReceivedArguments: (completion: (() -> Void)?, count: (x: Int, UInt?)?, price: Decimal?)?
+            """
+        )
+    }
+
+    // MARK: - Assign Value To Variable Expression
 
     func testAssignValueToVariableExpressionSingleArgumentFirstParameterName() throws {
         let variablePrefix = "funcName"
