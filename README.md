@@ -59,7 +59,7 @@ class ServiceProtocolSpy: ServiceProtocol {
         get { underlyingName }
         set { underlyingName = newValue }
     }
-    var underlyingName: (String )!
+    var underlyingName: (String)!
     
     var fetchConfigArgCallsCount = 0
     var fetchConfigArgCalled: Bool {
