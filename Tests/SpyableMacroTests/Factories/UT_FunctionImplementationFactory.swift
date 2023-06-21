@@ -97,6 +97,9 @@ final class UT_FunctionImplementationFactory: XCTestCase {
                 fooCallsCount += 1
                 fooReceivedBar = (bar)
                 fooReceivedInvocations.append((bar))
+                if let fooThrowableError {
+                    throw fooThrowableError
+                }
                 if fooClosure != nil {
                     return try await fooClosure!(bar)
                 } else {
