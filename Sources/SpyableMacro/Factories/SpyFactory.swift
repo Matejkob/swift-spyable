@@ -17,6 +17,8 @@ import SwiftSyntaxBuilder
 ///   These factories produce variables that keep track of how many times a method was called, whether it was called,
 ///   the arguments it was last called with, and all invocations with their arguments respectively.
 ///
+/// - `ThrowableErrorFactory`: It creates a variable for storing a throwing error for a stubbed method.
+///
 /// - `ReturnValueFactory`: It creates a variable for storing a return value for a stubbed method.
 ///
 /// - `ClosureFactory`: It creates a closure variable for every method in the protocol, allowing the spy to
@@ -40,7 +42,7 @@ import SwiftSyntaxBuilder
 /// ```swift
 /// protocol ServiceProtocol {
 ///     var data: Data { get }
-///     func fetch(text: String, count: Int) async -> Decimal
+///     func fetch(text: String, count: Int) async throws -> Decimal
 /// }
 /// ```
 /// the factory generates:
@@ -58,15 +60,19 @@ import SwiftSyntaxBuilder
 ///     }
 ///     var fetchTextCountReceivedArguments: (text: String, count: Int)?
 ///     var fetchTextCountReceivedInvocations: [(text: String, count: Int)] = []
+///     var fetchTextCountThrowableError: Error?
 ///     var fetchTextCountReturnValue: Decimal!
-///     var fetchTextCountClosure: ((String, Int) async -> Decimal)?
+///     var fetchTextCountClosure: ((String, Int) async throws -> Decimal)?
 ///
-///     func fetch(text: String, count: Int) async -> Decimal {
+///     func fetch(text: String, count: Int) async throws -> Decimal {
 ///         fetchTextCountCallsCount += 1
 ///         fetchTextCountReceivedArguments = (text, count)
 ///         fetchTextCountReceivedInvocations.append((text, count))
+///         if let fetchTextCountThrowableError {
+///             throw fetchTextCountThrowableError
+///         }
 ///         if fetchTextCountClosure != nil {
-///             return await fetchTextCountClosure!(text, count)
+///             return try await fetchTextCountClosure!(text, count)
 ///         } else {
 ///             return fetchTextCountReturnValue
 ///         }
@@ -80,6 +86,7 @@ struct SpyFactory {
     private let calledFactory = CalledFactory()
     private let receivedArgumentsFactory = ReceivedArgumentsFactory()
     private let receivedInvocationsFactory = ReceivedInvocationsFactory()
+    private let throwableErrorFactory = ThrowableErrorFactory()
     private let returnValueFactory = ReturnValueFactory()
     private let closureFactory = ClosureFactory()
     private let functionImplementationFactory = FunctionImplementationFactory()
@@ -123,6 +130,10 @@ struct SpyFactory {
                             variablePrefix: variablePrefix,
                             parameterList: parameterList
                         )
+                    }
+
+                    if functionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
+                        throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
                     }
 
                     if let returnType = functionDeclaration.signature.output?.returnType {

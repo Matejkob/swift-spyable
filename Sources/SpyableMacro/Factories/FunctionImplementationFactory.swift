@@ -9,6 +9,7 @@ import SwiftSyntaxBuilder
 /// - `CallsCountFactory`: to increment the `CallsCount` each time the function is invoked.
 /// - `ReceivedArgumentsFactory`: to update the `ReceivedArguments` with the arguments of the latest invocation.
 /// - `ReceivedInvocationsFactory`: to append the latest invocation to the `ReceivedInvocations` list.
+/// - `ThrowableErrorFactory`: to provide throw `ThrowableError` expression.
 /// - `ClosureFactory`: to generate a closure expression that mirrors the function signature.
 /// - `ReturnValueFactory`: to provide the return statement from the `ReturnValue`.
 ///
@@ -42,10 +43,13 @@ import SwiftSyntaxBuilder
 /// ```
 /// the factory generates:
 /// ```swift
-/// func fetchText() -> String {
+/// func fetchText() async throws -> String {
 ///     fetchTextCallsCount += 1
-///     if let closure = fetchTextClosure {
-///         return try await closure()
+///     if let fetchTextThrowableError {
+///         throw fetchTextThrowableError
+///     }
+///     if fetchTextClosure != nil {
+///         return try await fetchTextClosure!()
 ///     } else {
 ///         return fetchTextReturnValue
 ///     }
@@ -55,6 +59,7 @@ struct FunctionImplementationFactory {
     private let callsCountFactory = CallsCountFactory()
     private let receivedArgumentsFactory = ReceivedArgumentsFactory()
     private let receivedInvocationsFactory = ReceivedInvocationsFactory()
+    private let throwableErrorFactory = ThrowableErrorFactory()
     private let closureFactory = ClosureFactory()
     private let returnValueFactory = ReturnValueFactory()
 
@@ -84,6 +89,10 @@ struct FunctionImplementationFactory {
                         variablePrefix: variablePrefix,
                         parameterList: parameterList
                     )
+                }
+
+                if protocolFunctionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
+                    throwableErrorFactory.throwErrorExpression(variablePrefix: variablePrefix)
                 }
 
                 if protocolFunctionDeclaration.signature.output == nil {
