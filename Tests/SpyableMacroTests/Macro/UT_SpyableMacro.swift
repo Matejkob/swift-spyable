@@ -90,10 +90,14 @@ final class UT_SpyableMacro: XCTestCase {
                 var fetchConfigCalled: Bool {
                     return fetchConfigCallsCount > 0
                 }
+                var fetchConfigThrowableError: Error?
                 var fetchConfigReturnValue: [String: String]!
                 var fetchConfigClosure: (() async throws -> [String: String])?
                     func fetchConfig() async throws -> [String: String] {
                     fetchConfigCallsCount += 1
+                    if let fetchConfigThrowableError {
+                        throw fetchConfigThrowableError
+                    }
                     if fetchConfigClosure != nil {
                         return try await fetchConfigClosure!()
                     } else {
