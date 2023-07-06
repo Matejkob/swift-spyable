@@ -51,7 +51,7 @@
 ///
 /// - NOTE: The `@Spyable` macro should only be applied to protocols. Applying it to other
 ///         declarations will result in an error.
-@attached(peer, names: arbitrary)
+@attached(peer, names: suffixed(Spy))
 public macro Spyable() = #externalMacro(
     module: "SpyableMacro",
     type: "SpyableMacro"
