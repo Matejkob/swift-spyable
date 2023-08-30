@@ -43,7 +43,7 @@ import SwiftSyntaxBuilder
 struct VariablesImplementationFactory {
     private let accessorRemovalVisitor = AccessorRemovalVisitor()
     
-    @MemberDeclListBuilder
+    @MemberBlockItemListBuilder
     func variablesDeclarations(
         protocolVariableDeclaration: VariableDeclSyntax
     ) -> MemberDeclListSyntax {
@@ -63,25 +63,26 @@ struct VariablesImplementationFactory {
         binding: PatternBindingListSyntax.Element
     ) -> VariableDeclSyntax {
         let underlyingVariableName = underlyingVariableName(binding: binding)
-        
+
         return VariableDeclSyntax(
-            bindingKeyword: .keyword(.var),
-            bindingsBuilder: {
-                PatternBindingSyntax(
-                    pattern: binding.pattern,
-                    typeAnnotation: binding.typeAnnotation,
-                    accessor: .accessors(
-                        AccessorBlockSyntax(
-                            accessors: AccessorListSyntax(
-                                arrayLiteral:
-                                    "get { \(raw: underlyingVariableName) }",
-                                    "set { \(raw: underlyingVariableName) = newValue }"
-                            )
-                        )
+          bindingSpecifier: .keyword(.var),
+          bindingsBuilder: {
+            PatternBindingSyntax(
+                pattern: binding.pattern,
+                typeAnnotation: binding.typeAnnotation,
+                accessorBlock: AccessorBlockSyntax(
+                  accessors: .accessors(
+                      AccessorDeclListSyntax {
+                          AccessorDeclListSyntax(arrayLiteral:
+                              "get { \(raw: underlyingVariableName) }",
+                              "set { \(raw: underlyingVariableName) = newValue }"
+                          )
+                      }
                     )
                 )
-            }
-        )
+            )
+          }
+      )
     }
 
     private func underlyingVariableDeclaration(

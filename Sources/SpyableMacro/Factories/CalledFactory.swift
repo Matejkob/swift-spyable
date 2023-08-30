@@ -27,25 +27,33 @@ import SwiftSyntaxBuilder
 struct CalledFactory {
     func variableDeclaration(variablePrefix: String) -> VariableDeclSyntax {
         VariableDeclSyntax(
-            bindingKeyword: .keyword(.var),
+            bindingSpecifier: .keyword(.var),
             bindingsBuilder: {
                 PatternBindingSyntax(
                     pattern: IdentifierPatternSyntax(
                         identifier: .identifier(variablePrefix + "Called")
                     ),
                     typeAnnotation: TypeAnnotationSyntax(
-                        type: SimpleTypeIdentifierSyntax(name: .identifier("Bool"))
+                        type: IdentifierTypeSyntax(name: .identifier("Bool"))
                     ),
-                    accessor: .getter(
-                        CodeBlockSyntax {
-                            ReturnStmtSyntax(
-                                expression: SequenceExprSyntax {
-                                    IdentifierExprSyntax(identifier: .identifier(variablePrefix + "CallsCount"))
-                                    BinaryOperatorExprSyntax(operatorToken: .binaryOperator(">"))
-                                    IntegerLiteralExprSyntax(digits: .integerLiteral("0"))
-                                }
-                            )
-                        }
+                    accessorBlock: AccessorBlockSyntax(
+                        accessors: AccessorBlockSyntax.Accessors.getter(
+                            CodeBlockItemListSyntax {
+                                CodeBlockItemSyntax(
+                                    item: .stmt(
+                                        StmtSyntax(
+                                            ReturnStmtSyntax(
+                                                expression: SequenceExprSyntax {
+                                                    DeclReferenceExprSyntax(baseName: .identifier(variablePrefix + "CallsCount"))
+                                                    BinaryOperatorExprSyntax(operator: .binaryOperator(">"))
+                                                    IntegerLiteralExprSyntax(literal: .integerLiteral("0"))
+                                                }
+                                            )
+                                        )
+                                    )
+                                )
+                            }
+                        )
                     )
                 )
             }
