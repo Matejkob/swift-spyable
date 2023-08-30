@@ -42,6 +42,7 @@ final class UT_SpyableMacro: XCTestCase {
             expandedSource: """
 
             \(protocolDeclaration)
+
             class ServiceProtocolSpy: ServiceProtocol {
                 var name: String {
                     get {
