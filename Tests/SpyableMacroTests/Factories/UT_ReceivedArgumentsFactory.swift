@@ -14,7 +14,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -33,7 +33,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -52,7 +52,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -71,7 +71,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -90,7 +90,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -109,7 +109,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -128,7 +128,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -147,7 +147,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -166,7 +166,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -185,7 +185,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -204,7 +204,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().variableDeclaration(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -225,7 +225,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -244,7 +244,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -263,7 +263,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
@@ -282,7 +282,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
         let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
             variablePrefix: variablePrefix,
-            parameterList: functionDeclaration.signature.input.parameterList
+            parameterList: functionDeclaration.signature.parameterClause.parameters
         )
 
         assertBuildResult(
