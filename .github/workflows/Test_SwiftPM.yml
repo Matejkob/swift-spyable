@@ -17,7 +17,7 @@ jobs:
       - name: Install Swift
         uses: slashmo/install-swift@v0.4.0
         with:
-          version: swift-5.9-DEVELOPMENT-SNAPSHOT-2023-08-25-a
+          version: swift-5.9-DEVELOPMENT-SNAPSHOT-2023-09-14-a
       - name: Build
         run: |
           export TOOLCHAINS=swift
