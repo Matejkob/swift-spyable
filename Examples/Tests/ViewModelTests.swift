@@ -39,4 +39,25 @@ final class ViewModelTests: XCTestCase {
         XCTAssertEqual(serviceSpy.fetchConfigArgCallsCount, 2)
         XCTAssertEqual(serviceSpy.fetchConfigArgReceivedInvocations, [1, 2])
     }
+
+    func testThrowableError() async throws {
+        serviceSpy.fetchConfigArgThrowableError = CustomError.expected
+
+        do {
+            try await sut.saveConfig()
+            XCTFail("An error should have been thrown by the sut")
+        } catch CustomError.expected {
+            XCTAssertEqual(serviceSpy.fetchConfigArgCallsCount, 1)
+            XCTAssertEqual(serviceSpy.fetchConfigArgReceivedInvocations, [1])
+            XCTAssertTrue(sut.config.isEmpty)
+        } catch {
+            XCTFail("Unexpected error catched")
+        }
+    }
+}
+
+extension ViewModelTests {
+    enum CustomError: Error {
+        case expected
+    }
 }
