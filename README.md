@@ -111,9 +111,7 @@ This repo comes with an example of how to use Spyable. You can find it [here](./
 
 ## Documentation
 
-Soon.
-
-<!--The latest documentation for the Spyable macro is available [here][docs].-->
+The latest documentation for this library is available [here](https://swiftpackageindex.com/Matejkob/swift-spyable/0.1.2/documentation/spyable).
 
 ## Installation
 
