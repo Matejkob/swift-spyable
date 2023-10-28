@@ -35,8 +35,8 @@ struct ClosureFactory {
         let elements = TupleTypeElementListSyntax {
             TupleTypeElementSyntax(
                 type: FunctionTypeSyntax(
-                    arguments: TupleTypeElementListSyntax {
-                        for parameter in functionSignature.input.parameterList {
+                    parameters: TupleTypeElementListSyntax {
+                        for parameter in functionSignature.parameterClause.parameters {
                             TupleTypeElementSyntax(type: parameter.type)
                         }
                     },
@@ -44,8 +44,8 @@ struct ClosureFactory {
                         asyncSpecifier: functionSignature.effectSpecifiers?.asyncSpecifier,
                         throwsSpecifier: functionSignature.effectSpecifiers?.throwsSpecifier
                     ),
-                    output: functionSignature.output ?? ReturnClauseSyntax(
-                        returnType: SimpleTypeIdentifierSyntax(
+                    returnClause: functionSignature.returnClause ?? ReturnClauseSyntax(
+                        type: IdentifierTypeSyntax(
                             name: .identifier("Void")
                         )
                     )
@@ -77,16 +77,16 @@ struct ClosureFactory {
     func callExpression(variablePrefix: String, functionSignature: FunctionSignatureSyntax) -> ExprSyntaxProtocol {
         let calledExpression: ExprSyntaxProtocol
 
-        if functionSignature.output == nil {
+        if functionSignature.returnClause == nil {
             calledExpression = OptionalChainingExprSyntax(
-                expression: IdentifierExprSyntax(
-                    identifier: variableIdentifier(variablePrefix: variablePrefix)
+                expression: DeclReferenceExprSyntax(
+                    baseName: variableIdentifier(variablePrefix: variablePrefix)
                 )
             )
         } else {
-            calledExpression = ForcedValueExprSyntax(
-                expression: IdentifierExprSyntax(
-                    identifier: variableIdentifier(variablePrefix: variablePrefix)
+            calledExpression = ForceUnwrapExprSyntax(
+                expression: DeclReferenceExprSyntax(
+                    baseName: variableIdentifier(variablePrefix: variablePrefix)
                 )
             )
         }
@@ -94,11 +94,11 @@ struct ClosureFactory {
         var expression: ExprSyntaxProtocol = FunctionCallExprSyntax(
             calledExpression: calledExpression,
             leftParen: .leftParenToken(),
-            argumentList: TupleExprElementListSyntax {
-                for parameter in functionSignature.input.parameterList {                    
-                    TupleExprElementSyntax(
-                        expression: IdentifierExprSyntax(
-                            identifier: parameter.secondName ?? parameter.firstName
+            arguments: LabeledExprListSyntax {
+                for parameter in functionSignature.parameterClause.parameters {                    
+                    LabeledExprSyntax(
+                        expression: DeclReferenceExprSyntax(
+                            baseName: parameter.secondName ?? parameter.firstName
                         )
                     )
                 }

@@ -63,7 +63,7 @@ struct ReturnValueFactory {
     func returnStatement(variablePrefix: String) -> ReturnStmtSyntax {
         ReturnStmtSyntax(
             returnKeyword: .keyword(.return),
-            expression: IdentifierExprSyntax(identifier: variableIdentifier(variablePrefix: variablePrefix))
+            expression: DeclReferenceExprSyntax(baseName: variableIdentifier(variablePrefix: variablePrefix))
         )
     }
 

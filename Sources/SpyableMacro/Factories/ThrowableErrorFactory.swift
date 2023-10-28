@@ -39,7 +39,7 @@ struct ThrowableErrorFactory {
                     ),
                     typeAnnotation: TypeAnnotationSyntax(
                         type: OptionalTypeSyntax(
-                            wrappedType: SimpleTypeIdentifierSyntax(name: .identifier("Error"))
+                            wrappedType: IdentifierTypeSyntax(name: .identifier("Error"))
                         )
                     )
                 )
@@ -53,7 +53,7 @@ struct ThrowableErrorFactory {
                 ConditionElementSyntax(
                     condition: .optionalBinding(
                         OptionalBindingConditionSyntax(
-                           bindingKeyword: .keyword(.let),
+                            bindingSpecifier: .keyword(.let),
                            pattern: IdentifierPatternSyntax(
                                identifier: variableIdentifier(variablePrefix: variablePrefix)
                            )
@@ -63,8 +63,8 @@ struct ThrowableErrorFactory {
             },
             bodyBuilder: {
                 ThrowStmtSyntax(
-                    expression: IdentifierExprSyntax(
-                        identifier: variableIdentifier(variablePrefix: variablePrefix)
+                    expression: DeclReferenceExprSyntax(
+                        baseName: variableIdentifier(variablePrefix: variablePrefix)
                     )
                 )
             }

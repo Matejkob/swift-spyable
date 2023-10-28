@@ -92,7 +92,7 @@ struct SpyFactory {
     private let functionImplementationFactory = FunctionImplementationFactory()
 
     func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) -> ClassDeclSyntax {
-        let identifier = TokenSyntax.identifier(protocolDeclaration.identifier.text + "Spy")
+        let identifier = TokenSyntax.identifier(protocolDeclaration.name.text + "Spy")
 
         let variableDeclarations = protocolDeclaration.memberBlock.members
             .compactMap { $0.decl.as(VariableDeclSyntax.self) }
@@ -102,9 +102,9 @@ struct SpyFactory {
         
         return ClassDeclSyntax(
             identifier: identifier,
-            inheritanceClause: TypeInheritanceClauseSyntax {
+            inheritanceClause: InheritanceClauseSyntax {
                 InheritedTypeSyntax(
-                    typeName: SimpleTypeIdentifierSyntax(name: protocolDeclaration.identifier)
+                    type: IdentifierTypeSyntax(name: protocolDeclaration.name)
                 )
             },
             memberBlockBuilder: {
@@ -116,7 +116,7 @@ struct SpyFactory {
 
                 for functionDeclaration in functionDeclarations {
                     let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
-                    let parameterList = functionDeclaration.signature.input.parameterList
+                    let parameterList = functionDeclaration.signature.parameterClause.parameters
 
                     callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
                     calledFactory.variableDeclaration(variablePrefix: variablePrefix)
@@ -136,7 +136,7 @@ struct SpyFactory {
                         throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
                     }
 
-                    if let returnType = functionDeclaration.signature.output?.returnType {
+                    if let returnType = functionDeclaration.signature.returnClause?.type {
                         returnValueFactory.variableDeclaration(
                             variablePrefix: variablePrefix,
                             functionReturnType: returnType

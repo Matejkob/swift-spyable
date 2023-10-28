@@ -71,12 +71,12 @@ struct FunctionImplementationFactory {
             attributes: protocolFunctionDeclaration.attributes,
             modifiers: protocolFunctionDeclaration.modifiers,
             funcKeyword: protocolFunctionDeclaration.funcKeyword,
-            identifier: protocolFunctionDeclaration.identifier,
+            name: protocolFunctionDeclaration.name,
             genericParameterClause: protocolFunctionDeclaration.genericParameterClause,
             signature: protocolFunctionDeclaration.signature,
             genericWhereClause: protocolFunctionDeclaration.genericWhereClause,
             bodyBuilder: {
-                let parameterList = protocolFunctionDeclaration.signature.input.parameterList
+                let parameterList = protocolFunctionDeclaration.signature.parameterClause.parameters
 
                 callsCountFactory.incrementVariableExpression(variablePrefix: variablePrefix)
 
@@ -95,7 +95,7 @@ struct FunctionImplementationFactory {
                     throwableErrorFactory.throwErrorExpression(variablePrefix: variablePrefix)
                 }
 
-                if protocolFunctionDeclaration.signature.output == nil {
+                if protocolFunctionDeclaration.signature.returnClause == nil {
                     closureFactory.callExpression(
                         variablePrefix: variablePrefix,
                         functionSignature: protocolFunctionDeclaration.signature
@@ -117,8 +117,8 @@ struct FunctionImplementationFactory {
                     condition: .expression(
                         ExprSyntax(
                             SequenceExprSyntax {
-                                IdentifierExprSyntax(identifier: .identifier(variablePrefix + "Closure"))
-                                BinaryOperatorExprSyntax(operatorToken: .binaryOperator("!="))
+                                DeclReferenceExprSyntax(baseName: .identifier(variablePrefix + "Closure"))
+                                BinaryOperatorExprSyntax(operator: .binaryOperator("!="))
                                 NilLiteralExprSyntax()
                             }
                         )

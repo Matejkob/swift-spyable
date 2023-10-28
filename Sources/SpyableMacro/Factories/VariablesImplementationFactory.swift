@@ -46,7 +46,7 @@ struct VariablesImplementationFactory {
     @MemberBlockItemListBuilder
     func variablesDeclarations(
         protocolVariableDeclaration: VariableDeclSyntax
-    ) -> MemberDeclListSyntax {
+    ) -> MemberBlockItemListSyntax {
         if let binding = protocolVariableDeclaration.bindings.first {
             if let variableType = binding.typeAnnotation?.type, variableType.is(OptionalTypeSyntax.self) {
                 accessorRemovalVisitor.visit(protocolVariableDeclaration)
@@ -125,6 +125,6 @@ struct VariablesImplementationFactory {
 private class AccessorRemovalVisitor: SyntaxRewriter {
     override func visit(_ node: PatternBindingSyntax) -> PatternBindingSyntax {
         let superResult = super.visit(node)
-        return superResult.with(\.accessor, nil)
+        return superResult.with(\.accessorBlock, nil)
     }
 }

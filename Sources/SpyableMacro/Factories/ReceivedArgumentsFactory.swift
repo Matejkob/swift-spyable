@@ -82,7 +82,7 @@ struct ReceivedArgumentsFactory {
             let tupleElements = TupleTypeElementListSyntax {
                 for parameter in parameterList {
                     TupleTypeElementSyntax(
-                        name: parameter.secondName ?? parameter.firstName,
+                        firstName: parameter.secondName ?? parameter.firstName,
                         colon: .colonToken(),
                         type: {
                             if let attributedType = parameter.type.as(AttributedTypeSyntax.self) {
@@ -107,13 +107,13 @@ struct ReceivedArgumentsFactory {
         let identifier = variableIdentifier(variablePrefix: variablePrefix, parameterList: parameterList)
 
         return SequenceExprSyntax {
-            IdentifierExprSyntax(identifier: identifier)
+            DeclReferenceExprSyntax(baseName: identifier)
             AssignmentExprSyntax()
             TupleExprSyntax {
                 for parameter in parameterList {
-                    TupleExprElementSyntax(
-                        expression: IdentifierExprSyntax(
-                            identifier: parameter.secondName ?? parameter.firstName
+                    LabeledExprSyntax(
+                        expression: DeclReferenceExprSyntax(
+                            baseName: parameter.secondName ?? parameter.firstName
                         )
                     )
                 }
