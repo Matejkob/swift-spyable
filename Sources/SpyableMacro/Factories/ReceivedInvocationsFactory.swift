@@ -96,7 +96,7 @@ struct ReceivedInvocationsFactory {
         let identifier = variableIdentifier(variablePrefix: variablePrefix)
         let calledExpression = MemberAccessExprSyntax(
             base: DeclReferenceExprSyntax(baseName: identifier),
-            dot: .periodToken(),
+            period: .periodToken(),
             name: .identifier("append")
         )
         let argument = appendArgumentExpression(parameterList: parameterList)
