@@ -111,15 +111,17 @@ struct ReceivedInvocationsFactory {
 
     private func appendArgumentExpression(parameterList: FunctionParameterListSyntax) -> LabeledExprListSyntax {
         let tupleArgument = TupleExprSyntax(
-            elementListBuilder: {
-                for parameter in parameterList {
-                    LabeledExprSyntax(
-                        expression: DeclReferenceExprSyntax(
-                            baseName: parameter.secondName ?? parameter.firstName
+            elements: LabeledExprListSyntax(
+                itemsBuilder: {
+                    for parameter in parameterList {
+                        LabeledExprSyntax(
+                            expression: DeclReferenceExprSyntax(
+                                baseName: parameter.secondName ?? parameter.firstName
+                            )
                         )
-                    )
+                    }
                 }
-            }
+            )
         )
 
         return LabeledExprListSyntax {
