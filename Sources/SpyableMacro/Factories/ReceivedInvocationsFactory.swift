@@ -74,7 +74,7 @@ struct ReceivedInvocationsFactory {
             let tupleElements = TupleTypeElementListSyntax {
                 for parameter in parameterList {
                     TupleTypeElementSyntax(
-                        name: parameter.secondName ?? parameter.firstName,
+                        firstName: parameter.secondName ?? parameter.firstName,
                         colon: .colonToken(),
                         type: {
                             if let attributedType = parameter.type.as(AttributedTypeSyntax.self) {
