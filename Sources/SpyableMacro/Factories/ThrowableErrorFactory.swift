@@ -54,10 +54,10 @@ struct ThrowableErrorFactory {
                     condition: .optionalBinding(
                         OptionalBindingConditionSyntax(
                             bindingSpecifier: .keyword(.let),
-                           pattern: IdentifierPatternSyntax(
-                               identifier: variableIdentifier(variablePrefix: variablePrefix)
-                           )
-                       )
+                            pattern: IdentifierPatternSyntax(
+                                identifier: variableIdentifier(variablePrefix: variablePrefix)
+                            )
+                        )
                     )
                 )
             },
