@@ -89,7 +89,7 @@ struct VariablesImplementationFactory {
         binding: PatternBindingListSyntax.Element
     ) -> VariableDeclSyntax {
         VariableDeclSyntax(
-            bindingKeyword: .keyword(.var),
+            bindingSpecifier: .keyword(.var),
             bindingsBuilder: {
                 PatternBindingSyntax(
                     pattern: IdentifierPatternSyntax(

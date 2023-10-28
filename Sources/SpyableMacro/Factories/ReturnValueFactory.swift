@@ -40,7 +40,7 @@ import SwiftSyntaxBuilder
 struct ReturnValueFactory {
     func variableDeclaration(variablePrefix: String, functionReturnType: TypeSyntax) -> VariableDeclSyntax {
         VariableDeclSyntax(
-            bindingKeyword: .keyword(.var),
+            bindingSpecifier: .keyword(.var),
             bindingsBuilder: {
                 PatternBindingSyntax(
                     pattern: IdentifierPatternSyntax(

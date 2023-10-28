@@ -41,7 +41,7 @@ struct ReceivedArgumentsFactory {
         let type = variableType(parameterList: parameterList)
 
         return VariableDeclSyntax(
-            bindingKeyword: .keyword(.var),
+            bindingSpecifier: .keyword(.var),
             bindingsBuilder: {
                 PatternBindingSyntax(
                     pattern: IdentifierPatternSyntax(identifier: identifier),

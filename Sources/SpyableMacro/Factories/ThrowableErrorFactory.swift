@@ -31,7 +31,7 @@ import SwiftSyntaxBuilder
 struct ThrowableErrorFactory {
     func variableDeclaration(variablePrefix: String) -> VariableDeclSyntax {
         VariableDeclSyntax(
-            bindingKeyword: .keyword(.var),
+            bindingSpecifier: .keyword(.var),
             bindingsBuilder: {
                 PatternBindingSyntax(
                     pattern: IdentifierPatternSyntax(

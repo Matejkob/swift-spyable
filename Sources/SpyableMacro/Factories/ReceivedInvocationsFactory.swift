@@ -46,7 +46,7 @@ struct ReceivedInvocationsFactory {
         let elementType = arrayElementType(parameterList: parameterList)
 
         return VariableDeclSyntax(
-            bindingKeyword: .keyword(.var),
+            bindingSpecifier: .keyword(.var),
             bindingsBuilder: {
                 PatternBindingSyntax(
                     pattern: IdentifierPatternSyntax(identifier: identifier),
