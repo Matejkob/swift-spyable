@@ -101,7 +101,7 @@ struct SpyFactory {
             .compactMap { $0.decl.as(FunctionDeclSyntax.self) }
         
         return ClassDeclSyntax(
-            identifier: identifier,
+            name: identifier,
             inheritanceClause: InheritanceClauseSyntax {
                 InheritedTypeSyntax(
                     type: IdentifierTypeSyntax(name: protocolDeclaration.name)
