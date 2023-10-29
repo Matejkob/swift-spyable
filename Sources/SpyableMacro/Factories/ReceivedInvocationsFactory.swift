@@ -46,12 +46,12 @@ struct ReceivedInvocationsFactory {
         let elementType = arrayElementType(parameterList: parameterList)
 
         return VariableDeclSyntax(
-            bindingKeyword: .keyword(.var),
+            bindingSpecifier: .keyword(.var),
             bindingsBuilder: {
                 PatternBindingSyntax(
                     pattern: IdentifierPatternSyntax(identifier: identifier),
                     typeAnnotation: TypeAnnotationSyntax(
-                        type: ArrayTypeSyntax(elementType: elementType)
+                        type: ArrayTypeSyntax(element: elementType)
                     ),
                     initializer: InitializerClauseSyntax(
                         value: ArrayExprSyntax(elementsBuilder: {})
@@ -74,7 +74,7 @@ struct ReceivedInvocationsFactory {
             let tupleElements = TupleTypeElementListSyntax {
                 for parameter in parameterList {
                     TupleTypeElementSyntax(
-                        name: parameter.secondName ?? parameter.firstName,
+                        firstName: parameter.secondName ?? parameter.firstName,
                         colon: .colonToken(),
                         type: {
                             if let attributedType = parameter.type.as(AttributedTypeSyntax.self) {
@@ -95,8 +95,8 @@ struct ReceivedInvocationsFactory {
     func appendValueToVariableExpression(variablePrefix: String, parameterList: FunctionParameterListSyntax) -> FunctionCallExprSyntax {
         let identifier = variableIdentifier(variablePrefix: variablePrefix)
         let calledExpression = MemberAccessExprSyntax(
-            base: IdentifierExprSyntax(identifier: identifier),
-            dot: .periodToken(),
+            base: DeclReferenceExprSyntax(baseName: identifier),
+            period: .periodToken(),
             name: .identifier("append")
         )
         let argument = appendArgumentExpression(parameterList: parameterList)
@@ -104,26 +104,28 @@ struct ReceivedInvocationsFactory {
         return FunctionCallExprSyntax(
             calledExpression: calledExpression,
             leftParen: .leftParenToken(),
-            argumentList: argument,
+            arguments: argument,
             rightParen: .rightParenToken()
         )
     }
 
-    private func appendArgumentExpression(parameterList: FunctionParameterListSyntax) -> TupleExprElementListSyntax {
+    private func appendArgumentExpression(parameterList: FunctionParameterListSyntax) -> LabeledExprListSyntax {
         let tupleArgument = TupleExprSyntax(
-            elementListBuilder: {
-                for parameter in parameterList {
-                    TupleExprElementSyntax(
-                        expression: IdentifierExprSyntax(
-                            identifier: parameter.secondName ?? parameter.firstName
+            elements: LabeledExprListSyntax(
+                itemsBuilder: {
+                    for parameter in parameterList {
+                        LabeledExprSyntax(
+                            expression: DeclReferenceExprSyntax(
+                                baseName: parameter.secondName ?? parameter.firstName
+                            )
                         )
-                    )
+                    }
                 }
-            }
+            )
         )
 
-        return TupleExprElementListSyntax {
-            TupleExprElementSyntax(expression: tupleArgument)
+        return LabeledExprListSyntax {
+            LabeledExprSyntax(expression: tupleArgument)
         }
     }
 

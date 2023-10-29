@@ -23,14 +23,14 @@ import SwiftSyntaxBuilder
 struct CallsCountFactory {
     func variableDeclaration(variablePrefix: String) -> VariableDeclSyntax {
         VariableDeclSyntax(
-            bindingKeyword: .keyword(.var),
+            bindingSpecifier: .keyword(.var),
             bindingsBuilder: {
                 PatternBindingSyntax(
                     pattern: IdentifierPatternSyntax(
                         identifier: variableIdentifier(variablePrefix: variablePrefix)
                     ),
                     initializer: InitializerClauseSyntax(
-                        value: IntegerLiteralExprSyntax(digits: .integerLiteral("0"))
+                        value: IntegerLiteralExprSyntax(literal: .integerLiteral("0"))
                     )
                 )
             }
@@ -39,9 +39,9 @@ struct CallsCountFactory {
 
     func incrementVariableExpression(variablePrefix: String) -> SequenceExprSyntax {
         SequenceExprSyntax {
-            IdentifierExprSyntax(identifier: variableIdentifier(variablePrefix: variablePrefix))
-            BinaryOperatorExprSyntax(operatorToken: .binaryOperator("+="))
-            IntegerLiteralExprSyntax(digits: .integerLiteral("1"))
+            DeclReferenceExprSyntax(baseName: variableIdentifier(variablePrefix: variablePrefix))
+            BinaryOperatorExprSyntax(operator: .binaryOperator("+="))
+            IntegerLiteralExprSyntax(literal: .integerLiteral("1"))
         }
     }
 

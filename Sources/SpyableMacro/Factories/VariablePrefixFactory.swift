@@ -19,9 +19,9 @@ import SwiftSyntaxBuilder
 /// Please note that if a parameter is underscored (anonymous), it's ignored.
 struct VariablePrefixFactory {
     func text(for functionDeclaration: FunctionDeclSyntax) -> String {
-        var parts: [String] = [functionDeclaration.identifier.text]
+        var parts: [String] = [functionDeclaration.name.text]
 
-        let parameterList = functionDeclaration.signature.input.parameterList
+        let parameterList = functionDeclaration.signature.parameterClause.parameters
 
         let parameters = parameterList
             .map { $0.firstName.text }
