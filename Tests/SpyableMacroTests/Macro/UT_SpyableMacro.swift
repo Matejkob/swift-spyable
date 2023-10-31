@@ -28,6 +28,7 @@ final class UT_SpyableMacro: XCTestCase {
                 set
             }
 
+            mutating func logout()
             func initialize(name: String, secondName: String?)
             func fetchConfig() async throws -> [String: String]
             func fetchData(_ name: (String, count: Int)) async -> (() -> Void)
@@ -73,6 +74,15 @@ final class UT_SpyableMacro: XCTestCase {
                 }
                 var underlyingAdded: (() -> Void )!
                     var removed: (() -> Void)?
+                var logoutCallsCount = 0
+                var logoutCalled: Bool {
+                    return logoutCallsCount > 0
+                }
+                var logoutClosure: (() -> Void)?
+                func logout() {
+                    logoutCallsCount += 1
+                    logoutClosure?()
+                }
                 var initializeNameSecondNameCallsCount = 0
                 var initializeNameSecondNameCalled: Bool {
                     return initializeNameSecondNameCallsCount > 0
@@ -80,7 +90,6 @@ final class UT_SpyableMacro: XCTestCase {
                 var initializeNameSecondNameReceivedArguments: (name: String, secondName: String?)?
                 var initializeNameSecondNameReceivedInvocations: [(name: String, secondName: String?)] = []
                 var initializeNameSecondNameClosure: ((String, String?) -> Void)?
-
                     func initialize(name: String, secondName: String?) {
                     initializeNameSecondNameCallsCount += 1
                     initializeNameSecondNameReceivedArguments = (name, secondName)

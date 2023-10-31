@@ -69,7 +69,7 @@ struct FunctionImplementationFactory {
     ) -> FunctionDeclSyntax {
         FunctionDeclSyntax(
             attributes: protocolFunctionDeclaration.attributes,
-            modifiers: protocolFunctionDeclaration.modifiers,
+            modifiers: protocolFunctionDeclaration.modifiers.removingMutating,
             funcKeyword: protocolFunctionDeclaration.funcKeyword,
             name: protocolFunctionDeclaration.name,
             genericParameterClause: protocolFunctionDeclaration.genericParameterClause,
@@ -140,5 +140,13 @@ struct FunctionImplementationFactory {
                 )
             }
         )
+    }
+}
+
+private extension DeclModifierListSyntax {
+    var removingMutating: Self {
+        filter {
+            $0.name.text != "mutating"
+        }
     }
 }
