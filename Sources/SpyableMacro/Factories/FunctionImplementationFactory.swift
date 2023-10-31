@@ -146,7 +146,7 @@ struct FunctionImplementationFactory {
 private extension DeclModifierListSyntax {
     var removingMutating: Self {
         filter {
-            $0.name.text != "mutating"
+            $0.name.text != TokenSyntax.keyword(.mutating).text
         }
     }
 }
