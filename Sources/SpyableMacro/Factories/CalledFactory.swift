@@ -25,38 +25,13 @@ import SwiftSyntaxBuilder
 /// ```
 /// and an argument `variablePrefix` equal to `foo`.
 struct CalledFactory {
-    func variableDeclaration(variablePrefix: String) -> VariableDeclSyntax {
-        VariableDeclSyntax(
-            bindingSpecifier: .keyword(.var),
-            bindingsBuilder: {
-                PatternBindingSyntax(
-                    pattern: IdentifierPatternSyntax(
-                        identifier: .identifier(variablePrefix + "Called")
-                    ),
-                    typeAnnotation: TypeAnnotationSyntax(
-                        type: IdentifierTypeSyntax(name: .identifier("Bool"))
-                    ),
-                    accessorBlock: AccessorBlockSyntax(
-                        accessors: AccessorBlockSyntax.Accessors.getter(
-                            CodeBlockItemListSyntax {
-                                CodeBlockItemSyntax(
-                                    item: .stmt(
-                                        StmtSyntax(
-                                            ReturnStmtSyntax(
-                                                expression: SequenceExprSyntax {
-                                                    DeclReferenceExprSyntax(baseName: .identifier(variablePrefix + "CallsCount"))
-                                                    BinaryOperatorExprSyntax(operator: .binaryOperator(">"))
-                                                    IntegerLiteralExprSyntax(literal: .integerLiteral("0"))
-                                                }
-                                            )
-                                        )
-                                    )
-                                )
-                            }
-                        )
-                    )
-                )
-            }
+    func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
+        try VariableDeclSyntax(
+          """
+          var \(raw: variablePrefix)Called: Bool {
+              return \(raw: variablePrefix)CallsCount > 0
+          }
+          """
         )
     }
 }

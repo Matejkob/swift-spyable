@@ -30,7 +30,7 @@ public enum SpyableMacro: PeerMacro {
     ) throws -> [DeclSyntax] {
         let protocolDeclaration = try extractor.extractProtocolDeclaration(from: declaration)
 
-        let spyClassDeclaration = spyFactory.classDeclaration(for: protocolDeclaration)
+        let spyClassDeclaration = try spyFactory.classDeclaration(for: protocolDeclaration)
 
         return [DeclSyntax(spyClassDeclaration)]
     }
