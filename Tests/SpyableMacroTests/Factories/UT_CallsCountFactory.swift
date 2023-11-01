@@ -3,10 +3,10 @@ import XCTest
 import SwiftSyntax
 
 final class UT_CallsCountFactory: XCTestCase {
-    func testVariableDeclaration() {
+    func testVariableDeclaration() throws {
         let variablePrefix = "functionName"
 
-        let result = CallsCountFactory().variableDeclaration(variablePrefix: variablePrefix)
+        let result = try CallsCountFactory().variableDeclaration(variablePrefix: variablePrefix)
 
         assertBuildResult(
             result,

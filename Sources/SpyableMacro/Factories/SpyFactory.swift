@@ -118,7 +118,7 @@ struct SpyFactory {
                     let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
                     let parameterList = functionDeclaration.signature.parameterClause.parameters
 
-                    callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
+                    try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
                     try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
 
                     if !parameterList.isEmpty {
