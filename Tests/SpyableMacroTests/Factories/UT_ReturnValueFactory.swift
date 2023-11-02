@@ -3,11 +3,11 @@ import XCTest
 import SwiftSyntax
 
 final class UT_ReturnValueFactory: XCTestCase {
-    func testVariableDeclaration() {
+    func testVariableDeclaration() throws {
         let variablePrefix = "function_name"
         let functionReturnType = TypeSyntax("(text: String, count: UInt)")
 
-        let result = ReturnValueFactory().variableDeclaration(
+        let result = try ReturnValueFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             functionReturnType: functionReturnType
         )
@@ -20,11 +20,11 @@ final class UT_ReturnValueFactory: XCTestCase {
         )
     }
 
-    func testVariableDeclarationOptionType() {
+    func testVariableDeclarationOptionType() throws {
         let variablePrefix = "functionName"
         let functionReturnType = TypeSyntax("String?")
 
-        let result = ReturnValueFactory().variableDeclaration(
+        let result = try ReturnValueFactory().variableDeclaration(
             variablePrefix: variablePrefix,
             functionReturnType: functionReturnType
         )

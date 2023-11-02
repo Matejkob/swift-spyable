@@ -137,7 +137,7 @@ struct SpyFactory {
                     }
 
                     if let returnType = functionDeclaration.signature.returnClause?.type {
-                        returnValueFactory.variableDeclaration(
+                        try returnValueFactory.variableDeclaration(
                             variablePrefix: variablePrefix,
                             functionReturnType: returnType
                         )
