@@ -133,7 +133,7 @@ struct SpyFactory {
                     }
 
                     if functionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
-                        throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
+                        try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
                     }
 
                     if let returnType = functionDeclaration.signature.returnClause?.type {
