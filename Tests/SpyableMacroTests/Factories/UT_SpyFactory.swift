@@ -12,7 +12,7 @@ final class UT_SpyFactory: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
+        let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -33,7 +33,7 @@ final class UT_SpyFactory: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
+        let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -63,7 +63,7 @@ final class UT_SpyFactory: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
+        let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -98,7 +98,7 @@ final class UT_SpyFactory: XCTestCase {
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
 
-        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
+        let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -133,7 +133,7 @@ final class UT_SpyFactory: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
+        let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -172,7 +172,7 @@ final class UT_SpyFactory: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
+        let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -215,7 +215,7 @@ final class UT_SpyFactory: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
+        let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -246,7 +246,7 @@ final class UT_SpyFactory: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
+        let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,
@@ -269,7 +269,7 @@ final class UT_SpyFactory: XCTestCase {
         )
         let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
 
-        let result = SpyFactory().classDeclaration(for: protocolDeclaration)
+        let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
 
         assertBuildResult(
             result,

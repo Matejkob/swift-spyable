@@ -29,45 +29,21 @@ import SwiftSyntaxBuilder
 ///         your tests. You can use it to simulate different scenarios and verify that your code handles
 ///         errors correctly.
 struct ThrowableErrorFactory {
-    func variableDeclaration(variablePrefix: String) -> VariableDeclSyntax {
-        VariableDeclSyntax(
-            bindingSpecifier: .keyword(.var),
-            bindingsBuilder: {
-                PatternBindingSyntax(
-                    pattern: IdentifierPatternSyntax(
-                        identifier: variableIdentifier(variablePrefix: variablePrefix)
-                    ),
-                    typeAnnotation: TypeAnnotationSyntax(
-                        type: OptionalTypeSyntax(
-                            wrappedType: IdentifierTypeSyntax(name: .identifier("Error"))
-                        )
-                    )
-                )
-            }
+    func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
+        try VariableDeclSyntax(
+            """
+            var \(variableIdentifier(variablePrefix: variablePrefix)): Error?
+            """
         )
     }
 
-    func throwErrorExpression(variablePrefix: String) -> IfExprSyntax {
-        IfExprSyntax(
-            conditions: ConditionElementListSyntax {
-                ConditionElementSyntax(
-                    condition: .optionalBinding(
-                        OptionalBindingConditionSyntax(
-                            bindingSpecifier: .keyword(.let),
-                            pattern: IdentifierPatternSyntax(
-                                identifier: variableIdentifier(variablePrefix: variablePrefix)
-                            )
-                        )
-                    )
-                )
-            },
-            bodyBuilder: {
-                ThrowStmtSyntax(
-                    expression: DeclReferenceExprSyntax(
-                        baseName: variableIdentifier(variablePrefix: variablePrefix)
-                    )
-                )
+    func throwErrorExpression(variablePrefix: String) -> ExprSyntax {
+        ExprSyntax(
+            """
+            if let \(variableIdentifier(variablePrefix: variablePrefix)) {
+                throw \(variableIdentifier(variablePrefix: variablePrefix))
             }
+            """
         )
     }
 

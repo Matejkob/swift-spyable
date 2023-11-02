@@ -3,10 +3,10 @@ import XCTest
 import SwiftSyntax
 
 final class UT_ThrowableErrorFactory: XCTestCase {
-    func testVariableDeclaration() {
+    func testVariableDeclaration() throws {
         let variablePrefix = "functionName"
 
-        let result = ThrowableErrorFactory().variableDeclaration(variablePrefix: variablePrefix)
+        let result = try ThrowableErrorFactory().variableDeclaration(variablePrefix: variablePrefix)
 
         assertBuildResult(
             result,

@@ -91,7 +91,7 @@ struct SpyFactory {
     private let closureFactory = ClosureFactory()
     private let functionImplementationFactory = FunctionImplementationFactory()
 
-    func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) -> ClassDeclSyntax {
+    func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) throws -> ClassDeclSyntax {
         let identifier = TokenSyntax.identifier(protocolDeclaration.name.text + "Spy")
 
         let variableDeclarations = protocolDeclaration.memberBlock.members
@@ -100,7 +100,7 @@ struct SpyFactory {
         let functionDeclarations = protocolDeclaration.memberBlock.members
             .compactMap { $0.decl.as(FunctionDeclSyntax.self) }
         
-        return ClassDeclSyntax(
+        return try ClassDeclSyntax(
             name: identifier,
             inheritanceClause: InheritanceClauseSyntax {
                 InheritedTypeSyntax(
@@ -118,8 +118,8 @@ struct SpyFactory {
                     let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
                     let parameterList = functionDeclaration.signature.parameterClause.parameters
 
-                    callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
-                    calledFactory.variableDeclaration(variablePrefix: variablePrefix)
+                    try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
+                    try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
 
                     if !parameterList.isEmpty {
                         receivedArgumentsFactory.variableDeclaration(
@@ -133,11 +133,11 @@ struct SpyFactory {
                     }
 
                     if functionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
-                        throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
+                        try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
                     }
 
                     if let returnType = functionDeclaration.signature.returnClause?.type {
-                        returnValueFactory.variableDeclaration(
+                        try returnValueFactory.variableDeclaration(
                             variablePrefix: variablePrefix,
                             functionReturnType: returnType
                         )

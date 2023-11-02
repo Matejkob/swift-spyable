@@ -38,32 +38,27 @@ import SwiftSyntaxBuilder
 ///         your tests. You can use it to simulate different scenarios and verify that your code reacts
 ///         correctly to different returned values.
 struct ReturnValueFactory {
-    func variableDeclaration(variablePrefix: String, functionReturnType: TypeSyntax) -> VariableDeclSyntax {
-        VariableDeclSyntax(
-            bindingSpecifier: .keyword(.var),
-            bindingsBuilder: {
-                PatternBindingSyntax(
-                    pattern: IdentifierPatternSyntax(
-                        identifier: variableIdentifier(variablePrefix: variablePrefix)
-                    ),
-                    typeAnnotation: {
-                        if functionReturnType.is(OptionalTypeSyntax.self) {
-                            TypeAnnotationSyntax(type: functionReturnType)
-                        } else {
-                            TypeAnnotationSyntax(
-                                type: ImplicitlyUnwrappedOptionalTypeSyntax(wrappedType: functionReturnType)
-                            )
-                        }
-                    }()
-                )
-            }
+    func variableDeclaration(variablePrefix: String, functionReturnType: TypeSyntax) throws -> VariableDeclSyntax {
+        let typeAnnotation = if functionReturnType.is(OptionalTypeSyntax.self) {
+            TypeAnnotationSyntax(type: functionReturnType)
+        } else {
+            TypeAnnotationSyntax(
+                type: ImplicitlyUnwrappedOptionalTypeSyntax(wrappedType: functionReturnType)
+            )
+        }
+
+        return try VariableDeclSyntax(
+            """
+            var \(variableIdentifier(variablePrefix: variablePrefix))\(typeAnnotation)
+            """
         )
     }
 
-    func returnStatement(variablePrefix: String) -> ReturnStmtSyntax {
-        ReturnStmtSyntax(
-            returnKeyword: .keyword(.return),
-            expression: DeclReferenceExprSyntax(baseName: variableIdentifier(variablePrefix: variablePrefix))
+    func returnStatement(variablePrefix: String) -> StmtSyntax {
+        StmtSyntax(
+            """
+            return \(variableIdentifier(variablePrefix: variablePrefix))
+            """
         )
     }
 
