@@ -9,20 +9,25 @@ import SwiftDiagnostics
 ///         the Spyable system grows and needs to handle more error types.
 enum SpyableDiagnostic: String, DiagnosticMessage, Error {
     case onlyApplicableToProtocol
+    case variableDeclInProtocolWithNotSingleBinding
 
     var message: String {
         switch self {
-        case .onlyApplicableToProtocol: "'@Spyable' can only be applied to a 'protocol'"
+        case .onlyApplicableToProtocol:
+            "'@Spyable' can only be applied to a 'protocol'"
+        case .variableDeclInProtocolWithNotSingleBinding: 
+            "Variable declaration in a 'protocol' with the '@Spyable' attribute must have exactly one binding"
         }
     }
-    
-    var diagnosticID: MessageID {
-        MessageID(domain: "SpyableMacro", id: rawValue)
-    }
-    
+
     var severity: DiagnosticSeverity {
         switch self {
         case .onlyApplicableToProtocol: .error
+        case .variableDeclInProtocolWithNotSingleBinding: .error
         }
+    }
+
+    var diagnosticID: MessageID {
+        MessageID(domain: "SpyableMacro", id: rawValue)
     }
 }

@@ -53,7 +53,7 @@ final class UT_SpyableMacro: XCTestCase {
                         underlyingName = newValue
                     }
                 }
-                var underlyingName: (String )!
+                var underlyingName: (String)!
                 var anyProtocol: any Codable {
                     get {
                         underlyingAnyProtocol
@@ -62,7 +62,7 @@ final class UT_SpyableMacro: XCTestCase {
                         underlyingAnyProtocol = newValue
                     }
                 }
-                var underlyingAnyProtocol: (any Codable )!
+                var underlyingAnyProtocol: (any Codable)!
                     var secondName: String?
                 var added: () -> Void {
                     get {
@@ -72,7 +72,7 @@ final class UT_SpyableMacro: XCTestCase {
                         underlyingAdded = newValue
                     }
                 }
-                var underlyingAdded: (() -> Void )!
+                var underlyingAdded: (() -> Void)!
                     var removed: (() -> Void)?
                 var logoutCallsCount = 0
                 var logoutCalled: Bool {

@@ -109,7 +109,7 @@ struct SpyFactory {
             },
             memberBlockBuilder: {
                 for variableDeclaration in variableDeclarations {
-                    variablesImplementationFactory.variablesDeclarations(
+                    try variablesImplementationFactory.variablesDeclarations(
                         protocolVariableDeclaration: variableDeclaration
                     )
                 }

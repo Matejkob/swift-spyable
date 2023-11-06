@@ -8,7 +8,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
 
         let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
 
-        let result = VariablesImplementationFactory().variablesDeclarations(
+        let result = try VariablesImplementationFactory().variablesDeclarations(
             protocolVariableDeclaration: protocolVariableDeclaration
         )
 
@@ -23,7 +23,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
                     underlyingPoint = newValue
                 }
             }
-            var underlyingPoint: ((x: Int, y: Int?, (Int, Int)) )!
+            var underlyingPoint: ((x: Int, y: Int?, (Int, Int)))!
             """
         )
     }
@@ -33,7 +33,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
 
         let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
 
-        let result = VariablesImplementationFactory().variablesDeclarations(
+        let result = try VariablesImplementationFactory().variablesDeclarations(
             protocolVariableDeclaration: protocolVariableDeclaration
         )
 
@@ -50,7 +50,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
 
         let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
 
-        let result = VariablesImplementationFactory().variablesDeclarations(
+        let result = try VariablesImplementationFactory().variablesDeclarations(
             protocolVariableDeclaration: protocolVariableDeclaration
         )
 
@@ -65,7 +65,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
                     underlyingCompletion = newValue
                 }
             }
-            var underlyingCompletion: (() -> Void )!
+            var underlyingCompletion: (() -> Void)!
             """
         )
     }

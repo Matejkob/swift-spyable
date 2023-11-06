@@ -229,7 +229,7 @@ final class UT_SpyFactory: XCTestCase {
                         underlyingData = newValue
                     }
                 }
-                var underlyingData: (Data )!
+                var underlyingData: (Data)!
             }
             """
         )
@@ -283,7 +283,7 @@ final class UT_SpyFactory: XCTestCase {
                         underlyingCompletion = newValue
                     }
                 }
-                var underlyingCompletion: (() -> Void )!
+                var underlyingCompletion: (() -> Void)!
             }
             """
         )
