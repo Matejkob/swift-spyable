@@ -91,8 +91,8 @@ struct VariablesImplementationFactory {
 
     private func underlyingVariableName(binding: PatternBindingListSyntax.Element) throws -> String {
         guard let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
-            // As far as I know variable declaration in a protocol should have exactly one binding.
-            throw SpyableDiagnostic.variableDeclInProtocolWithNotSingleBinding
+            // As far as I know variable declaration in a protocol should have identifier pattern
+            throw SpyableDiagnostic.variableDeclInProtocolWithNotIdentifierPattern
         }
 
         let identifierText = identifierPattern.identifier.text

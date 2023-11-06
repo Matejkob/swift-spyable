@@ -10,6 +10,7 @@ import SwiftDiagnostics
 enum SpyableDiagnostic: String, DiagnosticMessage, Error {
     case onlyApplicableToProtocol
     case variableDeclInProtocolWithNotSingleBinding
+    case variableDeclInProtocolWithNotIdentifierPattern
 
     var message: String {
         switch self {
@@ -17,6 +18,8 @@ enum SpyableDiagnostic: String, DiagnosticMessage, Error {
             "'@Spyable' can only be applied to a 'protocol'"
         case .variableDeclInProtocolWithNotSingleBinding: 
             "Variable declaration in a 'protocol' with the '@Spyable' attribute must have exactly one binding"
+        case .variableDeclInProtocolWithNotIdentifierPattern:
+            "Variable declaration in a 'protocol' with the '@Spyable' attribute must have identifier pattern"
         }
     }
 
@@ -24,6 +27,7 @@ enum SpyableDiagnostic: String, DiagnosticMessage, Error {
         switch self {
         case .onlyApplicableToProtocol: .error
         case .variableDeclInProtocolWithNotSingleBinding: .error
+        case .variableDeclInProtocolWithNotIdentifierPattern: .error
         }
     }
 

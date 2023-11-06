@@ -69,4 +69,28 @@ final class UT_VariablesImplementationFactory: XCTestCase {
             """
         )
     }
+
+    func testVariablesDeclarationsWithMultiBindings() throws {
+        let declaration = DeclSyntax("var foo: String?, bar: Int")
+
+        let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
+
+        XCTAssertThrowsError(
+            try VariablesImplementationFactory().variablesDeclarations(protocolVariableDeclaration: protocolVariableDeclaration)
+        ) { error in
+            XCTAssertEqual(error as! SpyableDiagnostic, SpyableDiagnostic.variableDeclInProtocolWithNotSingleBinding)
+        }
+    }
+
+    func testVariablesDeclarationsWithTuplePattern() throws {
+        let declaration = DeclSyntax("var (x, y): Int")
+
+        let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
+
+        XCTAssertThrowsError(
+            try VariablesImplementationFactory().variablesDeclarations(protocolVariableDeclaration: protocolVariableDeclaration)
+        ) { error in
+            XCTAssertEqual(error as! SpyableDiagnostic, SpyableDiagnostic.variableDeclInProtocolWithNotIdentifierPattern)
+        }
+    }
 }
