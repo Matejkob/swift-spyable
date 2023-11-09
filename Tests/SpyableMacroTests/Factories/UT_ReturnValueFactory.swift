@@ -38,8 +38,6 @@ final class UT_ReturnValueFactory: XCTestCase {
     )
   }
 
-
-
   func testReturnStatement() {
     let variablePrefix = "function_name"
 
