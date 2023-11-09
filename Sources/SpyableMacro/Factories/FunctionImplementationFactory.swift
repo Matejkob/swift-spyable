@@ -56,97 +56,100 @@ import SwiftSyntaxBuilder
 /// }
 /// ```
 struct FunctionImplementationFactory {
-    private let callsCountFactory = CallsCountFactory()
-    private let receivedArgumentsFactory = ReceivedArgumentsFactory()
-    private let receivedInvocationsFactory = ReceivedInvocationsFactory()
-    private let throwableErrorFactory = ThrowableErrorFactory()
-    private let closureFactory = ClosureFactory()
-    private let returnValueFactory = ReturnValueFactory()
+  private let callsCountFactory = CallsCountFactory()
+  private let receivedArgumentsFactory = ReceivedArgumentsFactory()
+  private let receivedInvocationsFactory = ReceivedInvocationsFactory()
+  private let throwableErrorFactory = ThrowableErrorFactory()
+  private let closureFactory = ClosureFactory()
+  private let returnValueFactory = ReturnValueFactory()
 
-    func declaration(
-        variablePrefix: String,
-        protocolFunctionDeclaration: FunctionDeclSyntax
-    ) -> FunctionDeclSyntax {
-        FunctionDeclSyntax(
-            attributes: protocolFunctionDeclaration.attributes,
-            modifiers: protocolFunctionDeclaration.modifiers.removingMutating,
-            funcKeyword: protocolFunctionDeclaration.funcKeyword,
-            name: protocolFunctionDeclaration.name,
-            genericParameterClause: protocolFunctionDeclaration.genericParameterClause,
-            signature: protocolFunctionDeclaration.signature,
-            genericWhereClause: protocolFunctionDeclaration.genericWhereClause,
-            bodyBuilder: {
-                let parameterList = protocolFunctionDeclaration.signature.parameterClause.parameters
+  func declaration(
+    variablePrefix: String,
+    protocolFunctionDeclaration: FunctionDeclSyntax
+  ) -> FunctionDeclSyntax {
+    FunctionDeclSyntax(
+      attributes: protocolFunctionDeclaration.attributes,
+      modifiers: protocolFunctionDeclaration.modifiers.removingMutating,
+      funcKeyword: protocolFunctionDeclaration.funcKeyword,
+      name: protocolFunctionDeclaration.name,
+      genericParameterClause: protocolFunctionDeclaration.genericParameterClause,
+      signature: protocolFunctionDeclaration.signature,
+      genericWhereClause: protocolFunctionDeclaration.genericWhereClause,
+      bodyBuilder: {
+        let parameterList = protocolFunctionDeclaration.signature.parameterClause.parameters
 
-                callsCountFactory.incrementVariableExpression(variablePrefix: variablePrefix)
+        callsCountFactory.incrementVariableExpression(variablePrefix: variablePrefix)
 
-                if !parameterList.isEmpty {
-                    receivedArgumentsFactory.assignValueToVariableExpression(
-                        variablePrefix: variablePrefix,
-                        parameterList: parameterList
-                    )
-                    receivedInvocationsFactory.appendValueToVariableExpression(
-                        variablePrefix: variablePrefix,
-                        parameterList: parameterList
-                    )
-                }
+        if !parameterList.isEmpty {
+          receivedArgumentsFactory.assignValueToVariableExpression(
+            variablePrefix: variablePrefix,
+            parameterList: parameterList
+          )
+          receivedInvocationsFactory.appendValueToVariableExpression(
+            variablePrefix: variablePrefix,
+            parameterList: parameterList
+          )
+        }
 
-                if protocolFunctionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
-                    throwableErrorFactory.throwErrorExpression(variablePrefix: variablePrefix)
-                }
+        if protocolFunctionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
+          throwableErrorFactory.throwErrorExpression(variablePrefix: variablePrefix)
+        }
 
-                if protocolFunctionDeclaration.signature.returnClause == nil {
-                    closureFactory.callExpression(
-                        variablePrefix: variablePrefix,
-                        functionSignature: protocolFunctionDeclaration.signature
-                    )
-                } else {
-                    returnExpression(
-                        variablePrefix: variablePrefix,
-                        protocolFunctionDeclaration: protocolFunctionDeclaration
-                    )
-                }
-            }
+        if protocolFunctionDeclaration.signature.returnClause == nil {
+          closureFactory.callExpression(
+            variablePrefix: variablePrefix,
+            functionSignature: protocolFunctionDeclaration.signature
+          )
+        } else {
+          returnExpression(
+            variablePrefix: variablePrefix,
+            protocolFunctionDeclaration: protocolFunctionDeclaration
+          )
+        }
+      }
+    )
+  }
+
+  private func returnExpression(
+    variablePrefix: String,
+    protocolFunctionDeclaration: FunctionDeclSyntax
+  ) -> IfExprSyntax {
+    return IfExprSyntax(
+      conditions: ConditionElementListSyntax {
+        ConditionElementSyntax(
+          condition: .expression(
+            ExprSyntax(
+              SequenceExprSyntax {
+                DeclReferenceExprSyntax(baseName: .identifier(variablePrefix + "Closure"))
+                BinaryOperatorExprSyntax(operator: .binaryOperator("!="))
+                NilLiteralExprSyntax()
+              }
+            )
+          )
         )
-    }
-
-    private func returnExpression(variablePrefix: String, protocolFunctionDeclaration: FunctionDeclSyntax) -> IfExprSyntax {
-        return IfExprSyntax(
-            conditions: ConditionElementListSyntax {
-                ConditionElementSyntax(
-                    condition: .expression(
-                        ExprSyntax(
-                            SequenceExprSyntax {
-                                DeclReferenceExprSyntax(baseName: .identifier(variablePrefix + "Closure"))
-                                BinaryOperatorExprSyntax(operator: .binaryOperator("!="))
-                                NilLiteralExprSyntax()
-                            }
-                        )
-                    )
-                )
-            },
-            elseKeyword: .keyword(.else),
-            elseBody: .codeBlock(
-                CodeBlockSyntax {
-                    returnValueFactory.returnStatement(variablePrefix: variablePrefix)
-                }
-            ),
-            bodyBuilder: {
-                ReturnStmtSyntax(
-                    expression: closureFactory.callExpression(
-                        variablePrefix: variablePrefix,
-                        functionSignature: protocolFunctionDeclaration.signature
-                    )
-                )
-            }
+      },
+      elseKeyword: .keyword(.else),
+      elseBody: .codeBlock(
+        CodeBlockSyntax {
+          returnValueFactory.returnStatement(variablePrefix: variablePrefix)
+        }
+      ),
+      bodyBuilder: {
+        ReturnStmtSyntax(
+          expression: closureFactory.callExpression(
+            variablePrefix: variablePrefix,
+            functionSignature: protocolFunctionDeclaration.signature
+          )
         )
-    }
+      }
+    )
+  }
 }
 
-private extension DeclModifierListSyntax {
-    var removingMutating: Self {
-        filter {
-            $0.name.text != TokenSyntax.keyword(.mutating).text
-        }
+extension DeclModifierListSyntax {
+  fileprivate var removingMutating: Self {
+    filter {
+      $0.name.text != TokenSyntax.keyword(.mutating).text
     }
+  }
 }

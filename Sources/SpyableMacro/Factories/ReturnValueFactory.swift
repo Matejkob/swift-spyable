@@ -38,31 +38,35 @@ import SwiftSyntaxBuilder
 ///         your tests. You can use it to simulate different scenarios and verify that your code reacts
 ///         correctly to different returned values.
 struct ReturnValueFactory {
-    func variableDeclaration(variablePrefix: String, functionReturnType: TypeSyntax) throws -> VariableDeclSyntax {
-        let typeAnnotation = if functionReturnType.is(OptionalTypeSyntax.self) {
-            TypeAnnotationSyntax(type: functionReturnType)
-        } else {
-            TypeAnnotationSyntax(
-                type: ImplicitlyUnwrappedOptionalTypeSyntax(wrappedType: functionReturnType)
-            )
-        }
-
-        return try VariableDeclSyntax(
-            """
-            var \(variableIdentifier(variablePrefix: variablePrefix))\(typeAnnotation)
-            """
+  func variableDeclaration(
+    variablePrefix: String,
+    functionReturnType: TypeSyntax
+  ) throws -> VariableDeclSyntax {
+    let typeAnnotation =
+      if functionReturnType.is(OptionalTypeSyntax.self) {
+        TypeAnnotationSyntax(type: functionReturnType)
+      } else {
+        TypeAnnotationSyntax(
+          type: ImplicitlyUnwrappedOptionalTypeSyntax(wrappedType: functionReturnType)
         )
-    }
+      }
 
-    func returnStatement(variablePrefix: String) -> StmtSyntax {
-        StmtSyntax(
-            """
-            return \(variableIdentifier(variablePrefix: variablePrefix))
-            """
-        )
-    }
+    return try VariableDeclSyntax(
+      """
+      var \(variableIdentifier(variablePrefix: variablePrefix))\(typeAnnotation)
+      """
+    )
+  }
 
-    private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
-        TokenSyntax.identifier(variablePrefix + "ReturnValue")
-    }
+  func returnStatement(variablePrefix: String) -> StmtSyntax {
+    StmtSyntax(
+      """
+      return \(variableIdentifier(variablePrefix: variablePrefix))
+      """
+    )
+  }
+
+  private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
+    TokenSyntax.identifier(variablePrefix + "ReturnValue")
+  }
 }

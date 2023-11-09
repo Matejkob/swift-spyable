@@ -80,80 +80,80 @@ import SwiftSyntaxBuilder
 /// }
 /// ```
 struct SpyFactory {
-    private let variablePrefixFactory = VariablePrefixFactory()
-    private let variablesImplementationFactory = VariablesImplementationFactory()
-    private let callsCountFactory = CallsCountFactory()
-    private let calledFactory = CalledFactory()
-    private let receivedArgumentsFactory = ReceivedArgumentsFactory()
-    private let receivedInvocationsFactory = ReceivedInvocationsFactory()
-    private let throwableErrorFactory = ThrowableErrorFactory()
-    private let returnValueFactory = ReturnValueFactory()
-    private let closureFactory = ClosureFactory()
-    private let functionImplementationFactory = FunctionImplementationFactory()
+  private let variablePrefixFactory = VariablePrefixFactory()
+  private let variablesImplementationFactory = VariablesImplementationFactory()
+  private let callsCountFactory = CallsCountFactory()
+  private let calledFactory = CalledFactory()
+  private let receivedArgumentsFactory = ReceivedArgumentsFactory()
+  private let receivedInvocationsFactory = ReceivedInvocationsFactory()
+  private let throwableErrorFactory = ThrowableErrorFactory()
+  private let returnValueFactory = ReturnValueFactory()
+  private let closureFactory = ClosureFactory()
+  private let functionImplementationFactory = FunctionImplementationFactory()
 
-    func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) throws -> ClassDeclSyntax {
-        let identifier = TokenSyntax.identifier(protocolDeclaration.name.text + "Spy")
+  func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) throws -> ClassDeclSyntax {
+    let identifier = TokenSyntax.identifier(protocolDeclaration.name.text + "Spy")
 
-        let variableDeclarations = protocolDeclaration.memberBlock.members
-            .compactMap { $0.decl.as(VariableDeclSyntax.self) }
+    let variableDeclarations = protocolDeclaration.memberBlock.members
+      .compactMap { $0.decl.as(VariableDeclSyntax.self) }
 
-        let functionDeclarations = protocolDeclaration.memberBlock.members
-            .compactMap { $0.decl.as(FunctionDeclSyntax.self) }
-        
-        return try ClassDeclSyntax(
-            name: identifier,
-            inheritanceClause: InheritanceClauseSyntax {
-                InheritedTypeSyntax(
-                    type: IdentifierTypeSyntax(name: protocolDeclaration.name)
-                )
-            },
-            memberBlockBuilder: {
-                for variableDeclaration in variableDeclarations {
-                    try variablesImplementationFactory.variablesDeclarations(
-                        protocolVariableDeclaration: variableDeclaration
-                    )
-                }
+    let functionDeclarations = protocolDeclaration.memberBlock.members
+      .compactMap { $0.decl.as(FunctionDeclSyntax.self) }
 
-                for functionDeclaration in functionDeclarations {
-                    let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
-                    let parameterList = functionDeclaration.signature.parameterClause.parameters
-
-                    try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
-                    try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
-
-                    if !parameterList.isEmpty {
-                        receivedArgumentsFactory.variableDeclaration(
-                            variablePrefix: variablePrefix,
-                            parameterList: parameterList
-                        )
-                        receivedInvocationsFactory.variableDeclaration(
-                            variablePrefix: variablePrefix,
-                            parameterList: parameterList
-                        )
-                    }
-
-                    if functionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
-                        try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
-                    }
-
-                    if let returnType = functionDeclaration.signature.returnClause?.type {
-                        try returnValueFactory.variableDeclaration(
-                            variablePrefix: variablePrefix,
-                            functionReturnType: returnType
-                        )
-                    }
-
-                    closureFactory.variableDeclaration(
-                        variablePrefix: variablePrefix,
-                        functionSignature: functionDeclaration.signature
-                    )
-
-                    functionImplementationFactory.declaration(
-                        variablePrefix: variablePrefix,
-                        protocolFunctionDeclaration: functionDeclaration
-                    )
-                }
-            }
+    return try ClassDeclSyntax(
+      name: identifier,
+      inheritanceClause: InheritanceClauseSyntax {
+        InheritedTypeSyntax(
+          type: IdentifierTypeSyntax(name: protocolDeclaration.name)
         )
-    }
+      },
+      memberBlockBuilder: {
+        for variableDeclaration in variableDeclarations {
+          try variablesImplementationFactory.variablesDeclarations(
+            protocolVariableDeclaration: variableDeclaration
+          )
+        }
+
+        for functionDeclaration in functionDeclarations {
+          let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
+          let parameterList = functionDeclaration.signature.parameterClause.parameters
+
+          try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
+          try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
+
+          if !parameterList.isEmpty {
+            receivedArgumentsFactory.variableDeclaration(
+              variablePrefix: variablePrefix,
+              parameterList: parameterList
+            )
+            receivedInvocationsFactory.variableDeclaration(
+              variablePrefix: variablePrefix,
+              parameterList: parameterList
+            )
+          }
+
+          if functionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
+            try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
+          }
+
+          if let returnType = functionDeclaration.signature.returnClause?.type {
+            try returnValueFactory.variableDeclaration(
+              variablePrefix: variablePrefix,
+              functionReturnType: returnType
+            )
+          }
+
+          closureFactory.variableDeclaration(
+            variablePrefix: variablePrefix,
+            functionSignature: functionDeclaration.signature
+          )
+
+          functionImplementationFactory.declaration(
+            variablePrefix: variablePrefix,
+            protocolFunctionDeclaration: functionDeclaration
+          )
+        }
+      }
+    )
+  }
 }

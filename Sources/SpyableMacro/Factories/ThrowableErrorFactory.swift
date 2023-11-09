@@ -29,25 +29,25 @@ import SwiftSyntaxBuilder
 ///         your tests. You can use it to simulate different scenarios and verify that your code handles
 ///         errors correctly.
 struct ThrowableErrorFactory {
-    func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
-        try VariableDeclSyntax(
-            """
-            var \(variableIdentifier(variablePrefix: variablePrefix)): Error?
-            """
-        )
-    }
+  func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
+    try VariableDeclSyntax(
+      """
+      var \(variableIdentifier(variablePrefix: variablePrefix)): Error?
+      """
+    )
+  }
 
-    func throwErrorExpression(variablePrefix: String) -> ExprSyntax {
-        ExprSyntax(
-            """
-            if let \(variableIdentifier(variablePrefix: variablePrefix)) {
-                throw \(variableIdentifier(variablePrefix: variablePrefix))
-            }
-            """
-        )
-    }
+  func throwErrorExpression(variablePrefix: String) -> ExprSyntax {
+    ExprSyntax(
+      """
+      if let \(variableIdentifier(variablePrefix: variablePrefix)) {
+          throw \(variableIdentifier(variablePrefix: variablePrefix))
+      }
+      """
+    )
+  }
 
-    private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
-        TokenSyntax.identifier(variablePrefix + "ThrowableError")
-    }
+  private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
+    TokenSyntax.identifier(variablePrefix + "ThrowableError")
+  }
 }

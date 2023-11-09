@@ -9,7 +9,7 @@ let package = Package(
         .iOS(.v13),
         .tvOS(.v13),
         .watchOS(.v6),
-        .macCatalyst(.v13)
+        .macCatalyst(.v13),
     ],
     products: [
         .library(
@@ -18,13 +18,13 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(name: "swift-spyable", path: "../")
+        .package(name: "swift-spyable", path: "../"),
     ],
     targets: [
         .target(
             name: "Examples",
             dependencies: [
-                .product(name: "Spyable", package: "swift-spyable")
+                .product(name: "Spyable", package: "swift-spyable"),
             ],
             path: "Sources"
         ),
@@ -32,6 +32,6 @@ let package = Package(
             name: "ExamplesTests",
             dependencies: ["Examples"],
             path: "Tests"
-        )
+        ),
     ]
 )

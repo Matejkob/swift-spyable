@@ -20,18 +20,18 @@ import SwiftSyntaxMacros
 /// ```
 /// This will generate a `ServiceProtocolSpy` class that implements `ServiceProtocol` and records method calls.
 public enum SpyableMacro: PeerMacro {
-    private static let extractor = Extractor()
-    private static let spyFactory = SpyFactory()
+  private static let extractor = Extractor()
+  private static let spyFactory = SpyFactory()
 
-    public static func expansion(
-        of node: AttributeSyntax,
-        providingPeersOf declaration: some DeclSyntaxProtocol,
-        in context: some MacroExpansionContext
-    ) throws -> [DeclSyntax] {
-        let protocolDeclaration = try extractor.extractProtocolDeclaration(from: declaration)
+  public static func expansion(
+    of _: AttributeSyntax,
+    providingPeersOf declaration: some DeclSyntaxProtocol,
+    in _: some MacroExpansionContext
+  ) throws -> [DeclSyntax] {
+    let protocolDeclaration = try extractor.extractProtocolDeclaration(from: declaration)
 
-        let spyClassDeclaration = try spyFactory.classDeclaration(for: protocolDeclaration)
+    let spyClassDeclaration = try spyFactory.classDeclaration(for: protocolDeclaration)
 
-        return [DeclSyntax(spyClassDeclaration)]
-    }
+    return [DeclSyntax(spyClassDeclaration)]
+  }
 }

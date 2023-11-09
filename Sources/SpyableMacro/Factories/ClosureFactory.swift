@@ -28,96 +28,100 @@ import SwiftSyntaxBuilder
 ///         the behavior of the function under different conditions, and validate that your code
 ///         interacts correctly with the function.
 struct ClosureFactory {
-    func variableDeclaration(
-        variablePrefix: String,
-        functionSignature: FunctionSignatureSyntax
-    ) -> VariableDeclSyntax {
-        let elements = TupleTypeElementListSyntax {
-            TupleTypeElementSyntax(
-                type: FunctionTypeSyntax(
-                    parameters: TupleTypeElementListSyntax {
-                        for parameter in functionSignature.parameterClause.parameters {
-                            TupleTypeElementSyntax(type: parameter.type)
-                        }
-                    },
-                    effectSpecifiers: TypeEffectSpecifiersSyntax(
-                        asyncSpecifier: functionSignature.effectSpecifiers?.asyncSpecifier,
-                        throwsSpecifier: functionSignature.effectSpecifiers?.throwsSpecifier
-                    ),
-                    returnClause: functionSignature.returnClause ?? ReturnClauseSyntax(
-                        type: IdentifierTypeSyntax(
-                            name: .identifier("Void")
-                        )
-                    )
-                )
-            )
-        }
-
-        let typeAnnotation = TypeAnnotationSyntax(
-            type: OptionalTypeSyntax(
-                wrappedType: TupleTypeSyntax(
-                    elements: elements
-                )
-            )
-        )
-
-        return VariableDeclSyntax(
-            bindingSpecifier: .keyword(.var),
-            bindingsBuilder: {
-                PatternBindingSyntax(
-                    pattern: IdentifierPatternSyntax(
-                        identifier: variableIdentifier(variablePrefix: variablePrefix)
-                    ),
-                    typeAnnotation: typeAnnotation
-                )
+  func variableDeclaration(
+    variablePrefix: String,
+    functionSignature: FunctionSignatureSyntax
+  ) -> VariableDeclSyntax {
+    let elements = TupleTypeElementListSyntax {
+      TupleTypeElementSyntax(
+        type: FunctionTypeSyntax(
+          parameters: TupleTypeElementListSyntax {
+            for parameter in functionSignature.parameterClause.parameters {
+              TupleTypeElementSyntax(type: parameter.type)
             }
-        )
-    }
-
-    func callExpression(variablePrefix: String, functionSignature: FunctionSignatureSyntax) -> ExprSyntaxProtocol {
-        let calledExpression: ExprSyntaxProtocol
-
-        if functionSignature.returnClause == nil {
-            calledExpression = OptionalChainingExprSyntax(
-                expression: DeclReferenceExprSyntax(
-                    baseName: variableIdentifier(variablePrefix: variablePrefix)
-                )
+          },
+          effectSpecifiers: TypeEffectSpecifiersSyntax(
+            asyncSpecifier: functionSignature.effectSpecifiers?.asyncSpecifier,
+            throwsSpecifier: functionSignature.effectSpecifiers?.throwsSpecifier
+          ),
+          returnClause: functionSignature.returnClause
+            ?? ReturnClauseSyntax(
+              type: IdentifierTypeSyntax(
+                name: .identifier("Void")
+              )
             )
-        } else {
-            calledExpression = ForceUnwrapExprSyntax(
-                expression: DeclReferenceExprSyntax(
-                    baseName: variableIdentifier(variablePrefix: variablePrefix)
-                )
-            )
-        }
-
-        var expression: ExprSyntaxProtocol = FunctionCallExprSyntax(
-            calledExpression: calledExpression,
-            leftParen: .leftParenToken(),
-            arguments: LabeledExprListSyntax {
-                for parameter in functionSignature.parameterClause.parameters {                    
-                    LabeledExprSyntax(
-                        expression: DeclReferenceExprSyntax(
-                            baseName: parameter.secondName ?? parameter.firstName
-                        )
-                    )
-                }
-            },
-            rightParen: .rightParenToken()
         )
-        
-        if functionSignature.effectSpecifiers?.asyncSpecifier != nil {
-            expression = AwaitExprSyntax(expression: expression)
-        }
-        
-        if functionSignature.effectSpecifiers?.throwsSpecifier != nil {
-            expression = TryExprSyntax(expression: expression)
-        }
-
-        return expression
+      )
     }
 
-    private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
-        TokenSyntax.identifier(variablePrefix + "Closure")
+    let typeAnnotation = TypeAnnotationSyntax(
+      type: OptionalTypeSyntax(
+        wrappedType: TupleTypeSyntax(
+          elements: elements
+        )
+      )
+    )
+
+    return VariableDeclSyntax(
+      bindingSpecifier: .keyword(.var),
+      bindingsBuilder: {
+        PatternBindingSyntax(
+          pattern: IdentifierPatternSyntax(
+            identifier: variableIdentifier(variablePrefix: variablePrefix)
+          ),
+          typeAnnotation: typeAnnotation
+        )
+      }
+    )
+  }
+
+  func callExpression(
+    variablePrefix: String,
+    functionSignature: FunctionSignatureSyntax
+  ) -> ExprSyntaxProtocol {
+    let calledExpression: ExprSyntaxProtocol
+
+    if functionSignature.returnClause == nil {
+      calledExpression = OptionalChainingExprSyntax(
+        expression: DeclReferenceExprSyntax(
+          baseName: variableIdentifier(variablePrefix: variablePrefix)
+        )
+      )
+    } else {
+      calledExpression = ForceUnwrapExprSyntax(
+        expression: DeclReferenceExprSyntax(
+          baseName: variableIdentifier(variablePrefix: variablePrefix)
+        )
+      )
     }
+
+    var expression: ExprSyntaxProtocol = FunctionCallExprSyntax(
+      calledExpression: calledExpression,
+      leftParen: .leftParenToken(),
+      arguments: LabeledExprListSyntax {
+        for parameter in functionSignature.parameterClause.parameters {
+          LabeledExprSyntax(
+            expression: DeclReferenceExprSyntax(
+              baseName: parameter.secondName ?? parameter.firstName
+            )
+          )
+        }
+      },
+      rightParen: .rightParenToken()
+    )
+
+    if functionSignature.effectSpecifiers?.asyncSpecifier != nil {
+      expression = AwaitExprSyntax(expression: expression)
+    }
+
+    if functionSignature.effectSpecifiers?.throwsSpecifier != nil {
+      expression = TryExprSyntax(expression: expression)
+    }
+
+    return expression
+  }
+
+  private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
+    TokenSyntax.identifier(variablePrefix + "Closure")
+  }
 }

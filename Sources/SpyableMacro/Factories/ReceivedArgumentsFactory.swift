@@ -36,100 +36,112 @@ import SwiftSyntaxBuilder
 /// ```
 /// and an argument `variablePrefix` equal to `bar`.
 struct ReceivedArgumentsFactory {
-    func variableDeclaration(variablePrefix: String, parameterList: FunctionParameterListSyntax) -> VariableDeclSyntax {
-        let identifier = variableIdentifier(variablePrefix: variablePrefix, parameterList: parameterList)
-        let type = variableType(parameterList: parameterList)
+  func variableDeclaration(
+    variablePrefix: String,
+    parameterList: FunctionParameterListSyntax
+  ) -> VariableDeclSyntax {
+    let identifier = variableIdentifier(
+      variablePrefix: variablePrefix, parameterList: parameterList)
+    let type = variableType(parameterList: parameterList)
 
-        return VariableDeclSyntax(
-            bindingSpecifier: .keyword(.var),
-            bindingsBuilder: {
-                PatternBindingSyntax(
-                    pattern: IdentifierPatternSyntax(identifier: identifier),
-                    typeAnnotation: TypeAnnotationSyntax(
-                        type: type
-                    )
-                )
-            }
+    return VariableDeclSyntax(
+      bindingSpecifier: .keyword(.var),
+      bindingsBuilder: {
+        PatternBindingSyntax(
+          pattern: IdentifierPatternSyntax(identifier: identifier),
+          typeAnnotation: TypeAnnotationSyntax(
+            type: type
+          )
         )
+      }
+    )
+  }
+
+  private func variableType(parameterList: FunctionParameterListSyntax) -> TypeSyntaxProtocol {
+    let variableType: TypeSyntaxProtocol
+
+    if parameterList.count == 1, var onlyParameterType = parameterList.first?.type {
+      if let attributedType = onlyParameterType.as(AttributedTypeSyntax.self) {
+        onlyParameterType = attributedType.baseType
+      }
+
+      if onlyParameterType.is(OptionalTypeSyntax.self) {
+        variableType = onlyParameterType
+      } else if onlyParameterType.is(FunctionTypeSyntax.self) {
+        variableType = OptionalTypeSyntax(
+          wrappedType: TupleTypeSyntax(
+            elements: TupleTypeElementListSyntax {
+              TupleTypeElementSyntax(type: onlyParameterType)
+            }
+          ),
+          questionMark: .postfixQuestionMarkToken()
+        )
+      } else {
+        variableType = OptionalTypeSyntax(
+          wrappedType: onlyParameterType,
+          questionMark: .postfixQuestionMarkToken()
+        )
+      }
+    } else {
+      let tupleElements = TupleTypeElementListSyntax {
+        for parameter in parameterList {
+          TupleTypeElementSyntax(
+            firstName: parameter.secondName ?? parameter.firstName,
+            colon: .colonToken(),
+            type: {
+              if let attributedType = parameter.type.as(AttributedTypeSyntax.self) {
+                return attributedType.baseType
+              } else {
+                return parameter.type
+              }
+            }()
+          )
+        }
+      }
+      variableType = OptionalTypeSyntax(
+        wrappedType: TupleTypeSyntax(elements: tupleElements),
+        questionMark: .postfixQuestionMarkToken()
+      )
     }
 
-    private func variableType(parameterList: FunctionParameterListSyntax) -> TypeSyntaxProtocol {
-        let variableType: TypeSyntaxProtocol
+    return variableType
+  }
 
-        if parameterList.count == 1, var onlyParameterType = parameterList.first?.type {
-            if let attributedType = onlyParameterType.as(AttributedTypeSyntax.self) {
-                onlyParameterType = attributedType.baseType
-            }
+  func assignValueToVariableExpression(
+    variablePrefix: String,
+    parameterList: FunctionParameterListSyntax
+  ) -> SequenceExprSyntax {
+    let identifier = variableIdentifier(
+      variablePrefix: variablePrefix, parameterList: parameterList)
 
-            if onlyParameterType.is(OptionalTypeSyntax.self) {
-                variableType = onlyParameterType
-            } else if onlyParameterType.is(FunctionTypeSyntax.self) {
-                variableType = OptionalTypeSyntax(
-                    wrappedType: TupleTypeSyntax(
-                        elements: TupleTypeElementListSyntax {
-                            TupleTypeElementSyntax(type: onlyParameterType)
-                        }
-                    ),
-                    questionMark: .postfixQuestionMarkToken()
-                )
-            } else {
-                variableType = OptionalTypeSyntax(
-                    wrappedType: onlyParameterType,
-                    questionMark: .postfixQuestionMarkToken()
-                )
-            }
-        } else {
-            let tupleElements = TupleTypeElementListSyntax {
-                for parameter in parameterList {
-                    TupleTypeElementSyntax(
-                        firstName: parameter.secondName ?? parameter.firstName,
-                        colon: .colonToken(),
-                        type: {
-                            if let attributedType = parameter.type.as(AttributedTypeSyntax.self) {
-                                return attributedType.baseType
-                            } else {
-                                return parameter.type
-                            }
-                        }()
-                    )
-                }
-            }
-            variableType = OptionalTypeSyntax(
-                wrappedType: TupleTypeSyntax(elements: tupleElements),
-                questionMark: .postfixQuestionMarkToken()
+    return SequenceExprSyntax {
+      DeclReferenceExprSyntax(baseName: identifier)
+      AssignmentExprSyntax()
+      TupleExprSyntax {
+        for parameter in parameterList {
+          LabeledExprSyntax(
+            expression: DeclReferenceExprSyntax(
+              baseName: parameter.secondName ?? parameter.firstName
             )
+          )
         }
-
-        return variableType
+      }
     }
+  }
 
-    func assignValueToVariableExpression(variablePrefix: String, parameterList: FunctionParameterListSyntax) -> SequenceExprSyntax {
-        let identifier = variableIdentifier(variablePrefix: variablePrefix, parameterList: parameterList)
+  private func variableIdentifier(
+    variablePrefix: String,
+    parameterList: FunctionParameterListSyntax
+  ) -> TokenSyntax {
+    if parameterList.count == 1, let onlyParameter = parameterList.first {
+      let parameterNameToken = onlyParameter.secondName ?? onlyParameter.firstName
+      let parameterNameText = parameterNameToken.text
+      let capitalizedParameterName =
+        parameterNameText.prefix(1).uppercased() + parameterNameText.dropFirst()
 
-        return SequenceExprSyntax {
-            DeclReferenceExprSyntax(baseName: identifier)
-            AssignmentExprSyntax()
-            TupleExprSyntax {
-                for parameter in parameterList {
-                    LabeledExprSyntax(
-                        expression: DeclReferenceExprSyntax(
-                            baseName: parameter.secondName ?? parameter.firstName
-                        )
-                    )
-                }
-            }
-        }
+      return .identifier(variablePrefix + "Received" + capitalizedParameterName)
+    } else {
+      return .identifier(variablePrefix + "ReceivedArguments")
     }
-
-    private func variableIdentifier(variablePrefix: String, parameterList: FunctionParameterListSyntax) -> TokenSyntax {
-        if parameterList.count == 1, let onlyParameter = parameterList.first {
-             let parameterNameToken = onlyParameter.secondName ?? onlyParameter.firstName
-             let parameterNameText = parameterNameToken.text
-             let capitalizedParameterName = parameterNameText.prefix(1).uppercased() + parameterNameText.dropFirst()
-
-             return .identifier(variablePrefix + "Received" + capitalizedParameterName)
-         } else {
-             return .identifier(variablePrefix + "ReceivedArguments")
-         }
-    }
+  }
 }

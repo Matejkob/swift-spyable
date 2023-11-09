@@ -1,252 +1,253 @@
-import XCTest
-@testable import SpyableMacro
 import SwiftSyntax
+import XCTest
+
+@testable import SpyableMacro
 
 final class UT_ClosureFactory: XCTestCase {
-    func testVariableDeclaration() throws {
-        let variablePrefix = "foo"
+  func testVariableDeclaration() throws {
+    let variablePrefix = "foo"
 
-        let protocolFunctionDeclaration = try FunctionDeclSyntax(
-            """
-            func foo()
-            """
-        ) {}
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo()
+      """
+    ) {}
 
-        let result = ClosureFactory().variableDeclaration(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-        )
+    let result = ClosureFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
 
-        assertBuildResult(
-            result,
-            """
-            var fooClosure: (() -> Void)?
-            """
-        )
-    }
+    assertBuildResult(
+      result,
+      """
+      var fooClosure: (() -> Void)?
+      """
+    )
+  }
 
-    func testVariableDeclarationArguments() throws {
-        let variablePrefix = "foo"
+  func testVariableDeclarationArguments() throws {
+    let variablePrefix = "foo"
 
-        let protocolFunctionDeclaration = try FunctionDeclSyntax(
-            """
-            func foo(text: String, count: UInt)
-            """
-        ) {}
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo(text: String, count: UInt)
+      """
+    ) {}
 
-        let result = ClosureFactory().variableDeclaration(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-        )
+    let result = ClosureFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
 
-        assertBuildResult(
-            result,
-            """
-            var fooClosure: ((String, UInt) -> Void)?
-            """
-        )
-    }
+    assertBuildResult(
+      result,
+      """
+      var fooClosure: ((String, UInt) -> Void)?
+      """
+    )
+  }
 
-    func testVariableDeclarationAsync() throws {
-        let variablePrefix = "foo"
+  func testVariableDeclarationAsync() throws {
+    let variablePrefix = "foo"
 
-        let protocolFunctionDeclaration = try FunctionDeclSyntax(
-            """
-            func foo() async
-            """
-        ) {}
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo() async
+      """
+    ) {}
 
-        let result = ClosureFactory().variableDeclaration(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-        )
+    let result = ClosureFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
 
-        assertBuildResult(
-            result,
-            """
-            var fooClosure: (() async -> Void)?
-            """
-        )
-    }
+    assertBuildResult(
+      result,
+      """
+      var fooClosure: (() async -> Void)?
+      """
+    )
+  }
 
-    func testVariableDeclarationThrows() throws {
-        let variablePrefix = "foo"
+  func testVariableDeclarationThrows() throws {
+    let variablePrefix = "foo"
 
-        let protocolFunctionDeclaration = try FunctionDeclSyntax(
-            """
-            func foo() throws
-            """
-        ) {}
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo() throws
+      """
+    ) {}
 
-        let result = ClosureFactory().variableDeclaration(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-        )
+    let result = ClosureFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
 
-        assertBuildResult(
-            result,
-            """
-            var fooClosure: (() throws -> Void)?
-            """
-        )
-    }
+    assertBuildResult(
+      result,
+      """
+      var fooClosure: (() throws -> Void)?
+      """
+    )
+  }
 
-    func testVariableDeclarationReturnValue() throws {
-        let variablePrefix = "foo"
+  func testVariableDeclarationReturnValue() throws {
+    let variablePrefix = "foo"
 
-        let protocolFunctionDeclaration = try FunctionDeclSyntax(
-            """
-            func foo() -> Data
-            """
-        ) {}
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo() -> Data
+      """
+    ) {}
 
-        let result = ClosureFactory().variableDeclaration(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-        )
+    let result = ClosureFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
 
-        assertBuildResult(
-            result,
-            """
-            var fooClosure: (() -> Data )?
-            """
-        )
-    }
+    assertBuildResult(
+      result,
+      """
+      var fooClosure: (() -> Data )?
+      """
+    )
+  }
 
-    func testVariableDeclarationEverything() throws {
-        let variablePrefix = "foo"
+  func testVariableDeclarationEverything() throws {
+    let variablePrefix = "foo"
 
-        let protocolFunctionDeclaration = try FunctionDeclSyntax(
-            """
-            func foo(
-                text: inout String,
-                product: (UInt?, name: String),
-                added: (() -> Void)?,
-                removed: @escaping () -> Bool
-            ) async throws -> (text: String, output: (() -> Void)?)
-            """
-        ) {}
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo(
+          text: inout String,
+          product: (UInt?, name: String),
+          added: (() -> Void)?,
+          removed: @escaping () -> Bool
+      ) async throws -> (text: String, output: (() -> Void)?)
+      """
+    ) {}
 
-        let result = ClosureFactory().variableDeclaration(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-        )
+    let result = ClosureFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
 
-        assertBuildResult(
-            result,
-            """
-            var fooClosure: ((inout String, (UInt?, name: String), (() -> Void)?, @escaping () -> Bool) async throws -> (text: String, output: (() -> Void)?) )?
-            """
-        )
-    }
+    assertBuildResult(
+      result,
+      """
+      var fooClosure: ((inout String, (UInt?, name: String), (() -> Void)?, @escaping () -> Bool) async throws -> (text: String, output: (() -> Void)?) )?
+      """
+    )
+  }
 
-    func testCallExpression() throws {
-        let variablePrefix = "foo"
+  func testCallExpression() throws {
+    let variablePrefix = "foo"
 
-        let protocolFunctionDeclaration = try FunctionDeclSyntax(
-            """
-            func foo()
-            """
-        ) {}
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo()
+      """
+    ) {}
 
-        let result = ClosureFactory().callExpression(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-        )
+    let result = ClosureFactory().callExpression(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
 
-        assertBuildResult(
-            result,
-            """
-            fooClosure?()
-            """
-        )
-    }
+    assertBuildResult(
+      result,
+      """
+      fooClosure?()
+      """
+    )
+  }
 
-    func testCallExpressionArguments() throws {
-        let variablePrefix = "foo"
+  func testCallExpressionArguments() throws {
+    let variablePrefix = "foo"
 
-        let protocolFunctionDeclaration = try FunctionDeclSyntax(
-            """
-            func foo(text: String, count: UInt)
-            """
-        ) {}
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo(text: String, count: UInt)
+      """
+    ) {}
 
-        let result = ClosureFactory().callExpression(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-        )
+    let result = ClosureFactory().callExpression(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
 
-        assertBuildResult(
-            result,
-            """
-            fooClosure?(text, count)
-            """
-        )
-    }
+    assertBuildResult(
+      result,
+      """
+      fooClosure?(text, count)
+      """
+    )
+  }
 
-    func testCallExpressionAsync() throws {
-        let variablePrefix = "foo"
+  func testCallExpressionAsync() throws {
+    let variablePrefix = "foo"
 
-        let protocolFunctionDeclaration = try FunctionDeclSyntax(
-            """
-            func foo() async
-            """
-        ) {}
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo() async
+      """
+    ) {}
 
-        let result = ClosureFactory().callExpression(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-        )
+    let result = ClosureFactory().callExpression(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
 
-        assertBuildResult(
-            result,
-            """
-            await fooClosure?()
-            """
-        )
-    }
+    assertBuildResult(
+      result,
+      """
+      await fooClosure?()
+      """
+    )
+  }
 
-    func testCallExpressionThrows() throws {
-        let variablePrefix = "foo"
+  func testCallExpressionThrows() throws {
+    let variablePrefix = "foo"
 
-        let protocolFunctionDeclaration = try FunctionDeclSyntax(
-            """
-            func foo() throws
-            """
-        ) {}
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo() throws
+      """
+    ) {}
 
-        let result = ClosureFactory().callExpression(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-        )
+    let result = ClosureFactory().callExpression(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
 
-        assertBuildResult(
-            result,
-            """
-            try fooClosure?()
-            """
-        )
-    }
+    assertBuildResult(
+      result,
+      """
+      try fooClosure?()
+      """
+    )
+  }
 
-    func testCallExpressionEverything() throws {
-        let variablePrefix = "foo"
+  func testCallExpressionEverything() throws {
+    let variablePrefix = "foo"
 
-        let protocolFunctionDeclaration = try FunctionDeclSyntax(
-            """
-            func foo(text: inout String, product: (UInt?, name: String), added: (() -> Void)?, removed: @escaping () -> Bool) async throws -> String?
-            """
-        ) {}
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo(text: inout String, product: (UInt?, name: String), added: (() -> Void)?, removed: @escaping () -> Bool) async throws -> String?
+      """
+    ) {}
 
-        let result = ClosureFactory().callExpression(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-        )
+    let result = ClosureFactory().callExpression(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
 
-        assertBuildResult(
-            result,
-            """
-            try await fooClosure!(text, product, added, removed)
-            """
-        )
-    }
+    assertBuildResult(
+      result,
+      """
+      try await fooClosure!(text, product, added, removed)
+      """
+    )
+  }
 }

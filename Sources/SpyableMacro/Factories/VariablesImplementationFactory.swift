@@ -43,67 +43,67 @@ import SwiftSyntaxBuilder
 /// - Important: The variable declaration must have exactly one binding. Any deviation from this will result in
 ///              an error diagnostic produced by the macro.
 struct VariablesImplementationFactory {
-    private let accessorRemovalVisitor = AccessorRemovalVisitor()
-    
-    @MemberBlockItemListBuilder
-    func variablesDeclarations(
-        protocolVariableDeclaration: VariableDeclSyntax
-    ) throws -> MemberBlockItemListSyntax {
-        if protocolVariableDeclaration.bindings.count == 1 {
-            // Since the count of `bindings` is exactly 1, it is safe to force unwrap it.
-            let binding = protocolVariableDeclaration.bindings.first!
+  private let accessorRemovalVisitor = AccessorRemovalVisitor()
 
-            if binding.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true {
-                accessorRemovalVisitor.visit(protocolVariableDeclaration)
-            } else {
-                try protocolVariableDeclarationWithGetterAndSetter(binding: binding)
+  @MemberBlockItemListBuilder
+  func variablesDeclarations(
+    protocolVariableDeclaration: VariableDeclSyntax
+  ) throws -> MemberBlockItemListSyntax {
+    if protocolVariableDeclaration.bindings.count == 1 {
+      // Since the count of `bindings` is exactly 1, it is safe to force unwrap it.
+      let binding = protocolVariableDeclaration.bindings.first!
 
-                try underlyingVariableDeclaration(binding: binding)
-            }
-        } else {
-            // As far as I know variable declaration in a protocol should have exactly one binding.
-            throw SpyableDiagnostic.variableDeclInProtocolWithNotSingleBinding
-        }
+      if binding.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true {
+        accessorRemovalVisitor.visit(protocolVariableDeclaration)
+      } else {
+        try protocolVariableDeclarationWithGetterAndSetter(binding: binding)
+
+        try underlyingVariableDeclaration(binding: binding)
+      }
+    } else {
+      // As far as I know variable declaration in a protocol should have exactly one binding.
+      throw SpyableDiagnostic.variableDeclInProtocolWithNotSingleBinding
+    }
+  }
+
+  private func protocolVariableDeclarationWithGetterAndSetter(
+    binding: PatternBindingSyntax
+  ) throws -> VariableDeclSyntax {
+    try VariableDeclSyntax(
+      """
+      var \(binding.pattern.trimmed)\(binding.typeAnnotation!.trimmed) {
+          get { \(raw: underlyingVariableName(binding: binding)) }
+          set { \(raw: underlyingVariableName(binding: binding)) = newValue }
+      }
+      """
+    )
+  }
+
+  private func underlyingVariableDeclaration(
+    binding: PatternBindingListSyntax.Element
+  ) throws -> VariableDeclSyntax {
+    try VariableDeclSyntax(
+      """
+      var \(raw: underlyingVariableName(binding: binding)): (\(binding.typeAnnotation!.type.trimmed))!
+      """
+    )
+  }
+
+  private func underlyingVariableName(binding: PatternBindingListSyntax.Element) throws -> String {
+    guard let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
+      // As far as I know variable declaration in a protocol should have identifier pattern
+      throw SpyableDiagnostic.variableDeclInProtocolWithNotIdentifierPattern
     }
 
-    private func protocolVariableDeclarationWithGetterAndSetter(
-        binding: PatternBindingSyntax
-    ) throws -> VariableDeclSyntax {
-        try VariableDeclSyntax(
-            """
-            var \(binding.pattern.trimmed)\(binding.typeAnnotation!.trimmed) {
-                get { \(raw: underlyingVariableName(binding: binding)) }
-                set { \(raw: underlyingVariableName(binding: binding)) = newValue }
-            }
-            """
-        )
-    }
+    let identifierText = identifierPattern.identifier.text
 
-    private func underlyingVariableDeclaration(
-        binding: PatternBindingListSyntax.Element
-    ) throws -> VariableDeclSyntax {
-      try VariableDeclSyntax(
-          """
-          var \(raw: underlyingVariableName(binding: binding)): (\(binding.typeAnnotation!.type.trimmed))!
-          """
-      )
-    }
-
-    private func underlyingVariableName(binding: PatternBindingListSyntax.Element) throws -> String {
-        guard let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
-            // As far as I know variable declaration in a protocol should have identifier pattern
-            throw SpyableDiagnostic.variableDeclInProtocolWithNotIdentifierPattern
-        }
-
-        let identifierText = identifierPattern.identifier.text
-
-        return "underlying" + identifierText.prefix(1).uppercased() + identifierText.dropFirst()
-    }
+    return "underlying" + identifierText.prefix(1).uppercased() + identifierText.dropFirst()
+  }
 }
 
 private class AccessorRemovalVisitor: SyntaxRewriter {
-    override func visit(_ node: PatternBindingSyntax) -> PatternBindingSyntax {
-        let superResult = super.visit(node)
-        return superResult.with(\.accessorBlock, nil)
-    }
+  override func visit(_ node: PatternBindingSyntax) -> PatternBindingSyntax {
+    let superResult = super.visit(node)
+    return superResult.with(\.accessorBlock, nil)
+  }
 }

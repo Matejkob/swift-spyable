@@ -41,95 +41,103 @@ import SwiftSyntaxBuilder
 ///         order and number of invocations matter, use `ReceivedInvocationsFactory`. If you only care
 ///         about the arguments in the last invocation, use `ReceivedArgumentsFactory`.
 struct ReceivedInvocationsFactory {
-    func variableDeclaration(variablePrefix: String, parameterList: FunctionParameterListSyntax) -> VariableDeclSyntax {
-        let identifier = variableIdentifier(variablePrefix: variablePrefix)
-        let elementType = arrayElementType(parameterList: parameterList)
+  func variableDeclaration(
+    variablePrefix: String,
+    parameterList: FunctionParameterListSyntax
+  ) -> VariableDeclSyntax {
+    let identifier = variableIdentifier(variablePrefix: variablePrefix)
+    let elementType = arrayElementType(parameterList: parameterList)
 
-        return VariableDeclSyntax(
-            bindingSpecifier: .keyword(.var),
-            bindingsBuilder: {
-                PatternBindingSyntax(
-                    pattern: IdentifierPatternSyntax(identifier: identifier),
-                    typeAnnotation: TypeAnnotationSyntax(
-                        type: ArrayTypeSyntax(element: elementType)
-                    ),
-                    initializer: InitializerClauseSyntax(
-                        value: ArrayExprSyntax(elementsBuilder: {})
-                    )
-                )
-            }
+    return VariableDeclSyntax(
+      bindingSpecifier: .keyword(.var),
+      bindingsBuilder: {
+        PatternBindingSyntax(
+          pattern: IdentifierPatternSyntax(identifier: identifier),
+          typeAnnotation: TypeAnnotationSyntax(
+            type: ArrayTypeSyntax(element: elementType)
+          ),
+          initializer: InitializerClauseSyntax(
+            value: ArrayExprSyntax(elementsBuilder: {})
+          )
         )
-    }
+      }
+    )
+  }
 
-    private func arrayElementType(parameterList: FunctionParameterListSyntax) -> TypeSyntaxProtocol {
-        let arrayElementType: TypeSyntaxProtocol
+  private func arrayElementType(parameterList: FunctionParameterListSyntax) -> TypeSyntaxProtocol {
+    let arrayElementType: TypeSyntaxProtocol
 
-        if parameterList.count == 1, var onlyParameterType = parameterList.first?.type {
-            if let attributedType = onlyParameterType.as(AttributedTypeSyntax.self) {
-                onlyParameterType = attributedType.baseType
-            }
+    if parameterList.count == 1, var onlyParameterType = parameterList.first?.type {
+      if let attributedType = onlyParameterType.as(AttributedTypeSyntax.self) {
+        onlyParameterType = attributedType.baseType
+      }
 
-            arrayElementType = onlyParameterType
-        } else {
-            let tupleElements = TupleTypeElementListSyntax {
-                for parameter in parameterList {
-                    TupleTypeElementSyntax(
-                        firstName: parameter.secondName ?? parameter.firstName,
-                        colon: .colonToken(),
-                        type: {
-                            if let attributedType = parameter.type.as(AttributedTypeSyntax.self) {
-                                return attributedType.baseType
-                            } else {
-                                return parameter.type
-                            }
-                        }()
-                    )
-                }
-            }
-            arrayElementType = TupleTypeSyntax(elements: tupleElements)
+      arrayElementType = onlyParameterType
+    } else {
+      let tupleElements = TupleTypeElementListSyntax {
+        for parameter in parameterList {
+          TupleTypeElementSyntax(
+            firstName: parameter.secondName ?? parameter.firstName,
+            colon: .colonToken(),
+            type: {
+              if let attributedType = parameter.type.as(AttributedTypeSyntax.self) {
+                return attributedType.baseType
+              } else {
+                return parameter.type
+              }
+            }()
+          )
         }
-
-        return arrayElementType
+      }
+      arrayElementType = TupleTypeSyntax(elements: tupleElements)
     }
 
-    func appendValueToVariableExpression(variablePrefix: String, parameterList: FunctionParameterListSyntax) -> FunctionCallExprSyntax {
-        let identifier = variableIdentifier(variablePrefix: variablePrefix)
-        let calledExpression = MemberAccessExprSyntax(
-            base: DeclReferenceExprSyntax(baseName: identifier),
-            period: .periodToken(),
-            name: .identifier("append")
-        )
-        let argument = appendArgumentExpression(parameterList: parameterList)
+    return arrayElementType
+  }
 
-        return FunctionCallExprSyntax(
-            calledExpression: calledExpression,
-            leftParen: .leftParenToken(),
-            arguments: argument,
-            rightParen: .rightParenToken()
-        )
-    }
+  func appendValueToVariableExpression(
+    variablePrefix: String,
+    parameterList: FunctionParameterListSyntax
+  ) -> FunctionCallExprSyntax {
+    let identifier = variableIdentifier(variablePrefix: variablePrefix)
+    let calledExpression = MemberAccessExprSyntax(
+      base: DeclReferenceExprSyntax(baseName: identifier),
+      period: .periodToken(),
+      name: .identifier("append")
+    )
+    let argument = appendArgumentExpression(parameterList: parameterList)
 
-    private func appendArgumentExpression(parameterList: FunctionParameterListSyntax) -> LabeledExprListSyntax {
-        let tupleArgument = TupleExprSyntax(
-            elements: LabeledExprListSyntax(
-                itemsBuilder: {
-                    for parameter in parameterList {
-                        LabeledExprSyntax(
-                            expression: DeclReferenceExprSyntax(
-                                baseName: parameter.secondName ?? parameter.firstName
-                            )
-                        )
-                    }
-                }
+    return FunctionCallExprSyntax(
+      calledExpression: calledExpression,
+      leftParen: .leftParenToken(),
+      arguments: argument,
+      rightParen: .rightParenToken()
+    )
+  }
+
+  private func appendArgumentExpression(
+    parameterList: FunctionParameterListSyntax
+  ) -> LabeledExprListSyntax {
+    let tupleArgument = TupleExprSyntax(
+      elements: LabeledExprListSyntax(
+        itemsBuilder: {
+          for parameter in parameterList {
+            LabeledExprSyntax(
+              expression: DeclReferenceExprSyntax(
+                baseName: parameter.secondName ?? parameter.firstName
+              )
             )
-        )
-
-        return LabeledExprListSyntax {
-            LabeledExprSyntax(expression: tupleArgument)
+          }
         }
-    }
+      )
+    )
 
-    private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
-        TokenSyntax.identifier(variablePrefix + "ReceivedInvocations")
+    return LabeledExprListSyntax {
+      LabeledExprSyntax(expression: tupleArgument)
     }
+  }
+
+  private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
+    TokenSyntax.identifier(variablePrefix + "ReceivedInvocations")
+  }
 }

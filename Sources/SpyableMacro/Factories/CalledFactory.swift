@@ -25,13 +25,13 @@ import SwiftSyntaxBuilder
 /// ```
 /// and an argument `variablePrefix` equal to `foo`.
 struct CalledFactory {
-    func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
-        try VariableDeclSyntax(
-          """
-          var \(raw: variablePrefix)Called: Bool {
-              return \(raw: variablePrefix)CallsCount > 0
-          }
-          """
-        )
-    }
+  func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
+    try VariableDeclSyntax(
+      """
+      var \(raw: variablePrefix)Called: Bool {
+          return \(raw: variablePrefix)CallsCount > 0
+      }
+      """
+    )
+  }
 }
