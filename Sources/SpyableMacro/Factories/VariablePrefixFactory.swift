@@ -18,24 +18,25 @@ import SwiftSyntaxBuilder
 /// It will capitalize the first letter of each parameter name and append it to the function name.
 /// Please note that if a parameter is underscored (anonymous), it's ignored.
 struct VariablePrefixFactory {
-    func text(for functionDeclaration: FunctionDeclSyntax) -> String {
-        var parts: [String] = [functionDeclaration.name.text]
+  func text(for functionDeclaration: FunctionDeclSyntax) -> String {
+    var parts: [String] = [functionDeclaration.name.text]
 
-        let parameterList = functionDeclaration.signature.parameterClause.parameters
+    let parameterList = functionDeclaration.signature.parameterClause.parameters
 
-        let parameters = parameterList
-            .map { $0.firstName.text }
-            .filter { $0 != "_" }
-            .map { $0.capitalizingFirstLetter() }
+    let parameters =
+      parameterList
+      .map { $0.firstName.text }
+      .filter { $0 != "_" }
+      .map { $0.capitalizingFirstLetter() }
 
-        parts.append(contentsOf: parameters)
+    parts.append(contentsOf: parameters)
 
-        return parts.joined()
-    }
+    return parts.joined()
+  }
 }
 
 extension String {
-    fileprivate func capitalizingFirstLetter() -> String {
-        return prefix(1).uppercased() + dropFirst()
-    }
+  fileprivate func capitalizingFirstLetter() -> String {
+    return prefix(1).uppercased() + dropFirst()
+  }
 }

@@ -1,5 +1,5 @@
-import XCTest
 @testable import Examples
+import XCTest
 
 final class ViewModelTests: XCTestCase {
     var serviceSpy: ServiceProtocolSpy!
@@ -21,7 +21,7 @@ final class ViewModelTests: XCTestCase {
     }
 
     func testSaveConfig() async throws {
-        let expectedConfig: [String: String] = ["key": "value"]
+        let expectedConfig = ["key": "value"]
 
         serviceSpy.fetchConfigArgReturnValue = expectedConfig
 

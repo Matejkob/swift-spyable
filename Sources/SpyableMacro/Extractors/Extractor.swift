@@ -9,11 +9,13 @@ import SwiftSyntax
 /// meaning the input declaration is not a protocol declaration, the method throws
 /// a `SpyableDiagnostic.onlyApplicableToProtocol` error.
 struct Extractor {
-    func extractProtocolDeclaration(from declaration: DeclSyntaxProtocol) throws -> ProtocolDeclSyntax {
-        guard let protocolDeclaration = declaration.as(ProtocolDeclSyntax.self) else {
-            throw SpyableDiagnostic.onlyApplicableToProtocol
-        }
-
-        return protocolDeclaration
+  func extractProtocolDeclaration(
+    from declaration: DeclSyntaxProtocol
+  ) throws -> ProtocolDeclSyntax {
+    guard let protocolDeclaration = declaration.as(ProtocolDeclSyntax.self) else {
+      throw SpyableDiagnostic.onlyApplicableToProtocol
     }
+
+    return protocolDeclaration
+  }
 }

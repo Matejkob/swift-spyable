@@ -1,11 +1,11 @@
 #if canImport(SwiftCompilerPlugin)
-import SwiftCompilerPlugin
-import SwiftSyntaxMacros
+  import SwiftCompilerPlugin
+  import SwiftSyntaxMacros
 
-@main
-struct SpyableCompilerPlugin: CompilerPlugin {
+  @main
+  struct SpyableCompilerPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        SpyableMacro.self
+      SpyableMacro.self
     ]
-}
+  }
 #endif
