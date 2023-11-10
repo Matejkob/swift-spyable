@@ -3,6 +3,6 @@ format:
 		--ignore-unparsable-files \
 		--in-place \
 		--recursive \
-		./Package.swift ./Sources ./Tests
+		./Package.swift ./Sources ./Tests ./Examples
 
 .PHONY: format
