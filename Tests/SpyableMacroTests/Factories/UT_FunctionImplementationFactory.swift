@@ -110,4 +110,27 @@ final class UT_FunctionImplementationFactory: XCTestCase {
       """
     )
   }
+
+  func testDeclarationWithMutatingKeyword() throws {
+    let variablePrefix = "functionName"
+
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      "mutating func foo()"
+    ) {}
+
+    let result = FunctionImplementationFactory().declaration(
+      variablePrefix: variablePrefix,
+      protocolFunctionDeclaration: protocolFunctionDeclaration
+    )
+
+    assertBuildResult(
+      result,
+      """
+      func foo() {
+          functionNameCallsCount += 1
+          functionNameClosure?()
+      }
+      """
+    )
+  }
 }

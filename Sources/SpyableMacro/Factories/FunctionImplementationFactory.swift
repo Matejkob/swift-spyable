@@ -67,54 +67,53 @@ struct FunctionImplementationFactory {
     variablePrefix: String,
     protocolFunctionDeclaration: FunctionDeclSyntax
   ) -> FunctionDeclSyntax {
-    FunctionDeclSyntax(
-      attributes: protocolFunctionDeclaration.attributes,
-      modifiers: protocolFunctionDeclaration.modifiers.removingMutating,
-      funcKeyword: protocolFunctionDeclaration.funcKeyword,
-      name: protocolFunctionDeclaration.name,
-      genericParameterClause: protocolFunctionDeclaration.genericParameterClause,
-      signature: protocolFunctionDeclaration.signature,
-      genericWhereClause: protocolFunctionDeclaration.genericWhereClause,
-      bodyBuilder: {
-        let parameterList = protocolFunctionDeclaration.signature.parameterClause.parameters
+    var spyFunctionDeclaration = protocolFunctionDeclaration
 
-        callsCountFactory.incrementVariableExpression(variablePrefix: variablePrefix)
+    spyFunctionDeclaration.modifiers = protocolFunctionDeclaration.modifiers.removingMutatingKeyword
 
-        if !parameterList.isEmpty {
-          receivedArgumentsFactory.assignValueToVariableExpression(
-            variablePrefix: variablePrefix,
-            parameterList: parameterList
-          )
-          receivedInvocationsFactory.appendValueToVariableExpression(
-            variablePrefix: variablePrefix,
-            parameterList: parameterList
-          )
-        }
+    spyFunctionDeclaration.body = CodeBlockSyntax {
+      let parameterList = protocolFunctionDeclaration.signature.parameterClause.parameters
 
-        if protocolFunctionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
-          throwableErrorFactory.throwErrorExpression(variablePrefix: variablePrefix)
-        }
+      callsCountFactory.incrementVariableExpression(variablePrefix: variablePrefix)
 
-        if protocolFunctionDeclaration.signature.returnClause == nil {
-          closureFactory.callExpression(
-            variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
-          )
-        } else {
-          returnExpression(
-            variablePrefix: variablePrefix,
-            protocolFunctionDeclaration: protocolFunctionDeclaration
-          )
-        }
+      if !parameterList.isEmpty {
+        receivedArgumentsFactory.assignValueToVariableExpression(
+          variablePrefix: variablePrefix,
+          parameterList: parameterList
+        )
+        receivedInvocationsFactory.appendValueToVariableExpression(
+          variablePrefix: variablePrefix,
+          parameterList: parameterList
+        )
       }
-    )
+
+      if protocolFunctionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
+        throwableErrorFactory.throwErrorExpression(variablePrefix: variablePrefix)
+      }
+
+      if protocolFunctionDeclaration.signature.returnClause == nil {
+        closureFactory.callExpression(
+          variablePrefix: variablePrefix,
+          functionSignature: protocolFunctionDeclaration.signature
+        )
+      } else {
+        returnExpression(
+          variablePrefix: variablePrefix,
+          protocolFunctionDeclaration: protocolFunctionDeclaration
+        )
+      }
+    }
+
+    return spyFunctionDeclaration
   }
 
   private func returnExpression(
     variablePrefix: String,
     protocolFunctionDeclaration: FunctionDeclSyntax
   ) -> IfExprSyntax {
-    return IfExprSyntax(
+    // Cannot be refactored to leverage string interpolation 
+    // due to the bug: https://github.com/apple/swift-syntax/issues/2352
+    IfExprSyntax(
       conditions: ConditionElementListSyntax {
         ConditionElementSyntax(
           condition: .expression(
@@ -147,9 +146,7 @@ struct FunctionImplementationFactory {
 }
 
 extension DeclModifierListSyntax {
-  fileprivate var removingMutating: Self {
-    filter {
-      $0.name.text != TokenSyntax.keyword(.mutating).text
-    }
+  fileprivate var removingMutatingKeyword: Self {
+    filter { $0.name.text != TokenSyntax.keyword(.mutating).text }
   }
 }
