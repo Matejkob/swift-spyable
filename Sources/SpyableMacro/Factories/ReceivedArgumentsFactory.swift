@@ -39,21 +39,17 @@ struct ReceivedArgumentsFactory {
   func variableDeclaration(
     variablePrefix: String,
     parameterList: FunctionParameterListSyntax
-  ) -> VariableDeclSyntax {
+  ) throws -> VariableDeclSyntax {
     let identifier = variableIdentifier(
-      variablePrefix: variablePrefix, parameterList: parameterList)
+      variablePrefix: variablePrefix, 
+      parameterList: parameterList
+    )
     let type = variableType(parameterList: parameterList)
 
-    return VariableDeclSyntax(
-      bindingSpecifier: .keyword(.var),
-      bindingsBuilder: {
-        PatternBindingSyntax(
-          pattern: IdentifierPatternSyntax(identifier: identifier),
-          typeAnnotation: TypeAnnotationSyntax(
-            type: type
-          )
-        )
-      }
+    return try VariableDeclSyntax(
+      """
+      var \(identifier): \(type)
+      """
     )
   }
 
@@ -110,23 +106,27 @@ struct ReceivedArgumentsFactory {
   func assignValueToVariableExpression(
     variablePrefix: String,
     parameterList: FunctionParameterListSyntax
-  ) -> SequenceExprSyntax {
+  ) -> ExprSyntax {
     let identifier = variableIdentifier(
-      variablePrefix: variablePrefix, parameterList: parameterList)
+      variablePrefix: variablePrefix,
+      parameterList: parameterList
+    )
 
-    return SequenceExprSyntax {
-      DeclReferenceExprSyntax(baseName: identifier)
-      AssignmentExprSyntax()
-      TupleExprSyntax {
-        for parameter in parameterList {
-          LabeledExprSyntax(
-            expression: DeclReferenceExprSyntax(
-              baseName: parameter.secondName ?? parameter.firstName
-            )
+    let tuple = TupleExprSyntax {
+      for parameter in parameterList {
+        LabeledExprSyntax(
+          expression: DeclReferenceExprSyntax(
+            baseName: parameter.secondName ?? parameter.firstName
           )
-        }
+        )
       }
     }
+
+    return ExprSyntax(
+      """
+      \(identifier) = \(tuple)
+      """
+    )
   }
 
   private func variableIdentifier(

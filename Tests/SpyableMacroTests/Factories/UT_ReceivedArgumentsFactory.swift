@@ -12,7 +12,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
       "func foo(bar: String)"
     ) {}
 
-    let result = ReceivedArgumentsFactory().variableDeclaration(
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -31,7 +31,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
       "func foo(_ price: Decimal?)"
     ) {}
 
-    let result = ReceivedArgumentsFactory().variableDeclaration(
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -50,7 +50,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
       "func foo(firstName secondName: (String, Int))"
     ) {}
 
-    let result = ReceivedArgumentsFactory().variableDeclaration(
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -69,7 +69,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
       "func foo(completion: @escaping () -> Void)"
     ) {}
 
-    let result = ReceivedArgumentsFactory().variableDeclaration(
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -88,7 +88,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
       "func foo(completion: @escaping (() -> Void))"
     ) {}
 
-    let result = ReceivedArgumentsFactory().variableDeclaration(
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -107,7 +107,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
       "func foo(completion: () -> Void)"
     ) {}
 
-    let result = ReceivedArgumentsFactory().variableDeclaration(
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -126,7 +126,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
       "func foo(completion: (() -> Void)?)"
     ) {}
 
-    let result = ReceivedArgumentsFactory().variableDeclaration(
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -145,7 +145,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
       "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)"
     ) {}
 
-    let result = ReceivedArgumentsFactory().variableDeclaration(
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -164,7 +164,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
       "func foo(completion: @escaping () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)"
     ) {}
 
-    let result = ReceivedArgumentsFactory().variableDeclaration(
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -183,7 +183,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
       "func foo(completion: () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)"
     ) {}
 
-    let result = ReceivedArgumentsFactory().variableDeclaration(
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -202,7 +202,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
       "func foo(completion: (() -> Void)?, _ count: (x: Int, UInt?)?, final price: Decimal?)"
     ) {}
 
-    let result = ReceivedArgumentsFactory().variableDeclaration(
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )

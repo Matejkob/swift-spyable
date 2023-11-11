@@ -122,7 +122,7 @@ struct SpyFactory {
           try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
 
           if !parameterList.isEmpty {
-            receivedArgumentsFactory.variableDeclaration(
+            try receivedArgumentsFactory.variableDeclaration(
               variablePrefix: variablePrefix,
               parameterList: parameterList
             )
