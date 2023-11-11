@@ -126,7 +126,7 @@ struct SpyFactory {
               variablePrefix: variablePrefix,
               parameterList: parameterList
             )
-            receivedInvocationsFactory.variableDeclaration(
+            try receivedInvocationsFactory.variableDeclaration(
               variablePrefix: variablePrefix,
               parameterList: parameterList
             )
