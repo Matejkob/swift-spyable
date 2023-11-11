@@ -111,7 +111,7 @@ struct FunctionImplementationFactory {
     variablePrefix: String,
     protocolFunctionDeclaration: FunctionDeclSyntax
   ) -> IfExprSyntax {
-    // Cannot be refactored to leverage string interpolation 
+    // Cannot be refactored to leverage string interpolation
     // due to the bug: https://github.com/apple/swift-syntax/issues/2352
     IfExprSyntax(
       conditions: ConditionElementListSyntax {
