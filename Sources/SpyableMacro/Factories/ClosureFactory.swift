@@ -31,7 +31,7 @@ struct ClosureFactory {
   func variableDeclaration(
     variablePrefix: String,
     functionSignature: FunctionSignatureSyntax
-  ) -> VariableDeclSyntax {
+  ) throws -> VariableDeclSyntax {
     let elements = TupleTypeElementListSyntax {
       TupleTypeElementSyntax(
         type: FunctionTypeSyntax(
@@ -44,34 +44,19 @@ struct ClosureFactory {
             asyncSpecifier: functionSignature.effectSpecifiers?.asyncSpecifier,
             throwsSpecifier: functionSignature.effectSpecifiers?.throwsSpecifier
           ),
-          returnClause: functionSignature.returnClause
-            ?? ReturnClauseSyntax(
-              type: IdentifierTypeSyntax(
-                name: .identifier("Void")
-              )
+          returnClause: functionSignature.returnClause ?? ReturnClauseSyntax(
+            type: IdentifierTypeSyntax(
+              name: .identifier("Void")
             )
+          )
         )
       )
     }
 
-    let typeAnnotation = TypeAnnotationSyntax(
-      type: OptionalTypeSyntax(
-        wrappedType: TupleTypeSyntax(
-          elements: elements
-        )
-      )
-    )
-
-    return VariableDeclSyntax(
-      bindingSpecifier: .keyword(.var),
-      bindingsBuilder: {
-        PatternBindingSyntax(
-          pattern: IdentifierPatternSyntax(
-            identifier: variableIdentifier(variablePrefix: variablePrefix)
-          ),
-          typeAnnotation: typeAnnotation
-        )
-      }
+    return try VariableDeclSyntax(
+      """
+      var \(variableIdentifier(variablePrefix: variablePrefix)): (\(elements))?
+      """
     )
   }
 
