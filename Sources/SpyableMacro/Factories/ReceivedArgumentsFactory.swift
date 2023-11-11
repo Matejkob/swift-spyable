@@ -41,7 +41,7 @@ struct ReceivedArgumentsFactory {
     parameterList: FunctionParameterListSyntax
   ) throws -> VariableDeclSyntax {
     let identifier = variableIdentifier(
-      variablePrefix: variablePrefix, 
+      variablePrefix: variablePrefix,
       parameterList: parameterList
     )
     let type = variableType(parameterList: parameterList)
