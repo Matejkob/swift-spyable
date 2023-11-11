@@ -12,7 +12,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       "func foo(bar: String?)"
     ) {}
 
-    let result = ReceivedInvocationsFactory().variableDeclaration(
+    let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -31,7 +31,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       "func foo(_ tuple: (text: String, (Decimal?, date: Date))?)"
     ) {}
 
-    let result = ReceivedInvocationsFactory().variableDeclaration(
+    let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -50,7 +50,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       "func bar(completion: @escaping () -> Void)"
     ) {}
 
-    let result = ReceivedInvocationsFactory().variableDeclaration(
+    let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -69,7 +69,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       "func foo(completion: () -> Void)"
     ) {}
 
-    let result = ReceivedInvocationsFactory().variableDeclaration(
+    let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -88,7 +88,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       "func name(completion: (() -> Void)?)"
     ) {}
 
-    let result = ReceivedInvocationsFactory().variableDeclaration(
+    let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -107,7 +107,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)"
     ) {}
 
-    let result = ReceivedInvocationsFactory().variableDeclaration(
+    let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -126,7 +126,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       "func foo(completion: @escaping () -> Void, count: UInt, final price: Decimal?)"
     ) {}
 
-    let result = ReceivedInvocationsFactory().variableDeclaration(
+    let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -145,7 +145,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       "func bar(completion: () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)"
     ) {}
 
-    let result = ReceivedInvocationsFactory().variableDeclaration(
+    let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
@@ -164,7 +164,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       "func func_name(completion: (() -> Void)?, _ count: (x: Int, UInt?)?, final price: Decimal?)"
     ) {}
 
-    let result = ReceivedInvocationsFactory().variableDeclaration(
+    let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )

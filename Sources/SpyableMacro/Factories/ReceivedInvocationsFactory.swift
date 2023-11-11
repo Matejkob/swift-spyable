@@ -44,23 +44,14 @@ struct ReceivedInvocationsFactory {
   func variableDeclaration(
     variablePrefix: String,
     parameterList: FunctionParameterListSyntax
-  ) -> VariableDeclSyntax {
+  ) throws -> VariableDeclSyntax {
     let identifier = variableIdentifier(variablePrefix: variablePrefix)
     let elementType = arrayElementType(parameterList: parameterList)
 
-    return VariableDeclSyntax(
-      bindingSpecifier: .keyword(.var),
-      bindingsBuilder: {
-        PatternBindingSyntax(
-          pattern: IdentifierPatternSyntax(identifier: identifier),
-          typeAnnotation: TypeAnnotationSyntax(
-            type: ArrayTypeSyntax(element: elementType)
-          ),
-          initializer: InitializerClauseSyntax(
-            value: ArrayExprSyntax(elementsBuilder: {})
-          )
-        )
-      }
+    return try VariableDeclSyntax(
+      """
+      var \(identifier): [\(elementType)] = []
+      """
     )
   }
 
@@ -71,7 +62,6 @@ struct ReceivedInvocationsFactory {
       if let attributedType = onlyParameterType.as(AttributedTypeSyntax.self) {
         onlyParameterType = attributedType.baseType
       }
-
       arrayElementType = onlyParameterType
     } else {
       let tupleElements = TupleTypeElementListSyntax {
@@ -98,20 +88,14 @@ struct ReceivedInvocationsFactory {
   func appendValueToVariableExpression(
     variablePrefix: String,
     parameterList: FunctionParameterListSyntax
-  ) -> FunctionCallExprSyntax {
+  ) -> ExprSyntax {
     let identifier = variableIdentifier(variablePrefix: variablePrefix)
-    let calledExpression = MemberAccessExprSyntax(
-      base: DeclReferenceExprSyntax(baseName: identifier),
-      period: .periodToken(),
-      name: .identifier("append")
-    )
     let argument = appendArgumentExpression(parameterList: parameterList)
 
-    return FunctionCallExprSyntax(
-      calledExpression: calledExpression,
-      leftParen: .leftParenToken(),
-      arguments: argument,
-      rightParen: .rightParenToken()
+    return ExprSyntax(
+      """
+      \(identifier).append(\(argument))
+      """
     )
   }
 
