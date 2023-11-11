@@ -143,7 +143,7 @@ struct SpyFactory {
             )
           }
 
-          closureFactory.variableDeclaration(
+          try closureFactory.variableDeclaration(
             variablePrefix: variablePrefix,
             functionSignature: functionDeclaration.signature
           )
