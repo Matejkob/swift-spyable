@@ -44,11 +44,12 @@ struct ClosureFactory {
             asyncSpecifier: functionSignature.effectSpecifiers?.asyncSpecifier,
             throwsSpecifier: functionSignature.effectSpecifiers?.throwsSpecifier
           ),
-          returnClause: functionSignature.returnClause ?? ReturnClauseSyntax(
-            type: IdentifierTypeSyntax(
-              name: .identifier("Void")
+          returnClause: functionSignature.returnClause
+            ?? ReturnClauseSyntax(
+              type: IdentifierTypeSyntax(
+                name: .identifier("Void")
+              )
             )
-          )
         )
       )
     }
