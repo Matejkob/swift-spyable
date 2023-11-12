@@ -48,11 +48,12 @@
 ///     }
 /// }
 /// ```
+/// - Parameter flag: This defaults to nil, and can be optionally supplied to wrap the generated code in a preprocessor flag like `#if DEBUG`.
 ///
 /// - NOTE: The `@Spyable` macro should only be applied to protocols. Applying it to other
 ///         declarations will result in an error.
 @attached(peer, names: suffixed(Spy))
-public macro Spyable() =
+public macro Spyable(flag: String? = nil) =
   #externalMacro(
     module: "SpyableMacro",
     type: "SpyableMacro"

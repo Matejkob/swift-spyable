@@ -105,6 +105,49 @@ func testFetchConfig() async throws {
 }
 ```
 
+## Advanced Usage
+
+### Restricting the Availability of Spies
+
+If you wish, you can limit where Spyable's generated code can be used from. This can be useful if you want to prevent spies from being used in user-facing production code.
+
+To enforce this restriction, supply the `flag: String?` parameter of Spyable, like this:
+
+```swift
+@Spyable(flag: "DEBUG")
+protocol MyService {
+    func fetchData() async
+}
+```
+With the DEBUG flag added, the macro expansion will be wrapped in an #if DEBUG preprocessor macro, preventing its use anywhere that the DEBUG flag is not defined:
+
+```swift
+#if DEBUG
+class MyServiceSpy: MyService {
+    var fetchDataCallsCount = 0
+    var fetchDataCalled: Bool {
+        return fetchDataCallsCount > 0
+    }
+    var fetchDataClosure: (() async -> Void)?
+        func fetchData() async {
+        fetchDataCallsCount += 1
+        await fetchDataClosure?()
+    }
+}
+#endif
+```
+This example uses "DEBUG", but you can specify any flags you wish. For example, you could use "TESTS", and then make the macro available to your test targets by adding the "TESTS" flag to them under the "Active Compilation Conditions" custom build flags.
+
+#### A Caveat Regarding Xcode Previews
+Limiting spy availability may become restrictive if you intend to use spies in your Xcode Previews. If you intend to use spies with previews and you also want to prevent spies from being used in production code, the advised course of action is to split off previews into their own target where you can define a custom flag (Ex: "SPIES_ENABLED"), like this:
+
+```
+-- MyFeature (`SPIES_ENABLED = 0`)
+---- MyFeatureTests (`SPIES_ENABLED = 1`)
+---- MyFeaturePreviews (`SPIES_ENABLED = 1`)
+```
+Like the example before, you would specify this custom build flag under "Active Compilation Conditions" of both the `MyFeatureTests` and `MyFeaturePreviews` targets.
+
 ## Examples
 
 This repo comes with an example of how to use Spyable. You can find it [here](./Examples).

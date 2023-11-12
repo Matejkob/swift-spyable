@@ -11,6 +11,8 @@ import SwiftSyntaxMacros
 /// that implements the given protocol and records interactions with its methods and properties. The resulting
 /// class is added to the source file, thus "expanding" the `@Spyable` attribute into this new declaration.
 ///
+/// Additionally, if a `String` value is passed via the `flag` parameter, this will be used to wrap the entire declaration in an preprocessor `IfConfigDeclSyntax`, to allow users to restrict the exposure of their generated spies.
+///
 /// Example:
 /// ```swift
 /// @Spyable
@@ -32,6 +34,40 @@ public enum SpyableMacro: PeerMacro {
 
     let spyClassDeclaration = try spyFactory.classDeclaration(for: protocolDeclaration)
 
-    return [DeclSyntax(spyClassDeclaration)]
+    if let flag = declaration.preprocessorFlag {
+      return [
+        DeclSyntax(
+          IfConfigDeclSyntax(
+            clauses: IfConfigClauseListSyntax {
+              IfConfigClauseSyntax(
+                poundKeyword: .poundIfToken(),
+                condition: ExprSyntax(stringLiteral: flag),
+                elements: .statements(
+                  CodeBlockItemListSyntax {
+                    DeclSyntax(spyClassDeclaration)
+                  }
+                )
+              )
+            }
+          )
+        )
+      ]
+    } else {
+      return [DeclSyntax(spyClassDeclaration)]
+    }
+  }
+}
+
+private extension DeclSyntaxProtocol {
+  /// - Returns: The preprocessor `flag` parameter that can be optionally provided via `@Spyable(flag:)`.
+  var preprocessorFlag: String? {
+    self.as(ProtocolDeclSyntax.self)?.attributes.first?
+      .as(AttributeSyntax.self)?.arguments?
+      .as(LabeledExprListSyntax.self)?.first {
+        $0.label?.text == "flag"
+      }?
+      .as(LabeledExprSyntax.self)?.expression
+      .as(StringLiteralExprSyntax.self)?.segments.first?
+      .as(StringSegmentSyntax.self)?.content.text
   }
 }
