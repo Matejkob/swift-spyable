@@ -11,7 +11,7 @@ import SwiftSyntaxMacros
 /// that implements the given protocol and records interactions with its methods and properties. The resulting
 /// class is added to the source file, thus "expanding" the `@Spyable` attribute into this new declaration.
 ///
-/// Additionally, if a `String` value is passed via the `flag` parameter, this will be used to wrap the entire declaration in an preprocessor `IfConfigDeclSyntax`, to allow users to restrict the exposure of their generated spies.
+/// Additionally, if a `String` value is passed via the `behindPreprocessorFlag` parameter, this will be used to wrap the entire declaration in an preprocessor `IfConfigDeclSyntax`, to allow users to restrict the exposure of their generated spies.
 ///
 /// Example:
 /// ```swift
@@ -64,7 +64,7 @@ private extension DeclSyntaxProtocol {
     self.as(ProtocolDeclSyntax.self)?.attributes.first?
       .as(AttributeSyntax.self)?.arguments?
       .as(LabeledExprListSyntax.self)?.first {
-        $0.label?.text == "flag"
+        $0.label?.text == "behindPreprocessorFlag"
       }?
       .as(LabeledExprSyntax.self)?.expression
       .as(StringLiteralExprSyntax.self)?.segments.first?

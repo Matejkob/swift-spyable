@@ -111,15 +111,15 @@ func testFetchConfig() async throws {
 
 If you wish, you can limit where Spyable's generated code can be used from. This can be useful if you want to prevent spies from being used in user-facing production code.
 
-To enforce this restriction, supply the `flag: String?` parameter of Spyable, like this:
+To enforce this restriction, supply the `behindPreprocessorFlag: String?` parameter of Spyable, like this:
 
 ```swift
-@Spyable(flag: "DEBUG")
+@Spyable(behindPreprocessorFlag: "DEBUG")
 protocol MyService {
     func fetchData() async
 }
 ```
-With the DEBUG flag added, the macro expansion will be wrapped in an #if DEBUG preprocessor macro, preventing its use anywhere that the DEBUG flag is not defined:
+With `behindPreprocessorFlag` specified as DEBUG, the macro expansion will be wrapped in an #if DEBUG preprocessor macro, preventing its use anywhere that the DEBUG flag is not defined:
 
 ```swift
 #if DEBUG

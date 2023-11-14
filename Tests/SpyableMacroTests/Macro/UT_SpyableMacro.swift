@@ -147,7 +147,7 @@ final class UT_SpyableMacro: XCTestCase {
       """
     assertMacroExpansion(
       """
-      @Spyable(flag: "CUSTOM")
+      @Spyable(behindPreprocessorFlag: "CUSTOM")
       \(protocolDeclaration)
       """,
       expandedSource: """
