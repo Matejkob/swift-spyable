@@ -287,3 +287,50 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 }
+
+// - MARK: Handle Protocol Associated types
+
+extension UT_SpyFactory {
+  func testDeclarationAssociatedtype() throws {
+    let declaration = DeclSyntax(
+      """
+      protocol Foo {
+          associatedtype Key: Hashable
+      }
+      """
+    )
+    let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
+
+    let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
+
+    assertBuildResult(
+      result,
+      """
+      class FooSpy<Key: Hashable>: Foo {
+      }
+      """
+    )
+  }
+
+  func testDeclarationAssociatedtypeKeyValue() throws {
+    let declaration = DeclSyntax(
+      """
+      protocol Foo {
+          associatedtype Key: Hashable
+          associatedtype Value
+      }
+      """
+    )
+    let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
+
+    let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
+
+    assertBuildResult(
+      result,
+      """
+      class FooSpy<Key: Hashable, Value>: Foo {
+      }
+      """
+    )
+  }
+}
