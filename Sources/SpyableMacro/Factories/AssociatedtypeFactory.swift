@@ -17,7 +17,9 @@ import SwiftSyntaxBuilder
 /// ```
 
 struct AssociatedtypeFactory {
-  func constructGenericParameterClause(associatedtypeDeclList: [AssociatedTypeDeclSyntax]) -> GenericParameterClauseSyntax? {
+  func constructGenericParameterClause(associatedtypeDeclList: [AssociatedTypeDeclSyntax])
+    -> GenericParameterClauseSyntax?
+  {
     guard !associatedtypeDeclList.isEmpty else { return nil }
 
     var genericParameterList = [GenericParameterSyntax]()

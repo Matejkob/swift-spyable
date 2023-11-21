@@ -98,7 +98,8 @@ struct SpyFactory {
     let assosciatedtypeDeclarations = protocolDeclaration.memberBlock.members.compactMap {
       $0.decl.as(AssociatedTypeDeclSyntax.self)
     }
-    let genericParameterClause = associatedtypeFactory.constructGenericParameterClause(associatedtypeDeclList: assosciatedtypeDeclarations)
+    let genericParameterClause = associatedtypeFactory.constructGenericParameterClause(
+      associatedtypeDeclList: assosciatedtypeDeclarations)
 
     let variableDeclarations = protocolDeclaration.memberBlock.members
       .compactMap { $0.decl.as(VariableDeclSyntax.self) }
