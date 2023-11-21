@@ -152,14 +152,14 @@ final class UT_SpyableMacro: XCTestCase {
       """,
       expandedSource: """
 
-      \(protocolDeclaration)
+        \(protocolDeclaration)
 
-      #if CUSTOM
-      class ServiceProtocolSpy: ServiceProtocol {
-          var variable: Bool?
-      }
-      #endif
-      """,
+        #if CUSTOM
+        class ServiceProtocolSpy: ServiceProtocol {
+            var variable: Bool?
+        }
+        #endif
+        """,
       macros: sut
     )
   }
