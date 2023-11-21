@@ -80,6 +80,7 @@ import SwiftSyntaxBuilder
 /// }
 /// ```
 struct SpyFactory {
+  private let associatedtypeFactory = AssociatedtypeFactory()
   private let variablePrefixFactory = VariablePrefixFactory()
   private let variablesImplementationFactory = VariablesImplementationFactory()
   private let callsCountFactory = CallsCountFactory()
@@ -94,6 +95,11 @@ struct SpyFactory {
   func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) throws -> ClassDeclSyntax {
     let identifier = TokenSyntax.identifier(protocolDeclaration.name.text + "Spy")
 
+    let assosciatedtypeDeclarations = protocolDeclaration.memberBlock.members.compactMap {
+      $0.decl.as(AssociatedTypeDeclSyntax.self)
+    }
+    let genericParameterClause = associatedtypeFactory.constructGenericParameterClause(associatedtypeDeclList: assosciatedtypeDeclarations)
+
     let variableDeclarations = protocolDeclaration.memberBlock.members
       .compactMap { $0.decl.as(VariableDeclSyntax.self) }
 
@@ -102,6 +108,7 @@ struct SpyFactory {
 
     return try ClassDeclSyntax(
       name: identifier,
+      genericParameterClause: genericParameterClause,
       inheritanceClause: InheritanceClauseSyntax {
         InheritedTypeSyntax(
           type: IdentifierTypeSyntax(name: protocolDeclaration.name)
