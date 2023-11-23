@@ -58,13 +58,3 @@ public macro Spyable(behindPreprocessorFlag: String? = nil) =
     module: "SpyableMacro",
     type: "SpyableMacro"
   )
-
-@Spyable
-protocol MyProtocol {
-  func foo(
-//      text: inout String,
-      product: (UInt?, name: String),
-      added: (() -> Void)?,
-      removed: @autoclosure @escaping () -> Bool
-  ) async throws -> (text: String, output: (() -> Void)?)
-}
