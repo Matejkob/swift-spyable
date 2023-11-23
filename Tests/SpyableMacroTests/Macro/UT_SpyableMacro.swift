@@ -140,9 +140,13 @@ final class UT_SpyableMacro: XCTestCase {
             var fetchUsernameContextCompletionCalled: Bool {
                 return fetchUsernameContextCompletionCallsCount > 0
             }
+            var fetchUsernameContextCompletionReceivedArguments: (context: String, completion: (String) -> Void)?
+            var fetchUsernameContextCompletionReceivedInvocations: [(context: String, completion: (String) -> Void)] = []
             var fetchUsernameContextCompletionClosure: ((String, @escaping (String) -> Void) -> Void)?
                 func fetchUsername(context: String, completion: @escaping (String) -> Void) {
                 fetchUsernameContextCompletionCallsCount += 1
+                fetchUsernameContextCompletionReceivedArguments = (context, completion)
+                fetchUsernameContextCompletionReceivedInvocations.append((context, completion))
                 fetchUsernameContextCompletionClosure?(context, completion)
             }
             var onTapBackContextActionCallsCount = 0

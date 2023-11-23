@@ -18,7 +18,7 @@ extension FunctionParameterListSyntax {
       }
 
       return !attributedType.attributes.contains(where: { attribute in
-        attribute.as(AttributeSyntax.self)?.attributeName == "escaping"
+        attribute.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "escaping"
       })
     }
   }
