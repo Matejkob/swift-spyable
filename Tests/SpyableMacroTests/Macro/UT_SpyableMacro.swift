@@ -36,6 +36,7 @@ final class UT_SpyableMacro: XCTestCase {
           func fetchUsername(context: String, completion: @escaping (String) -> Void)
           func onTapBack(context: String, action: () -> Void)
           func onTapNext(context: String, action: @Sendable () -> Void)
+          func assert(_ message: @autoclosure () -> String)
       }
       """
 
@@ -166,6 +167,15 @@ final class UT_SpyableMacro: XCTestCase {
                 func onTapNext(context: String, action: @Sendable () -> Void) {
                 onTapNextContextActionCallsCount += 1
                 onTapNextContextActionClosure?(context, action)
+            }
+            var assertCallsCount = 0
+            var assertCalled: Bool {
+                return assertCallsCount > 0
+            }
+            var assertClosure: ((@autoclosure () -> String) -> Void)?
+                func assert(_ message: @autoclosure () -> String) {
+                assertCallsCount += 1
+                assertClosure?(message())
             }
         }
         """,

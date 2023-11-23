@@ -86,10 +86,12 @@ struct ClosureFactory {
       leftParen: .leftParenToken(),
       arguments: LabeledExprListSyntax {
         for parameter in functionSignature.parameterClause.parameters {
+          let trailingTrivia: Trivia? = parameter.usesAutoclosure ? "()" : nil
           LabeledExprSyntax(
             expression: DeclReferenceExprSyntax(
               baseName: parameter.secondName ?? parameter.firstName
-            )
+            ),
+            trailingTrivia: trailingTrivia
           )
         }
       },
