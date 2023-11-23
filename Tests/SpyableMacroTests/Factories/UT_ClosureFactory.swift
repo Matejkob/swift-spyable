@@ -123,7 +123,7 @@ final class UT_ClosureFactory: XCTestCase {
           text: inout String,
           product: (UInt?, name: String),
           added: (() -> Void)?,
-          removed: @escaping () -> Bool
+          removed: @autoclosure @escaping () -> Bool
       ) async throws -> (text: String, output: (() -> Void)?)
       """
     ) {}
@@ -136,7 +136,7 @@ final class UT_ClosureFactory: XCTestCase {
     assertBuildResult(
       result,
       """
-      var fooClosure: ((inout String, (UInt?, name: String), (() -> Void)?, @escaping () -> Bool) async throws -> (text: String, output: (() -> Void)?) )?
+      var fooClosure: ((inout String, (UInt?, name: String), (() -> Void)?, @autoclosure @escaping () -> Bool) async throws -> (text: String, output: (() -> Void)?) )?
       """
     )
   }
@@ -234,7 +234,7 @@ final class UT_ClosureFactory: XCTestCase {
 
     let protocolFunctionDeclaration = try FunctionDeclSyntax(
       """
-      func foo(text: inout String, product: (UInt?, name: String), added: (() -> Void)?, removed: @escaping () -> Bool) async throws -> String?
+      func foo(text: inout String, product: (UInt?, name: String), added: (() -> Void)?, removed: @autoclosure @escaping () -> Bool) async throws -> String?
       """
     ) {}
 
@@ -246,7 +246,7 @@ final class UT_ClosureFactory: XCTestCase {
     assertBuildResult(
       result,
       """
-      try await fooClosure!(text, product, added, removed)
+      try await fooClosure!(text, product, added, removed())
       """
     )
   }
