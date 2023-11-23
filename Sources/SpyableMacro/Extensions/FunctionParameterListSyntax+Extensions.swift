@@ -1,7 +1,7 @@
 import SwiftSyntax
 
 extension FunctionParameterListSyntax {
-  /// - Returns: Whether or not the parameter list supports generating and using properties to track received arguments and received invocations.
+  /// - Returns: Whether or not the function parameter list supports generating and using properties to track received arguments and received invocations.
   var supportsParameterTracking: Bool {
     !isEmpty && !containsNonEscapingClosure
   }
