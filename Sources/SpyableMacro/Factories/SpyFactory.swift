@@ -60,7 +60,7 @@ import SwiftSyntaxBuilder
 ///     }
 ///     var fetchTextCountReceivedArguments: (text: String, count: Int)?
 ///     var fetchTextCountReceivedInvocations: [(text: String, count: Int)] = []
-///     var fetchTextCountThrowableError: Error?
+///     var fetchTextCountThrowableError: (any Error)?
 ///     var fetchTextCountReturnValue: Decimal!
 ///     var fetchTextCountClosure: ((String, Int) async throws -> Decimal)?
 ///

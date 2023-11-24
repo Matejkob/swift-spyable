@@ -13,7 +13,7 @@ import SwiftSyntaxBuilder
 ///
 /// The following code:
 /// ```swift
-/// var fooThrowableError: Error?
+/// var fooThrowableError: (any Error)?
 ///
 /// if let fooThrowableError {
 ///     throw fooThrowableError
@@ -32,7 +32,7 @@ struct ThrowableErrorFactory {
   func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
     try VariableDeclSyntax(
       """
-      var \(variableIdentifier(variablePrefix: variablePrefix)): Error?
+      var \(variableIdentifier(variablePrefix: variablePrefix)): (any Error)?
       """
     )
   }
