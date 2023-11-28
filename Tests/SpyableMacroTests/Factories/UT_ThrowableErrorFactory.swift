@@ -12,7 +12,7 @@ final class UT_ThrowableErrorFactory: XCTestCase {
     assertBuildResult(
       result,
       """
-      var functionNameThrowableError: Error?
+      var functionNameThrowableError: (any Error)?
       """
     )
   }
