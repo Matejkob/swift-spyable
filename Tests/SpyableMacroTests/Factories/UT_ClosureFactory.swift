@@ -4,7 +4,7 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_ClosureFactory: XCTestCase {
-  func testVariableDeclaration() throws {
+  func testInternalVariableDeclaration() throws {
     let variablePrefix = "foo"
 
     let protocolFunctionDeclaration = try FunctionDeclSyntax(
@@ -15,6 +15,7 @@ final class UT_ClosureFactory: XCTestCase {
 
     let result = try ClosureFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       functionSignature: protocolFunctionDeclaration.signature
     )
 
@@ -25,6 +26,30 @@ final class UT_ClosureFactory: XCTestCase {
       """
     )
   }
+  
+  func testPublicVariableDeclaration() throws {
+    let variablePrefix = "foo"
+
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      """
+      func foo()
+      """
+    ) {}
+
+    let result = try ClosureFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      isPublic: true,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
+
+    assertBuildResult(
+      result,
+      """
+      public var fooClosure: (() -> Void)?
+      """
+    )
+  }
+
 
   func testVariableDeclarationArguments() throws {
     let variablePrefix = "foo"
@@ -37,6 +62,7 @@ final class UT_ClosureFactory: XCTestCase {
 
     let result = try ClosureFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       functionSignature: protocolFunctionDeclaration.signature
     )
 
@@ -59,6 +85,7 @@ final class UT_ClosureFactory: XCTestCase {
 
     let result = try ClosureFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       functionSignature: protocolFunctionDeclaration.signature
     )
 
@@ -81,6 +108,7 @@ final class UT_ClosureFactory: XCTestCase {
 
     let result = try ClosureFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       functionSignature: protocolFunctionDeclaration.signature
     )
 
@@ -103,6 +131,7 @@ final class UT_ClosureFactory: XCTestCase {
 
     let result = try ClosureFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       functionSignature: protocolFunctionDeclaration.signature
     )
 
@@ -130,6 +159,7 @@ final class UT_ClosureFactory: XCTestCase {
 
     let result = try ClosureFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       functionSignature: protocolFunctionDeclaration.signature
     )
 

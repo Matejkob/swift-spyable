@@ -4,13 +4,14 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_VariablesImplementationFactory: XCTestCase {
-  func testVariablesDeclarations() throws {
+  func testInternalVariablesDeclarations() throws {
     let declaration = DeclSyntax("var point: (x: Int, y: Int?, (Int, Int)) { get }")
 
     let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
 
     let result = try VariablesImplementationFactory().variablesDeclarations(
-      protocolVariableDeclaration: protocolVariableDeclaration
+      protocolVariableDeclaration: protocolVariableDeclaration,
+      isPublic: false
     )
 
     assertBuildResult(
@@ -28,6 +29,32 @@ final class UT_VariablesImplementationFactory: XCTestCase {
       """
     )
   }
+  
+  func testPublicVariablesDeclarations() throws {
+    let declaration = DeclSyntax("var point: (x: Int, y: Int?, (Int, Int)) { get }")
+
+    let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
+
+    let result = try VariablesImplementationFactory().variablesDeclarations(
+      protocolVariableDeclaration: protocolVariableDeclaration,
+      isPublic: true
+    )
+
+    assertBuildResult(
+      result,
+      """
+      public var point: (x: Int, y: Int?, (Int, Int)) {
+          get {
+              underlyingPoint
+          }
+          set {
+              underlyingPoint = newValue
+          }
+      }
+      public var underlyingPoint: ((x: Int, y: Int?, (Int, Int)))!
+      """
+    )
+  }
 
   func testVariablesDeclarationsOptional() throws {
     let declaration = DeclSyntax("var foo: String? { get }")
@@ -35,7 +62,8 @@ final class UT_VariablesImplementationFactory: XCTestCase {
     let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
 
     let result = try VariablesImplementationFactory().variablesDeclarations(
-      protocolVariableDeclaration: protocolVariableDeclaration
+      protocolVariableDeclaration: protocolVariableDeclaration,
+      isPublic: false
     )
 
     assertBuildResult(
@@ -52,7 +80,8 @@ final class UT_VariablesImplementationFactory: XCTestCase {
     let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
 
     let result = try VariablesImplementationFactory().variablesDeclarations(
-      protocolVariableDeclaration: protocolVariableDeclaration
+      protocolVariableDeclaration: protocolVariableDeclaration,
+      isPublic: false
     )
 
     assertBuildResult(
@@ -78,7 +107,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
 
     XCTAssertThrowsError(
       try VariablesImplementationFactory().variablesDeclarations(
-        protocolVariableDeclaration: protocolVariableDeclaration)
+        protocolVariableDeclaration: protocolVariableDeclaration, isPublic: false)
     ) { error in
       XCTAssertEqual(
         error as! SpyableDiagnostic, SpyableDiagnostic.variableDeclInProtocolWithNotSingleBinding)
@@ -92,7 +121,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
 
     XCTAssertThrowsError(
       try VariablesImplementationFactory().variablesDeclarations(
-        protocolVariableDeclaration: protocolVariableDeclaration)
+        protocolVariableDeclaration: protocolVariableDeclaration, isPublic: false)
     ) { error in
       XCTAssertEqual(
         error as! SpyableDiagnostic,

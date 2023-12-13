@@ -46,7 +46,7 @@ final class UT_SpyableMacro: XCTestCase {
         \(protocolDeclaration)
         
         public class ServiceProtocolSpy: ServiceProtocol {
-            var name: String {
+            public var name: String {
                 get {
                     underlyingName
                 }
@@ -54,8 +54,8 @@ final class UT_SpyableMacro: XCTestCase {
                     underlyingName = newValue
                 }
             }
-            var underlyingName: (String)!
-            var anyProtocol: any Codable {
+            public var underlyingName: (String)!
+            public var anyProtocol: any Codable {
                 get {
                     underlyingAnyProtocol
                 }
@@ -63,9 +63,9 @@ final class UT_SpyableMacro: XCTestCase {
                     underlyingAnyProtocol = newValue
                 }
             }
-            var underlyingAnyProtocol: (any Codable)!
-                var secondName: String?
-            var added: () -> Void {
+            public var underlyingAnyProtocol: (any Codable)!
+            public var secondName: String?
+            public var added: () -> Void {
                 get {
                     underlyingAdded
                 }
@@ -73,38 +73,38 @@ final class UT_SpyableMacro: XCTestCase {
                     underlyingAdded = newValue
                 }
             }
-            var underlyingAdded: (() -> Void)!
-                var removed: (() -> Void)?
-            var logoutCallsCount = 0
-            var logoutCalled: Bool {
+            public var underlyingAdded: (() -> Void)!
+            public var removed: (() -> Void)?
+            public var logoutCallsCount = 0
+            public var logoutCalled: Bool {
                 return logoutCallsCount > 0
             }
-            var logoutClosure: (() -> Void)?
-            func logout() {
+            public var logoutClosure: (() -> Void)?
+            public func logout() {
                 logoutCallsCount += 1
                 logoutClosure?()
             }
-            var initializeNameSecondNameCallsCount = 0
-            var initializeNameSecondNameCalled: Bool {
+            public var initializeNameSecondNameCallsCount = 0
+            public var initializeNameSecondNameCalled: Bool {
                 return initializeNameSecondNameCallsCount > 0
             }
-            var initializeNameSecondNameReceivedArguments: (name: String, secondName: String?)?
-            var initializeNameSecondNameReceivedInvocations: [(name: String, secondName: String?)] = []
-            var initializeNameSecondNameClosure: ((String, String?) -> Void)?
-                func initialize(name: String, secondName: String?) {
+            public var initializeNameSecondNameReceivedArguments: (name: String, secondName: String?)?
+            public var initializeNameSecondNameReceivedInvocations: [(name: String, secondName: String?)] = []
+            public var initializeNameSecondNameClosure: ((String, String?) -> Void)?
+            public func initialize(name: String, secondName: String?) {
                 initializeNameSecondNameCallsCount += 1
                 initializeNameSecondNameReceivedArguments = (name, secondName)
                 initializeNameSecondNameReceivedInvocations.append((name, secondName))
                 initializeNameSecondNameClosure?(name, secondName)
             }
-            var fetchConfigCallsCount = 0
-            var fetchConfigCalled: Bool {
+            public var fetchConfigCallsCount = 0
+            public var fetchConfigCalled: Bool {
                 return fetchConfigCallsCount > 0
             }
-            var fetchConfigThrowableError: (any Error)?
-            var fetchConfigReturnValue: [String: String]!
-            var fetchConfigClosure: (() async throws -> [String: String])?
-                func fetchConfig() async throws -> [String: String] {
+            public var fetchConfigThrowableError: (any Error)?
+            public var fetchConfigReturnValue: [String: String]!
+            public var fetchConfigClosure: (() async throws -> [String: String])?
+            public func fetchConfig() async throws -> [String: String] {
                 fetchConfigCallsCount += 1
                 if let fetchConfigThrowableError {
                     throw fetchConfigThrowableError
@@ -115,15 +115,15 @@ final class UT_SpyableMacro: XCTestCase {
                     return fetchConfigReturnValue
                 }
             }
-            var fetchDataCallsCount = 0
-            var fetchDataCalled: Bool {
+            public var fetchDataCallsCount = 0
+            public var fetchDataCalled: Bool {
                 return fetchDataCallsCount > 0
             }
-            var fetchDataReceivedName: (String, count: Int)?
-            var fetchDataReceivedInvocations: [(String, count: Int)] = []
-            var fetchDataReturnValue: (() -> Void)!
-            var fetchDataClosure: (((String, count: Int)) async -> (() -> Void))?
-                func fetchData(_ name: (String, count: Int)) async -> (() -> Void) {
+            public var fetchDataReceivedName: (String, count: Int)?
+            public var fetchDataReceivedInvocations: [(String, count: Int)] = []
+            public var fetchDataReturnValue: (() -> Void)!
+            public var fetchDataClosure: (((String, count: Int)) async -> (() -> Void))?
+            public func fetchData(_ name: (String, count: Int)) async -> (() -> Void) {
                 fetchDataCallsCount += 1
                 fetchDataReceivedName = (name)
                 fetchDataReceivedInvocations.append((name))
@@ -196,7 +196,7 @@ final class UT_SpyableMacro: XCTestCase {
                   }
               }
               var underlyingAnyProtocol: (any Codable)!
-                  var secondName: String?
+              var secondName: String?
               var added: () -> Void {
                   get {
                       underlyingAdded
@@ -206,7 +206,7 @@ final class UT_SpyableMacro: XCTestCase {
                   }
               }
               var underlyingAdded: (() -> Void)!
-                  var removed: (() -> Void)?
+              var removed: (() -> Void)?
               var logoutCallsCount = 0
               var logoutCalled: Bool {
                   return logoutCallsCount > 0
@@ -223,7 +223,7 @@ final class UT_SpyableMacro: XCTestCase {
               var initializeNameSecondNameReceivedArguments: (name: String, secondName: String?)?
               var initializeNameSecondNameReceivedInvocations: [(name: String, secondName: String?)] = []
               var initializeNameSecondNameClosure: ((String, String?) -> Void)?
-                  func initialize(name: String, secondName: String?) {
+              func initialize(name: String, secondName: String?) {
                   initializeNameSecondNameCallsCount += 1
                   initializeNameSecondNameReceivedArguments = (name, secondName)
                   initializeNameSecondNameReceivedInvocations.append((name, secondName))
@@ -236,7 +236,7 @@ final class UT_SpyableMacro: XCTestCase {
               var fetchConfigThrowableError: (any Error)?
               var fetchConfigReturnValue: [String: String]!
               var fetchConfigClosure: (() async throws -> [String: String])?
-                  func fetchConfig() async throws -> [String: String] {
+              func fetchConfig() async throws -> [String: String] {
                   fetchConfigCallsCount += 1
                   if let fetchConfigThrowableError {
                       throw fetchConfigThrowableError
@@ -255,7 +255,7 @@ final class UT_SpyableMacro: XCTestCase {
               var fetchDataReceivedInvocations: [(String, count: Int)] = []
               var fetchDataReturnValue: (() -> Void)!
               var fetchDataClosure: (((String, count: Int)) async -> (() -> Void))?
-                  func fetchData(_ name: (String, count: Int)) async -> (() -> Void) {
+              func fetchData(_ name: (String, count: Int)) async -> (() -> Void) {
                   fetchDataCallsCount += 1
                   fetchDataReceivedName = (name)
                   fetchDataReceivedInvocations.append((name))
@@ -288,7 +288,7 @@ final class UT_SpyableMacro: XCTestCase {
         
         #if CUSTOM
         public class ServiceProtocolSpy: ServiceProtocol {
-            var variable: Bool?
+            public var variable: Bool?
         }
         #endif
         """,

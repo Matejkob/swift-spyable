@@ -65,11 +65,16 @@ struct FunctionImplementationFactory {
 
   func declaration(
     variablePrefix: String,
+    isPublic: Bool,
     protocolFunctionDeclaration: FunctionDeclSyntax
   ) -> FunctionDeclSyntax {
-    var spyFunctionDeclaration = protocolFunctionDeclaration
+    var spyFunctionDeclaration = protocolFunctionDeclaration.trimmed
 
     spyFunctionDeclaration.modifiers = protocolFunctionDeclaration.modifiers.removingMutatingKeyword
+    
+    if isPublic {
+      spyFunctionDeclaration.modifiers.addPublicAccess()
+    }
 
     spyFunctionDeclaration.body = CodeBlockSyntax {
       let parameterList = protocolFunctionDeclaration.signature.parameterClause.parameters
@@ -148,5 +153,9 @@ struct FunctionImplementationFactory {
 extension DeclModifierListSyntax {
   fileprivate var removingMutatingKeyword: Self {
     filter { $0.name.text != TokenSyntax.keyword(.mutating).text }
+  }
+  
+  fileprivate mutating func addPublicAccess() {
+    append(DeclModifierSyntax(name: .keyword(.public)))
   }
 }

@@ -38,6 +38,7 @@ import SwiftSyntaxBuilder
 struct ReceivedArgumentsFactory {
   func variableDeclaration(
     variablePrefix: String,
+    isPublic: Bool,
     parameterList: FunctionParameterListSyntax
   ) throws -> VariableDeclSyntax {
     let identifier = variableIdentifier(
@@ -48,7 +49,7 @@ struct ReceivedArgumentsFactory {
 
     return try VariableDeclSyntax(
       """
-      var \(identifier): \(type)
+      \(raw: isPublic ? "public " : "")var \(identifier): \(type)
       """
     )
   }

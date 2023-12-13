@@ -6,7 +6,7 @@ import XCTest
 final class UT_ReceivedInvocationsFactory: XCTestCase {
   // MARK: - Variable Declaration
 
-  func testVariableDeclarationSingleArgument() throws {
+  func testInternalVariableDeclarationSingleArgument() throws {
     let variablePrefix = "foo"
     let functionDeclaration = try FunctionDeclSyntax(
       "func foo(bar: String?)"
@@ -14,6 +14,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
 
     let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -21,6 +22,26 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       result,
       """
       var fooReceivedInvocations: [String?] = []
+      """
+    )
+  }
+  
+  func testPublicVariableDeclarationSingleArgument() throws {
+    let variablePrefix = "foo"
+    let functionDeclaration = try FunctionDeclSyntax(
+      "func foo(bar: String?)"
+    ) {}
+
+    let result = try ReceivedInvocationsFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      isPublic: true,
+      parameterList: functionDeclaration.signature.parameterClause.parameters
+    )
+
+    assertBuildResult(
+      result,
+      """
+      public var fooReceivedInvocations: [String?] = []
       """
     )
   }
@@ -33,6 +54,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
 
     let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -52,6 +74,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
 
     let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -71,6 +94,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
 
     let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -90,6 +114,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
 
     let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -109,6 +134,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
 
     let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -128,6 +154,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
 
     let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -147,6 +174,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
 
     let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -166,6 +194,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
 
     let result = try ReceivedInvocationsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 

@@ -21,10 +21,10 @@ import SwiftSyntaxBuilder
 /// ```
 /// and an argument `variablePrefix` equal to `foo`.
 struct CallsCountFactory {
-  func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
+    func variableDeclaration(variablePrefix: String, isPublic: Bool) throws -> VariableDeclSyntax {
     try VariableDeclSyntax(
       """
-      var \(variableIdentifier(variablePrefix: variablePrefix)) = 0
+      \(raw: isPublic ? "public " : "")var \(variableIdentifier(variablePrefix: variablePrefix)) = 0
       """
     )
   }

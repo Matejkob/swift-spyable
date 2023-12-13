@@ -4,12 +4,13 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_ReturnValueFactory: XCTestCase {
-  func testVariableDeclaration() throws {
+  func testInternalVariableDeclaration() throws {
     let variablePrefix = "function_name"
     let functionReturnType = TypeSyntax("(text: String, count: UInt)")
 
     let result = try ReturnValueFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       functionReturnType: functionReturnType
     )
 
@@ -20,6 +21,24 @@ final class UT_ReturnValueFactory: XCTestCase {
       """
     )
   }
+  
+  func testPublicVariableDeclaration() throws {
+    let variablePrefix = "function_name"
+    let functionReturnType = TypeSyntax("(text: String, count: UInt)")
+    
+    let result = try ReturnValueFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      isPublic: true,
+      functionReturnType: functionReturnType
+    )
+    
+    assertBuildResult(
+      result,
+        """
+        public var function_nameReturnValue: (text: String, count: UInt)!
+        """
+    )
+  }
 
   func testVariableDeclarationOptionType() throws {
     let variablePrefix = "functionName"
@@ -27,6 +46,7 @@ final class UT_ReturnValueFactory: XCTestCase {
 
     let result = try ReturnValueFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       functionReturnType: functionReturnType
     )
 

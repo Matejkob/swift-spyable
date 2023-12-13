@@ -6,14 +6,15 @@ import XCTest
 final class UT_ReceivedArgumentsFactory: XCTestCase {
   // MARK: - Variable Declaration
 
-  func testVariableDeclarationSingleArgument() throws {
+  func testInternalVariableDeclarationSingleArgument() throws {
     let variablePrefix = "foo"
     let functionDeclaration = try FunctionDeclSyntax(
       "func foo(bar: String)"
     ) {}
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
+        variablePrefix: variablePrefix,
+        isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -25,7 +26,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
     )
   }
 
-  func testVariableDeclarationSingleOptionalArgument() throws {
+  func testPublicVariableDeclarationSingleOptionalArgument() throws {
     let variablePrefix = "foo_name"
     let functionDeclaration = try FunctionDeclSyntax(
       "func foo(_ price: Decimal?)"
@@ -33,13 +34,14 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: true,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
     assertBuildResult(
       result,
       """
-      var foo_nameReceivedPrice: Decimal?
+      public var foo_nameReceivedPrice: Decimal?
       """
     )
   }
@@ -52,6 +54,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -71,6 +74,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -90,6 +94,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -109,6 +114,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -128,6 +134,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -147,6 +154,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -166,6 +174,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -185,6 +194,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 
@@ -204,6 +214,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       parameterList: functionDeclaration.signature.parameterClause.parameters
     )
 

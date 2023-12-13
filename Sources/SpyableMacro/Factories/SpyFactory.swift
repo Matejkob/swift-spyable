@@ -106,9 +106,15 @@ struct SpyFactory {
 
     let functionDeclarations = protocolDeclaration.memberBlock.members
       .compactMap { $0.decl.as(FunctionDeclSyntax.self) }
+      
+      let isPublic = protocolDeclaration.modifiers.first { $0.name.tokenKind == .keyword(.public) } != nil
 
     return try ClassDeclSyntax(
-      modifiers: protocolDeclaration.modifiers,
+      modifiers: DeclModifierListSyntax {
+          if isPublic {
+              DeclModifierSyntax(name: .keyword(.public))
+          }
+      },
       name: identifier,
       genericParameterClause: genericParameterClause,
       inheritanceClause: InheritanceClauseSyntax {
@@ -119,7 +125,8 @@ struct SpyFactory {
       memberBlockBuilder: {
         for variableDeclaration in variableDeclarations {
           try variablesImplementationFactory.variablesDeclarations(
-            protocolVariableDeclaration: variableDeclaration
+            protocolVariableDeclaration: variableDeclaration,
+            isPublic: isPublic
           )
         }
 
@@ -127,38 +134,43 @@ struct SpyFactory {
           let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
           let parameterList = functionDeclaration.signature.parameterClause.parameters
 
-          try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
-          try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
+            try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix, isPublic: isPublic)
+            try calledFactory.variableDeclaration(variablePrefix: variablePrefix, isPublic: isPublic)
 
           if !parameterList.isEmpty {
             try receivedArgumentsFactory.variableDeclaration(
               variablePrefix: variablePrefix,
+              isPublic: isPublic,
               parameterList: parameterList
             )
             try receivedInvocationsFactory.variableDeclaration(
               variablePrefix: variablePrefix,
+              isPublic: isPublic,
               parameterList: parameterList
             )
           }
 
           if functionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
-            try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
+              try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix, isPublic: isPublic)
           }
 
           if let returnType = functionDeclaration.signature.returnClause?.type {
             try returnValueFactory.variableDeclaration(
               variablePrefix: variablePrefix,
+              isPublic: isPublic,
               functionReturnType: returnType
             )
           }
 
           try closureFactory.variableDeclaration(
             variablePrefix: variablePrefix,
+            isPublic: isPublic,
             functionSignature: functionDeclaration.signature
           )
 
           functionImplementationFactory.declaration(
             variablePrefix: variablePrefix,
+            isPublic: isPublic,
             protocolFunctionDeclaration: functionDeclaration
           )
         }

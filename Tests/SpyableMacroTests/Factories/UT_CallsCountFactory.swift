@@ -4,16 +4,29 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_CallsCountFactory: XCTestCase {
-  func testVariableDeclaration() throws {
+  func testInternalVariableDeclaration() throws {
     let variablePrefix = "functionName"
 
-    let result = try CallsCountFactory().variableDeclaration(variablePrefix: variablePrefix)
+    let result = try CallsCountFactory().variableDeclaration(variablePrefix: variablePrefix, isPublic: false)
 
     assertBuildResult(
       result,
       """
       var functionNameCallsCount = 0
       """
+    )
+  }
+    
+  func testPublicVariableDeclaration() throws {
+    let variablePrefix = "functionName"
+    
+    let result = try CallsCountFactory().variableDeclaration(variablePrefix: variablePrefix, isPublic: true)
+    
+    assertBuildResult(
+      result,
+        """
+        public var functionNameCallsCount = 0
+        """
     )
   }
 

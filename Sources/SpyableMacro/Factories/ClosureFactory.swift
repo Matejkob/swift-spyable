@@ -30,6 +30,7 @@ import SwiftSyntaxBuilder
 struct ClosureFactory {
   func variableDeclaration(
     variablePrefix: String,
+    isPublic: Bool,
     functionSignature: FunctionSignatureSyntax
   ) throws -> VariableDeclSyntax {
     let elements = TupleTypeElementListSyntax {
@@ -56,7 +57,7 @@ struct ClosureFactory {
 
     return try VariableDeclSyntax(
       """
-      var \(variableIdentifier(variablePrefix: variablePrefix)): (\(elements))?
+      \(raw: isPublic ? "public " : "")var \(variableIdentifier(variablePrefix: variablePrefix)): (\(elements))?
       """
     )
   }

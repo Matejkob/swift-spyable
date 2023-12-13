@@ -47,18 +47,20 @@ struct VariablesImplementationFactory {
 
   @MemberBlockItemListBuilder
   func variablesDeclarations(
-    protocolVariableDeclaration: VariableDeclSyntax
+    protocolVariableDeclaration: VariableDeclSyntax,
+    isPublic: Bool
   ) throws -> MemberBlockItemListSyntax {
     if protocolVariableDeclaration.bindings.count == 1 {
       // Since the count of `bindings` is exactly 1, it is safe to force unwrap it.
       let binding = protocolVariableDeclaration.bindings.first!
 
       if binding.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true {
-        accessorRemovalVisitor.visit(protocolVariableDeclaration)
+        optionalVariableWithAccessControl(variableDeclaration: protocolVariableDeclaration,
+                                          isPublic: isPublic)
       } else {
-        try protocolVariableDeclarationWithGetterAndSetter(binding: binding)
+        try protocolVariableDeclarationWithGetterAndSetter(binding: binding, isPublic: isPublic)
 
-        try underlyingVariableDeclaration(binding: binding)
+        try underlyingVariableDeclaration(binding: binding, isPublic: isPublic)
       }
     } else {
       // As far as I know variable declaration in a protocol should have exactly one binding.
@@ -67,11 +69,12 @@ struct VariablesImplementationFactory {
   }
 
   private func protocolVariableDeclarationWithGetterAndSetter(
-    binding: PatternBindingSyntax
+    binding: PatternBindingSyntax,
+    isPublic: Bool
   ) throws -> VariableDeclSyntax {
     try VariableDeclSyntax(
       """
-      var \(binding.pattern.trimmed)\(binding.typeAnnotation!.trimmed) {
+      \(raw: isPublic ? "public " : "")var \(binding.pattern.trimmed)\(binding.typeAnnotation!.trimmed) {
           get { \(raw: underlyingVariableName(binding: binding)) }
           set { \(raw: underlyingVariableName(binding: binding)) = newValue }
       }
@@ -80,11 +83,12 @@ struct VariablesImplementationFactory {
   }
 
   private func underlyingVariableDeclaration(
-    binding: PatternBindingListSyntax.Element
+    binding: PatternBindingListSyntax.Element,
+    isPublic: Bool
   ) throws -> VariableDeclSyntax {
     try VariableDeclSyntax(
       """
-      var \(raw: underlyingVariableName(binding: binding)): (\(binding.typeAnnotation!.type.trimmed))!
+      \(raw: isPublic ? "public ": "")var \(raw: underlyingVariableName(binding: binding)): (\(binding.typeAnnotation!.type.trimmed))!
       """
     )
   }
@@ -98,6 +102,25 @@ struct VariablesImplementationFactory {
     let identifierText = identifierPattern.identifier.text
 
     return "underlying" + identifierText.prefix(1).uppercased() + identifierText.dropFirst()
+  }
+  
+  private func optionalVariableWithAccessControl(
+    variableDeclaration: VariableDeclSyntax,
+    isPublic: Bool) -> VariableDeclSyntax {
+      
+      let modifiers = DeclModifierListSyntax {
+        if isPublic {
+          DeclModifierSyntax(name: .keyword(.public))
+        }
+        
+        for modifier in variableDeclaration.modifiers.map({ $0 }) {
+          modifier
+        }
+      }
+      
+      // This comes originally as a ``VariableDeclSyntax`` so will never return nil.
+      return accessorRemovalVisitor.visit(variableDeclaration.trimmed).as(VariableDeclSyntax.self)!
+        .with(\.modifiers, modifiers)
   }
 }
 

@@ -4,7 +4,7 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_FunctionImplementationFactory: XCTestCase {
-  func testDeclaration() throws {
+  func testInternalDeclaration() throws {
     let variablePrefix = "functionName"
 
     let protocolFunctionDeclaration = try FunctionDeclSyntax(
@@ -13,6 +13,7 @@ final class UT_FunctionImplementationFactory: XCTestCase {
 
     let result = FunctionImplementationFactory().declaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       protocolFunctionDeclaration: protocolFunctionDeclaration
     )
 
@@ -20,6 +21,30 @@ final class UT_FunctionImplementationFactory: XCTestCase {
       result,
       """
       func foo() {
+          functionNameCallsCount += 1
+          functionNameClosure?()
+      }
+      """
+    )
+  }
+  
+  func testPublicDeclaration() throws {
+    let variablePrefix = "functionName"
+
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      "func foo()"
+    ) {}
+
+    let result = FunctionImplementationFactory().declaration(
+      variablePrefix: variablePrefix,
+      isPublic: true,
+      protocolFunctionDeclaration: protocolFunctionDeclaration
+    )
+
+    assertBuildResult(
+      result,
+      """
+      public func foo() {
           functionNameCallsCount += 1
           functionNameClosure?()
       }
@@ -36,6 +61,7 @@ final class UT_FunctionImplementationFactory: XCTestCase {
 
     let result = FunctionImplementationFactory().declaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       protocolFunctionDeclaration: protocolFunctionDeclaration
     )
 
@@ -61,6 +87,7 @@ final class UT_FunctionImplementationFactory: XCTestCase {
 
     let result = FunctionImplementationFactory().declaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       protocolFunctionDeclaration: protocolFunctionDeclaration
     )
 
@@ -88,6 +115,7 @@ final class UT_FunctionImplementationFactory: XCTestCase {
 
     let result = FunctionImplementationFactory().declaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       protocolFunctionDeclaration: protocolFunctionDeclaration
     )
 
@@ -120,6 +148,7 @@ final class UT_FunctionImplementationFactory: XCTestCase {
 
     let result = FunctionImplementationFactory().declaration(
       variablePrefix: variablePrefix,
+      isPublic: false,
       protocolFunctionDeclaration: protocolFunctionDeclaration
     )
 

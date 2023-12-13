@@ -40,6 +40,7 @@ import SwiftSyntaxBuilder
 struct ReturnValueFactory {
   func variableDeclaration(
     variablePrefix: String,
+    isPublic: Bool,
     functionReturnType: TypeSyntax
   ) throws -> VariableDeclSyntax {
     let typeAnnotation =
@@ -53,7 +54,7 @@ struct ReturnValueFactory {
 
     return try VariableDeclSyntax(
       """
-      var \(variableIdentifier(variablePrefix: variablePrefix))\(typeAnnotation)
+      \(raw: isPublic ? "public " : "")var \(variableIdentifier(variablePrefix: variablePrefix))\(typeAnnotation)
       """
     )
   }

@@ -235,7 +235,7 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
-  func testDeclarationOptionalVariable() throws {
+  func testInternalDeclarationOptionalVariable() throws {
     let declaration = DeclSyntax(
       """
       protocol ServiceProtocol {
@@ -254,6 +254,28 @@ final class UT_SpyFactory: XCTestCase {
           var data: Data?
       }
       """
+    )
+  }
+    
+  func testPublicDeclarationOptionalVariable() throws {
+    let declaration = DeclSyntax(
+        """
+        public protocol ServiceProtocol {
+            var data: Data? { get set }
+        }
+        """
+    )
+    let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
+    
+    let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
+    
+    assertBuildResult(
+      result,
+        """
+        public class ServiceProtocolSpy: ServiceProtocol {
+            public var data: Data?
+        }
+        """
     )
   }
 
