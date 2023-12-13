@@ -108,6 +108,7 @@ struct SpyFactory {
       .compactMap { $0.decl.as(FunctionDeclSyntax.self) }
 
     return try ClassDeclSyntax(
+      modifiers: protocolDeclaration.modifiers,
       name: identifier,
       genericParameterClause: genericParameterClause,
       inheritanceClause: InheritanceClauseSyntax {
