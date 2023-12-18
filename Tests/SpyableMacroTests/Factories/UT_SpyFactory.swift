@@ -273,6 +273,8 @@ final class UT_SpyFactory: XCTestCase {
       result,
         """
         public class ServiceProtocolSpy: ServiceProtocol {
+            public init() {
+            }
             public var data: Data?
         }
         """

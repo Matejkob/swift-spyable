@@ -46,6 +46,8 @@ final class UT_SpyableMacro: XCTestCase {
         \(protocolDeclaration)
         
         public class ServiceProtocolSpy: ServiceProtocol {
+            public init() {
+            }
             public var name: String {
                 get {
                     underlyingName
@@ -288,6 +290,8 @@ final class UT_SpyableMacro: XCTestCase {
         
         #if CUSTOM
         public class ServiceProtocolSpy: ServiceProtocol {
+            public init() {
+            }
             public var variable: Bool?
         }
         #endif

@@ -123,13 +123,18 @@ struct SpyFactory {
         )
       },
       memberBlockBuilder: {
+        
+        if isPublic {
+          DeclSyntax(stringLiteral: "public init() {}")
+        }
+        
         for variableDeclaration in variableDeclarations {
           try variablesImplementationFactory.variablesDeclarations(
             protocolVariableDeclaration: variableDeclaration,
             isPublic: isPublic
           )
         }
-
+        
         for functionDeclaration in functionDeclarations {
           let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
           let parameterList = functionDeclaration.signature.parameterClause.parameters
