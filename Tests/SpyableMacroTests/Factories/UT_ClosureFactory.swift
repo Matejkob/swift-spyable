@@ -47,6 +47,14 @@ final class UT_ClosureFactory: XCTestCase {
     )
   }
 
+  func testVariableDeclarationWithInoutAttribute() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_(value: inout String)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: ((inout String) -> Void)?"
+    )
+  }
+
   func testVariableDeclarationEverything() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """
@@ -115,13 +123,21 @@ final class UT_ClosureFactory: XCTestCase {
     )
   }
 
+  func testCallExpressionWithInoutAttribute() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_(value: inout String)",
+      prefixForVariable: "_prefix_",
+      expectingCallExpression: "_prefix_Closure?(&value)"
+    )
+  }
+
   func testCallExpressionEverything() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """
         func _ignore_(text: inout String, product: (UInt?, name: String), added: (() -> Void)?, removed: @escaping () -> Bool) async throws -> String?
         """,
       prefixForVariable: "_prefix_",
-      expectingCallExpression: "try await _prefix_Closure!(text, product, added, removed)"
+      expectingCallExpression: "try await _prefix_Closure!(&text, product, added, removed)"
     )
   }
 
