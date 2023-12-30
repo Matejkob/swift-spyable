@@ -81,18 +81,22 @@ struct ClosureFactory {
       )
     }
 
+    let arguments = LabeledExprListSyntax {
+      for parameter in functionSignature.parameterClause.parameters {
+        let baseName = parameter.secondName ?? parameter.firstName
+
+        if parameter.isInoutParameter {
+          LabeledExprSyntax(expression: InOutExprSyntax(expression: DeclReferenceExprSyntax(baseName: baseName)))
+        } else {
+          LabeledExprSyntax(expression: DeclReferenceExprSyntax(baseName: baseName))
+        }
+      }
+    }
+
     var expression: ExprSyntaxProtocol = FunctionCallExprSyntax(
       calledExpression: calledExpression,
       leftParen: .leftParenToken(),
-      arguments: LabeledExprListSyntax {
-        for parameter in functionSignature.parameterClause.parameters {
-          LabeledExprSyntax(
-            expression: DeclReferenceExprSyntax(
-              baseName: parameter.secondName ?? parameter.firstName
-            )
-          )
-        }
-      },
+      arguments: arguments,
       rightParen: .rightParenToken()
     )
 
@@ -109,5 +113,16 @@ struct ClosureFactory {
 
   private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
     TokenSyntax.identifier(variablePrefix + "Closure")
+  }
+}
+
+private extension FunctionParameterListSyntax.Element {
+  var isInoutParameter: Bool {
+    if let attributedType = self.type.as(AttributedTypeSyntax.self),
+       attributedType.specifier?.text == TokenSyntax.keyword(.inout).text {
+      return true
+    } else {
+      return false
+    }
   }
 }
