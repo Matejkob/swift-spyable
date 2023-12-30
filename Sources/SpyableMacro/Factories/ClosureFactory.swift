@@ -86,7 +86,8 @@ struct ClosureFactory {
         let baseName = parameter.secondName ?? parameter.firstName
 
         if parameter.isInoutParameter {
-          LabeledExprSyntax(expression: InOutExprSyntax(expression: DeclReferenceExprSyntax(baseName: baseName)))
+          LabeledExprSyntax(
+            expression: InOutExprSyntax(expression: DeclReferenceExprSyntax(baseName: baseName)))
         } else {
           LabeledExprSyntax(expression: DeclReferenceExprSyntax(baseName: baseName))
         }
@@ -116,10 +117,11 @@ struct ClosureFactory {
   }
 }
 
-private extension FunctionParameterListSyntax.Element {
-  var isInoutParameter: Bool {
+extension FunctionParameterListSyntax.Element {
+  fileprivate var isInoutParameter: Bool {
     if let attributedType = self.type.as(AttributedTypeSyntax.self),
-       attributedType.specifier?.text == TokenSyntax.keyword(.inout).text {
+      attributedType.specifier?.text == TokenSyntax.keyword(.inout).text
+    {
       return true
     } else {
       return false
