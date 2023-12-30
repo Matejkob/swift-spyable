@@ -64,7 +64,7 @@ final class UT_SpyableMacro: XCTestCase {
                 }
             }
             var underlyingAnyProtocol: (any Codable)!
-                var secondName: String?
+            var secondName: String?
             var added: () -> Void {
                 get {
                     underlyingAdded
@@ -74,7 +74,7 @@ final class UT_SpyableMacro: XCTestCase {
                 }
             }
             var underlyingAdded: (() -> Void)!
-                var removed: (() -> Void)?
+            var removed: (() -> Void)?
             var logoutCallsCount = 0
             var logoutCalled: Bool {
                 return logoutCallsCount > 0
@@ -91,7 +91,7 @@ final class UT_SpyableMacro: XCTestCase {
             var initializeNameSecondNameReceivedArguments: (name: String, secondName: String?)?
             var initializeNameSecondNameReceivedInvocations: [(name: String, secondName: String?)] = []
             var initializeNameSecondNameClosure: ((String, String?) -> Void)?
-                func initialize(name: String, secondName: String?) {
+            func initialize(name: String, secondName: String?) {
                 initializeNameSecondNameCallsCount += 1
                 initializeNameSecondNameReceivedArguments = (name, secondName)
                 initializeNameSecondNameReceivedInvocations.append((name, secondName))
@@ -104,7 +104,7 @@ final class UT_SpyableMacro: XCTestCase {
             var fetchConfigThrowableError: (any Error)?
             var fetchConfigReturnValue: [String: String]!
             var fetchConfigClosure: (() async throws -> [String: String])?
-                func fetchConfig() async throws -> [String: String] {
+            func fetchConfig() async throws -> [String: String] {
                 fetchConfigCallsCount += 1
                 if let fetchConfigThrowableError {
                     throw fetchConfigThrowableError
@@ -123,7 +123,7 @@ final class UT_SpyableMacro: XCTestCase {
             var fetchDataReceivedInvocations: [(String, count: Int)] = []
             var fetchDataReturnValue: (() -> Void)!
             var fetchDataClosure: (((String, count: Int)) async -> (() -> Void))?
-                func fetchData(_ name: (String, count: Int)) async -> (() -> Void) {
+            func fetchData(_ name: (String, count: Int)) async -> (() -> Void) {
                 fetchDataCallsCount += 1
                 fetchDataReceivedName = (name)
                 fetchDataReceivedInvocations.append((name))
