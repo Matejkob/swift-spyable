@@ -13,13 +13,13 @@ import SwiftSyntaxBuilder
 ///
 /// The following code:
 /// ```swift
-/// var fooClosure: ((String, Int) async throws -> Data)?
+/// var fooClosure: ((inout String, Int) async throws -> Data)?
 ///
-/// try await fooClosure!(text, count)
+/// try await fooClosure!(&text, count)
 /// ```
 /// would be generated for a function like this:
 /// ```swift
-/// func foo(text: String, count: Int) async throws -> Data
+/// func foo(text: inout String, count: Int) async throws -> Data
 /// ```
 /// and an argument `variablePrefix` equal to `foo`.
 ///
