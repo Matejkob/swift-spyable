@@ -9,9 +9,9 @@ final class UT_ClosureFactory: XCTestCase {
 
   func testVariableDeclaration() throws {
     try assertProtocolFunction(
-        withFunctionDeclaration: "func _ignore_()",
-        prefixForVariable: "_prefix_",
-        expectingVariableDeclaration: "var _prefix_Closure: (() -> Void)?"
+      withFunctionDeclaration: "func _ignore_()",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: (() -> Void)?"
     )
   }
 
@@ -50,17 +50,17 @@ final class UT_ClosureFactory: XCTestCase {
   func testVariableDeclarationEverything() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """
-      func _ignore_(
-          text: inout String,
-          product: (UInt?, name: String),
-          added: (() -> Void)?,
-          removed: @escaping () -> Bool
-      ) async throws -> (text: String, output: (() -> Void)?)
-      """,
+        func _ignore_(
+            text: inout String,
+            product: (UInt?, name: String),
+            added: (() -> Void)?,
+            removed: @escaping () -> Bool
+        ) async throws -> (text: String, output: (() -> Void)?)
+        """,
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-      var _prefix_Closure: ((inout String, (UInt?, name: String), (() -> Void)?, @escaping () -> Bool) async throws -> (text: String, output: (() -> Void)?) )?
-      """
+        var _prefix_Closure: ((inout String, (UInt?, name: String), (() -> Void)?, @escaping () -> Bool) async throws -> (text: String, output: (() -> Void)?) )?
+        """
     )
   }
 
@@ -82,7 +82,7 @@ final class UT_ClosureFactory: XCTestCase {
   }
 
   // MARK: - Call Expression
-  
+
   func testCallExpression() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func _ignore_()",
@@ -118,8 +118,8 @@ final class UT_ClosureFactory: XCTestCase {
   func testCallExpressionEverything() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """
-      func _ignore_(text: inout String, product: (UInt?, name: String), added: (() -> Void)?, removed: @escaping () -> Bool) async throws -> String?
-      """,
+        func _ignore_(text: inout String, product: (UInt?, name: String), added: (() -> Void)?, removed: @escaping () -> Bool) async throws -> String?
+        """,
       prefixForVariable: "_prefix_",
       expectingCallExpression: "try await _prefix_Closure!(text, product, added, removed)"
     )
