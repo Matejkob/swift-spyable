@@ -20,8 +20,8 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       withFunctionDeclaration: "func foo(_ tuple: (text: String, (Decimal?, date: Date))?)",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-      var _prefix_ReceivedInvocations: [(text: String, (Decimal?, date: Date))?] = []
-      """
+        var _prefix_ReceivedInvocations: [(text: String, (Decimal?, date: Date))?] = []
+        """
     )
   }
 
@@ -51,41 +51,45 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
 
   func testVariableDeclarationMultiArguments() throws {
     try assertProtocolFunction(
-      withFunctionDeclaration: "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)",
+      withFunctionDeclaration:
+        "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-      var _prefix_ReceivedInvocations: [(text: String, count: (x: Int, UInt?)?, price: Decimal?)] = []
-      """
+        var _prefix_ReceivedInvocations: [(text: String, count: (x: Int, UInt?)?, price: Decimal?)] = []
+        """
     )
   }
 
   func testVariableDeclarationMultiArgumentsWithEscapingAttribute() throws {
     try assertProtocolFunction(
-      withFunctionDeclaration: "func foo(completion: @escaping () -> Void, count: UInt, final price: Decimal?)",
+      withFunctionDeclaration:
+        "func foo(completion: @escaping () -> Void, count: UInt, final price: Decimal?)",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-      var _prefix_ReceivedInvocations: [(completion: () -> Void, count: UInt, price: Decimal?)] = []
-      """
+        var _prefix_ReceivedInvocations: [(completion: () -> Void, count: UInt, price: Decimal?)] = []
+        """
     )
   }
 
   func testVariableDeclarationMultiArgumentsWithSomeClosureArgument() throws {
     try assertProtocolFunction(
-      withFunctionDeclaration: "func bar(completion: () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)",
+      withFunctionDeclaration:
+        "func bar(completion: () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-      var _prefix_ReceivedInvocations: [(completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)] = []
-      """
+        var _prefix_ReceivedInvocations: [(completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)] = []
+        """
     )
   }
 
   func testVariableDeclarationMultiArgumentsWithSomeOptionalClosureArgument() throws {
     try assertProtocolFunction(
-      withFunctionDeclaration: "func func_name(completion: (() -> Void)?, _ count: (x: Int, UInt?)?, final price: Decimal?)",
+      withFunctionDeclaration:
+        "func func_name(completion: (() -> Void)?, _ count: (x: Int, UInt?)?, final price: Decimal?)",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-      var _prefix_ReceivedInvocations: [(completion: (() -> Void)?, count: (x: Int, UInt?)?, price: Decimal?)] = []
-      """
+        var _prefix_ReceivedInvocations: [(completion: (() -> Void)?, count: (x: Int, UInt?)?, price: Decimal?)] = []
+        """
     )
   }
 
@@ -109,7 +113,8 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
 
   func testAppendValueToVariableExpressionMultiArguments() throws {
     try assertProtocolFunction(
-      withFunctionDeclaration: "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)",
+      withFunctionDeclaration:
+        "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)",
       prefixForVariable: "_prefix_",
       expectingExpression: "_prefix_ReceivedInvocations.append((text, count, price))"
     )

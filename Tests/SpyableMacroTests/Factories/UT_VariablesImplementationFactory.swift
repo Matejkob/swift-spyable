@@ -4,23 +4,23 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_VariablesImplementationFactory: XCTestCase {
-  
+
   // MARK: - Variables Declarations
 
   func testVariablesDeclarations() throws {
     try assertProtocolVariable(
       withVariableDeclaration: "var point: (x: Int, y: Int?, (Int, Int)) { get }",
       expectingVariableDeclaration: """
-      var point: (x: Int, y: Int?, (Int, Int)) {
-          get {
-              underlyingPoint
-          }
-          set {
-              underlyingPoint = newValue
-          }
-      }
-      var underlyingPoint: ((x: Int, y: Int?, (Int, Int)))!
-      """
+        var point: (x: Int, y: Int?, (Int, Int)) {
+            get {
+                underlyingPoint
+            }
+            set {
+                underlyingPoint = newValue
+            }
+        }
+        var underlyingPoint: ((x: Int, y: Int?, (Int, Int)))!
+        """
     )
   }
 
@@ -35,16 +35,16 @@ final class UT_VariablesImplementationFactory: XCTestCase {
     try assertProtocolVariable(
       withVariableDeclaration: "var completion: () -> Void { get }",
       expectingVariableDeclaration: """
-      var completion: () -> Void {
-          get {
-              underlyingCompletion
-          }
-          set {
-              underlyingCompletion = newValue
-          }
-      }
-      var underlyingCompletion: (() -> Void)!
-      """
+        var completion: () -> Void {
+            get {
+                underlyingCompletion
+            }
+            set {
+                underlyingCompletion = newValue
+            }
+        }
+        var underlyingCompletion: (() -> Void)!
+        """
     )
   }
 
@@ -57,7 +57,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
       )
     ) { error in
       XCTAssertEqual(
-        error as! SpyableDiagnostic, 
+        error as! SpyableDiagnostic,
         SpyableDiagnostic.variableDeclInProtocolWithNotSingleBinding
       )
     }

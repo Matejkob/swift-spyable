@@ -65,47 +65,48 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
   func testVariableDeclarationMultiArguments() throws {
     try assertProtocolFunction(
-      withFunctionDeclaration: "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)",
+      withFunctionDeclaration:
+        "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-      var _prefix_ReceivedArguments: (text: String, count: (x: Int, UInt?)?, price: Decimal?)?
-      """
+        var _prefix_ReceivedArguments: (text: String, count: (x: Int, UInt?)?, price: Decimal?)?
+        """
     )
   }
 
   func testVariableDeclarationMultiArgumentsWithEscapingAttribute() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """
-      func foo(completion: @escaping () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)
-      """,
+        func foo(completion: @escaping () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)
+        """,
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-      var _prefix_ReceivedArguments: (completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)?
-      """
+        var _prefix_ReceivedArguments: (completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)?
+        """
     )
   }
 
   func testVariableDeclarationMultiArgumentsWithSomeClosureArgument() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """
-      func foo(completion: () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)
-      """,
+        func foo(completion: () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)
+        """,
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-      var _prefix_ReceivedArguments: (completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)?
-      """
+        var _prefix_ReceivedArguments: (completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)?
+        """
     )
   }
 
   func testVariableDeclarationMultiArgumentsWithSomeOptionalClosureArgument() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """
-      func foo(completion: (() -> Void)?, _ count: (x: Int, UInt?)?, final price: Decimal?)
-      """,
+        func foo(completion: (() -> Void)?, _ count: (x: Int, UInt?)?, final price: Decimal?)
+        """,
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-      var _prefix_ReceivedArguments: (completion: (() -> Void)?, count: (x: Int, UInt?)?, price: Decimal?)?
-      """
+        var _prefix_ReceivedArguments: (completion: (() -> Void)?, count: (x: Int, UInt?)?, price: Decimal?)?
+        """
     )
   }
 
@@ -137,7 +138,8 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
 
   func testAssignValueToVariableExpressionMultiArguments() throws {
     try assertProtocolFunction(
-      withFunctionDeclaration: "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)",
+      withFunctionDeclaration:
+        "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)",
       prefixForVariable: "_prefix_",
       expectingExpression: "_prefix_ReceivedArguments = (text, count, price)"
     )

@@ -35,12 +35,12 @@ final class UT_VariablePrefixFactory: XCTestCase {
   func testTextFunctionWithMultiArguments() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """
-      func foo(
-          text1 text2: String,
-          _ count2: Int,
-          product1 product2: (name: String, price: Decimal)
-      ) -> String
-      """,
+        func foo(
+            text1 text2: String,
+            _ count2: Int,
+            product1 product2: (name: String, price: Decimal)
+        ) -> String
+        """,
       expectingVariableName: "fooText1Product1"
     )
   }
