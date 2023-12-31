@@ -4,6 +4,9 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_ThrowableErrorFactory: XCTestCase {
+
+  // MARK: - Variable Declaration
+
   func testVariableDeclaration() throws {
     let variablePrefix = "functionName"
 
@@ -16,6 +19,8 @@ final class UT_ThrowableErrorFactory: XCTestCase {
       """
     )
   }
+
+  // MARK: - Throw Error Expression
 
   func testThrowErrorExpression() {
     let variablePrefix = "function_name"

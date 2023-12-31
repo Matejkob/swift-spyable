@@ -4,18 +4,13 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_VariablesImplementationFactory: XCTestCase {
+  
+  // MARK: - Variables Declarations
+
   func testVariablesDeclarations() throws {
-    let declaration = DeclSyntax("var point: (x: Int, y: Int?, (Int, Int)) { get }")
-
-    let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
-
-    let result = try VariablesImplementationFactory().variablesDeclarations(
-      protocolVariableDeclaration: protocolVariableDeclaration
-    )
-
-    assertBuildResult(
-      result,
-      """
+    try assertProtocolVariable(
+      withVariableDeclaration: "var point: (x: Int, y: Int?, (Int, Int)) { get }",
+      expectingVariableDeclaration: """
       var point: (x: Int, y: Int?, (Int, Int)) {
           get {
               underlyingPoint
@@ -30,34 +25,16 @@ final class UT_VariablesImplementationFactory: XCTestCase {
   }
 
   func testVariablesDeclarationsOptional() throws {
-    let declaration = DeclSyntax("var foo: String? { get }")
-
-    let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
-
-    let result = try VariablesImplementationFactory().variablesDeclarations(
-      protocolVariableDeclaration: protocolVariableDeclaration
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var foo: String?
-      """
+    try assertProtocolVariable(
+      withVariableDeclaration: "var foo: String? { get }",
+      expectingVariableDeclaration: "var foo: String?"
     )
   }
 
   func testVariablesDeclarationsClosure() throws {
-    let declaration = DeclSyntax("var completion: () -> Void { get }")
-
-    let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
-
-    let result = try VariablesImplementationFactory().variablesDeclarations(
-      protocolVariableDeclaration: protocolVariableDeclaration
-    )
-
-    assertBuildResult(
-      result,
-      """
+    try assertProtocolVariable(
+      withVariableDeclaration: "var completion: () -> Void { get }",
+      expectingVariableDeclaration: """
       var completion: () -> Void {
           get {
               underlyingCompletion
@@ -72,31 +49,49 @@ final class UT_VariablesImplementationFactory: XCTestCase {
   }
 
   func testVariablesDeclarationsWithMultiBindings() throws {
-    let declaration = DeclSyntax("var foo: String?, bar: Int")
-
-    let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
+    let protocolVariableDeclaration = try VariableDeclSyntax("var foo: String?, bar: Int")
 
     XCTAssertThrowsError(
       try VariablesImplementationFactory().variablesDeclarations(
-        protocolVariableDeclaration: protocolVariableDeclaration)
+        protocolVariableDeclaration: protocolVariableDeclaration
+      )
     ) { error in
       XCTAssertEqual(
-        error as! SpyableDiagnostic, SpyableDiagnostic.variableDeclInProtocolWithNotSingleBinding)
+        error as! SpyableDiagnostic, 
+        SpyableDiagnostic.variableDeclInProtocolWithNotSingleBinding
+      )
     }
   }
 
   func testVariablesDeclarationsWithTuplePattern() throws {
-    let declaration = DeclSyntax("var (x, y): Int")
-
-    let protocolVariableDeclaration = try XCTUnwrap(VariableDeclSyntax(declaration))
+    let protocolVariableDeclaration = try VariableDeclSyntax("var (x, y): Int")
 
     XCTAssertThrowsError(
       try VariablesImplementationFactory().variablesDeclarations(
-        protocolVariableDeclaration: protocolVariableDeclaration)
+        protocolVariableDeclaration: protocolVariableDeclaration
+      )
     ) { error in
       XCTAssertEqual(
         error as! SpyableDiagnostic,
-        SpyableDiagnostic.variableDeclInProtocolWithNotIdentifierPattern)
+        SpyableDiagnostic.variableDeclInProtocolWithNotIdentifierPattern
+      )
     }
+  }
+
+  // MARK: - Helper Methods for Assertions
+
+  private func assertProtocolVariable(
+    withVariableDeclaration variableDeclaration: String,
+    expectingVariableDeclaration expectedDeclaration: String,
+    file: StaticString = #file,
+    line: UInt = #line
+  ) throws {
+    let protocolVariableDeclaration = try VariableDeclSyntax("\(raw: variableDeclaration)")
+
+    let result = try VariablesImplementationFactory().variablesDeclarations(
+      protocolVariableDeclaration: protocolVariableDeclaration
+    )
+
+    assertBuildResult(result, expectedDeclaration, file: file, line: line)
   }
 }

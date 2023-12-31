@@ -4,39 +4,26 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_ReturnValueFactory: XCTestCase {
+
+  // MARK: - Variable Declaration
+
   func testVariableDeclaration() throws {
-    let variablePrefix = "function_name"
-    let functionReturnType = TypeSyntax("(text: String, count: UInt)")
-
-    let result = try ReturnValueFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      functionReturnType: functionReturnType
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var function_nameReturnValue: (text: String, count: UInt)!
-      """
+    try assert(
+      functionReturnType: "(text: String, count: UInt)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReturnValue: (text: String, count: UInt)!"
     )
   }
 
   func testVariableDeclarationOptionType() throws {
-    let variablePrefix = "functionName"
-    let functionReturnType = TypeSyntax("String?")
-
-    let result = try ReturnValueFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      functionReturnType: functionReturnType
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var functionNameReturnValue: String?
-      """
+    try assert(
+      functionReturnType: "String?",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReturnValue: String?"
     )
   }
+
+  // MARK: Return Statement
 
   func testReturnStatement() {
     let variablePrefix = "function_name"
@@ -49,5 +36,22 @@ final class UT_ReturnValueFactory: XCTestCase {
       return function_nameReturnValue
       """
     )
+  }
+
+  // MARK: - Helper Methods for Assertions
+
+  private func assert(
+    functionReturnType: TypeSyntax,
+    prefixForVariable variablePrefix: String,
+    expectingVariableDeclaration expectedDeclaration: String,
+    file: StaticString = #file,
+    line: UInt = #line
+  ) throws {
+    let result = try ReturnValueFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      functionReturnType: functionReturnType
+    )
+
+    assertBuildResult(result, expectedDeclaration, file: file, line: line)
   }
 }

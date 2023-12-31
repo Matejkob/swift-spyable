@@ -4,213 +4,107 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_ReceivedArgumentsFactory: XCTestCase {
+
   // MARK: - Variable Declaration
 
   func testVariableDeclarationSingleArgument() throws {
-    let variablePrefix = "foo"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(bar: String)"
-    ) {}
-
-    let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooReceivedBar: String?
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(bar: String)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReceivedBar: String?"
     )
   }
 
   func testVariableDeclarationSingleOptionalArgument() throws {
-    let variablePrefix = "foo_name"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(_ price: Decimal?)"
-    ) {}
-
-    let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var foo_nameReceivedPrice: Decimal?
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(_ price: Decimal?)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReceivedPrice: Decimal?"
     )
   }
 
   func testVariableDeclarationSingleArgumentDoubleParameterName() throws {
-    let variablePrefix = "functionName"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(firstName secondName: (String, Int))"
-    ) {}
-
-    let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var functionNameReceivedSecondName: (String, Int)?
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(firstName secondName: (String, Int))",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReceivedSecondName: (String, Int)?"
     )
   }
 
   func testVariableDeclarationSingleArgumentWithEscapingAttribute() throws {
-    let variablePrefix = "foo"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(completion: @escaping () -> Void)"
-    ) {}
-
-    let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooReceivedCompletion: (() -> Void)?
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(completion: @escaping () -> Void)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReceivedCompletion: (() -> Void)?"
     )
   }
 
   func testVariableDeclarationSingleArgumentWithEscapingAttributeAndTuple() throws {
-    let variablePrefix = "foo"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(completion: @escaping (() -> Void))"
-    ) {}
-
-    let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooReceivedCompletion: (() -> Void)?
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(completion: @escaping (() -> Void))",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReceivedCompletion: (() -> Void)?"
     )
   }
 
   func testVariableDeclarationSingleClosureArgument() throws {
-    let variablePrefix = "foo"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(completion: () -> Void)"
-    ) {}
-
-    let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooReceivedCompletion: (() -> Void)?
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(completion: () -> Void)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReceivedCompletion: (() -> Void)?"
     )
   }
 
   func testVariableDeclarationSingleOptionalClosureArgument() throws {
-    let variablePrefix = "foo"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(completion: (() -> Void)?)"
-    ) {}
-
-    let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooReceivedCompletion: (() -> Void)?
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(completion: (() -> Void)?)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReceivedCompletion: (() -> Void)?"
     )
   }
 
   func testVariableDeclarationMultiArguments() throws {
-    let variablePrefix = "foo"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)"
-    ) {}
-
-    let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooReceivedArguments: (text: String, count: (x: Int, UInt?)?, price: Decimal?)?
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: """
+      var _prefix_ReceivedArguments: (text: String, count: (x: Int, UInt?)?, price: Decimal?)?
       """
     )
   }
 
   func testVariableDeclarationMultiArgumentsWithEscapingAttribute() throws {
-    let variablePrefix = "foo"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(completion: @escaping () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)"
-    ) {}
-
-    let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooReceivedArguments: (completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)?
+    try assertProtocolFunction(
+      withFunctionDeclaration: """
+      func foo(completion: @escaping () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)
+      """,
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: """
+      var _prefix_ReceivedArguments: (completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)?
       """
     )
   }
 
   func testVariableDeclarationMultiArgumentsWithSomeClosureArgument() throws {
-    let variablePrefix = "foo"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(completion: () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)"
-    ) {}
-
-    let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooReceivedArguments: (completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)?
+    try assertProtocolFunction(
+      withFunctionDeclaration: """
+      func foo(completion: () -> Void, _ count: (x: Int, UInt?)?, final price: Decimal?)
+      """,
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: """
+      var _prefix_ReceivedArguments: (completion: () -> Void, count: (x: Int, UInt?)?, price: Decimal?)?
       """
     )
   }
 
   func testVariableDeclarationMultiArgumentsWithSomeOptionalClosureArgument() throws {
-    let variablePrefix = "foo"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(completion: (() -> Void)?, _ count: (x: Int, UInt?)?, final price: Decimal?)"
-    ) {}
-
-    let result = try ReceivedArgumentsFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooReceivedArguments: (completion: (() -> Void)?, count: (x: Int, UInt?)?, price: Decimal?)?
+    try assertProtocolFunction(
+      withFunctionDeclaration: """
+      func foo(completion: (() -> Void)?, _ count: (x: Int, UInt?)?, final price: Decimal?)
+      """,
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: """
+      var _prefix_ReceivedArguments: (completion: (() -> Void)?, count: (x: Int, UInt?)?, price: Decimal?)?
       """
     )
   }
@@ -218,78 +112,70 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
   // MARK: - Assign Value To Variable Expression
 
   func testAssignValueToVariableExpressionSingleArgumentFirstParameterName() throws {
-    let variablePrefix = "funcName"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(text: String)"
-    ) {}
-
-    let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      funcNameReceivedText = (text)
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(text: String)",
+      prefixForVariable: "_prefix_",
+      expectingExpression: "_prefix_ReceivedText = (text)"
     )
   }
 
   func testAssignValueToVariableExpressionSingleArgumentSecondParameterName() throws {
-    let variablePrefix = "funcName"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(_ count: Int?)"
-    ) {}
-
-    let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      funcNameReceivedCount = (count)
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(_ count: Int?)",
+      prefixForVariable: "_prefix_",
+      expectingExpression: "_prefix_ReceivedCount = (count)"
     )
   }
 
   func testAssignValueToVariableExpressionSingleArgumentDoubleParameterName() throws {
-    let variablePrefix = "funcName"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(first second: Data)"
-    ) {}
-
-    let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
-      variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
-    )
-
-    assertBuildResult(
-      result,
-      """
-      funcNameReceivedSecond = (second)
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(first second: Data)",
+      prefixForVariable: "_prefix_",
+      expectingExpression: "_prefix_ReceivedSecond = (second)"
     )
   }
 
   func testAssignValueToVariableExpressionMultiArguments() throws {
-    let variablePrefix = "foo"
-    let functionDeclaration = try FunctionDeclSyntax(
-      "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)"
-    ) {}
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(text: String, _ count: (x: Int, UInt?)?, final price: Decimal?)",
+      prefixForVariable: "_prefix_",
+      expectingExpression: "_prefix_ReceivedArguments = (text, count, price)"
+    )
+  }
+
+  // MARK: - Helper Methods for Assertions
+
+  private func assertProtocolFunction(
+    withFunctionDeclaration functionDeclaration: String,
+    prefixForVariable variablePrefix: String,
+    expectingVariableDeclaration expectedDeclaration: String,
+    file: StaticString = #file,
+    line: UInt = #line
+  ) throws {
+    let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
+
+    let result = try ReceivedArgumentsFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      parameterList: protocolFunctionDeclaration.signature.parameterClause.parameters
+    )
+
+    assertBuildResult(result, expectedDeclaration, file: file, line: line)
+  }
+
+  private func assertProtocolFunction(
+    withFunctionDeclaration functionDeclaration: String,
+    prefixForVariable variablePrefix: String,
+    expectingExpression expectedExpression: String,
+    file: StaticString = #file,
+    line: UInt = #line
+  ) throws {
+    let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
     let result = ReceivedArgumentsFactory().assignValueToVariableExpression(
       variablePrefix: variablePrefix,
-      parameterList: functionDeclaration.signature.parameterClause.parameters
+      parameterList: protocolFunctionDeclaration.signature.parameterClause.parameters
     )
 
-    assertBuildResult(
-      result,
-      """
-      fooReceivedArguments = (text, count, price)
-      """
-    )
+    assertBuildResult(result, expectedExpression, file: file, line: line)
   }
 }
