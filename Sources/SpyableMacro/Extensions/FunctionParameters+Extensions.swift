@@ -18,7 +18,7 @@ extension FunctionParameterSyntax {
     }
 
     return !attributedType.attributes.contains {
-      $0.attributeNameTextMatches("escaping")
+      $0.attributeNameTextMatches(TokenSyntax.keyword(.escaping).text)
     }
   }
 
