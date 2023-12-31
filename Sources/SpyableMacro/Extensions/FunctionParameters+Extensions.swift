@@ -24,7 +24,7 @@ extension FunctionParameterSyntax {
 
   var usesAutoclosure: Bool {
     type.as(AttributedTypeSyntax.self)?.attributes.contains {
-      $0.attributeNameTextMatches("autoclosure")
+      $0.attributeNameTextMatches(TokenSyntax.keyword(.autoclosure).text)
     } == true
   }
 }
