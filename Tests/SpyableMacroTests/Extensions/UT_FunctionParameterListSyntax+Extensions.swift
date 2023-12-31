@@ -9,7 +9,7 @@ final class UT_FunctionParameterListSyntaxExtensions: XCTestCase {
       FunctionParameterListSyntax {
         "param: Int"
         "param: inout Int"
-        "param: @autoclosure @escaping (Int) throws async -> Void"
+        "param: @autoclosure @escaping (Int) async throws -> Void"
       }.supportsParameterTracking
     )
 
