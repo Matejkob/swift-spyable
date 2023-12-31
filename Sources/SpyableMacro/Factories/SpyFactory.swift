@@ -166,12 +166,14 @@ struct SpyFactory {
   }
 }
 
-private extension SyntaxProtocol {
+extension SyntaxProtocol {
   /// - Returns: `self` with leading space `Trivia` removed.
-  var removingLeadingSpaces: Self {
+  fileprivate var removingLeadingSpaces: Self {
     with(
-      \.leadingTrivia, Trivia(
-        pieces: leadingTrivia
+      \.leadingTrivia,
+      Trivia(
+        pieces:
+          leadingTrivia
           .filter {
             if case .spaces = $0 {
               false
@@ -179,7 +181,7 @@ private extension SyntaxProtocol {
               true
             }
           }
-       )
+      )
     )
   }
 }
