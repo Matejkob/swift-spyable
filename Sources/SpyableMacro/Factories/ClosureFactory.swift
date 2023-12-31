@@ -13,13 +13,13 @@ import SwiftSyntaxBuilder
 ///
 /// The following code:
 /// ```swift
-/// var fooClosure: ((String, Int) async throws -> Data)?
+/// var fooClosure: ((inout String, Int) async throws -> Data)?
 ///
-/// try await fooClosure!(text, count)
+/// try await fooClosure!(&text, count)
 /// ```
 /// would be generated for a function like this:
 /// ```swift
-/// func foo(text: String, count: Int) async throws -> Data
+/// func foo(text: inout String, count: Int) async throws -> Data
 /// ```
 /// and an argument `variablePrefix` equal to `foo`.
 ///
@@ -81,20 +81,28 @@ struct ClosureFactory {
       )
     }
 
+    let arguments = LabeledExprListSyntax {
+      for parameter in functionSignature.parameterClause.parameters {
+        let baseName = parameter.secondName ?? parameter.firstName
+
+        if parameter.isInoutParameter {
+          LabeledExprSyntax(
+            expression: InOutExprSyntax(
+              expression: DeclReferenceExprSyntax(baseName: baseName)
+            )
+          )
+        } else {
+          let trailingTrivia: Trivia? = parameter.usesAutoclosure ? "()" : nil
+
+          LabeledExprSyntax(expression: DeclReferenceExprSyntax(baseName: baseName), trailingTrivia: trailingTrivia)
+        }
+      }
+    }
+
     var expression: ExprSyntaxProtocol = FunctionCallExprSyntax(
       calledExpression: calledExpression,
       leftParen: .leftParenToken(),
-      arguments: LabeledExprListSyntax {
-        for parameter in functionSignature.parameterClause.parameters {
-          let trailingTrivia: Trivia? = parameter.usesAutoclosure ? "()" : nil
-          LabeledExprSyntax(
-            expression: DeclReferenceExprSyntax(
-              baseName: parameter.secondName ?? parameter.firstName
-            ),
-            trailingTrivia: trailingTrivia
-          )
-        }
-      },
+      arguments: arguments,
       rightParen: .rightParenToken()
     )
 
@@ -111,5 +119,17 @@ struct ClosureFactory {
 
   private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
     TokenSyntax.identifier(variablePrefix + "Closure")
+  }
+}
+
+extension FunctionParameterListSyntax.Element {
+  fileprivate var isInoutParameter: Bool {
+    if let attributedType = self.type.as(AttributedTypeSyntax.self),
+      attributedType.specifier?.text == TokenSyntax.keyword(.inout).text
+    {
+      return true
+    } else {
+      return false
+    }
   }
 }

@@ -248,7 +248,7 @@ final class UT_SpyFactory: XCTestCase {
           }
           var fooReceivedAdded: ((text: String) -> Void)?
           var fooReceivedInvocations: [((text: String) -> Void)?] = []
-          var fooThrowableError: Error?
+          var fooThrowableError: (any Error)?
           var fooReturnValue: (() -> Int)?
           var fooClosure: ((((text: String) -> Void)?) throws -> (() -> Int)?)?
           func foo(_ added: ((text: String) -> Void)?) throws -> (() -> Int)? {

@@ -4,250 +4,157 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_ClosureFactory: XCTestCase {
+
+  // MARK: - Variable Declaration
+
   func testVariableDeclaration() throws {
-    let variablePrefix = "foo"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      """
-      func foo()
-      """
-    ) {}
-
-    let result = try ClosureFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooClosure: (() -> Void)?
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_()",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: (() -> Void)?"
     )
   }
 
   func testVariableDeclarationArguments() throws {
-    let variablePrefix = "foo"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      """
-      func foo(text: String, count: UInt)
-      """
-    ) {}
-
-    let result = try ClosureFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooClosure: ((String, UInt) -> Void)?
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_(text: String, count: UInt)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: ((String, UInt) -> Void)?"
     )
   }
 
   func testVariableDeclarationAsync() throws {
-    let variablePrefix = "foo"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      """
-      func foo() async
-      """
-    ) {}
-
-    let result = try ClosureFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooClosure: (() async -> Void)?
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_() async",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: (() async -> Void)?"
     )
   }
 
   func testVariableDeclarationThrows() throws {
-    let variablePrefix = "foo"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      """
-      func foo() throws
-      """
-    ) {}
-
-    let result = try ClosureFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
-    )
-
-    assertBuildResult(
-      result,
-      """
-      var fooClosure: (() throws -> Void)?
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_() throws",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: (() throws -> Void)?"
     )
   }
 
   func testVariableDeclarationReturnValue() throws {
-    let variablePrefix = "foo"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      """
-      func foo() -> Data
-      """
-    ) {}
-
-    let result = try ClosureFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_() -> Data",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: (() -> Data )?"
     )
+  }
 
-    assertBuildResult(
-      result,
-      """
-      var fooClosure: (() -> Data )?
-      """
+  func testVariableDeclarationWithInoutAttribute() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_(value: inout String)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: ((inout String) -> Void)?"
     )
   }
 
   func testVariableDeclarationEverything() throws {
-    let variablePrefix = "foo"
+    try assertProtocolFunction(
+      withFunctionDeclaration: """
+        func _ignore_(
+            text: inout String,
+            product: (UInt?, name: String),
+            added: (() -> Void)?,
+            removed: @autoclosure @escaping () -> Bool
+        ) async throws -> (text: String, output: (() -> Void)?)
+        """,
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: """
+        var _prefix_Closure: ((inout String, (UInt?, name: String), (() -> Void)?, @autoclosure @escaping () -> Bool) async throws -> (text: String, output: (() -> Void)?) )?
+        """
+    )
+  }
 
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      """
-      func foo(
-          text: inout String,
-          product: (UInt?, name: String),
-          added: (() -> Void)?,
-          removed: @autoclosure @escaping () -> Bool
-      ) async throws -> (text: String, output: (() -> Void)?)
-      """
-    ) {}
+  private func assertProtocolFunction(
+    withFunctionDeclaration functionDeclaration: String,
+    prefixForVariable variablePrefix: String,
+    expectingVariableDeclaration expectedDeclaration: String,
+    file: StaticString = #file,
+    line: UInt = #line
+  ) throws {
+    let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
     let result = try ClosureFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       functionSignature: protocolFunctionDeclaration.signature
     )
 
-    assertBuildResult(
-      result,
-      """
-      var fooClosure: ((inout String, (UInt?, name: String), (() -> Void)?, @autoclosure @escaping () -> Bool) async throws -> (text: String, output: (() -> Void)?) )?
-      """
-    )
+    assertBuildResult(result, expectedDeclaration, file: file, line: line)
   }
 
+  // MARK: - Call Expression
+
   func testCallExpression() throws {
-    let variablePrefix = "foo"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      """
-      func foo()
-      """
-    ) {}
-
-    let result = ClosureFactory().callExpression(
-      variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
-    )
-
-    assertBuildResult(
-      result,
-      """
-      fooClosure?()
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_()",
+      prefixForVariable: "_prefix_",
+      expectingCallExpression: "_prefix_Closure?()"
     )
   }
 
   func testCallExpressionArguments() throws {
-    let variablePrefix = "foo"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      """
-      func foo(text: String, count: UInt)
-      """
-    ) {}
-
-    let result = ClosureFactory().callExpression(
-      variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
-    )
-
-    assertBuildResult(
-      result,
-      """
-      fooClosure?(text, count)
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_(text: String, count: UInt)",
+      prefixForVariable: "_prefix_",
+      expectingCallExpression: "_prefix_Closure?(text, count)"
     )
   }
 
   func testCallExpressionAsync() throws {
-    let variablePrefix = "foo"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      """
-      func foo() async
-      """
-    ) {}
-
-    let result = ClosureFactory().callExpression(
-      variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
-    )
-
-    assertBuildResult(
-      result,
-      """
-      await fooClosure?()
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_() async",
+      prefixForVariable: "_prefix_",
+      expectingCallExpression: "await _prefix_Closure?()"
     )
   }
 
   func testCallExpressionThrows() throws {
-    let variablePrefix = "foo"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      """
-      func foo() throws
-      """
-    ) {}
-
-    let result = ClosureFactory().callExpression(
-      variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_() throws",
+      prefixForVariable: "_prefix_",
+      expectingCallExpression: "try _prefix_Closure?()"
     )
+  }
 
-    assertBuildResult(
-      result,
-      """
-      try fooClosure?()
-      """
+  func testCallExpressionWithInoutAttribute() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_(value: inout String)",
+      prefixForVariable: "_prefix_",
+      expectingCallExpression: "_prefix_Closure?(&value)"
     )
   }
 
   func testCallExpressionEverything() throws {
-    let variablePrefix = "foo"
+    try assertProtocolFunction(
+      withFunctionDeclaration: """
+        func _ignore_(text: inout String, product: (UInt?, name: String), added: (() -> Void)?, removed: @autoclosure @escaping () -> Bool) async throws -> String?
+        """,
+      prefixForVariable: "_prefix_",
+      expectingCallExpression: "try await _prefix_Closure!(&text, product, added, removed())"
+    )
+  }
 
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      """
-      func foo(text: inout String, product: (UInt?, name: String), added: (() -> Void)?, removed: @autoclosure @escaping () -> Bool) async throws -> String?
-      """
-    ) {}
+  private func assertProtocolFunction(
+    withFunctionDeclaration functionDeclaration: String,
+    prefixForVariable variablePrefix: String,
+    expectingCallExpression expectedExpression: String,
+    file: StaticString = #file,
+    line: UInt = #line
+  ) throws {
+    let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
     let result = ClosureFactory().callExpression(
       variablePrefix: variablePrefix,
       functionSignature: protocolFunctionDeclaration.signature
     )
 
-    assertBuildResult(
-      result,
-      """
-      try await fooClosure!(text, product, added, removed())
-      """
-    )
+    assertBuildResult(result, expectedExpression, file: file, line: line)
   }
 }
