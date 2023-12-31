@@ -4,6 +4,9 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_CalledFactory: XCTestCase {
+
+  // MARK: - Variable Declaration
+
   func testVariableDeclaration() throws {
     let variablePrefix = "functionName"
 
