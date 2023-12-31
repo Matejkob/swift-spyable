@@ -102,10 +102,10 @@ struct SpyFactory {
       associatedtypeDeclList: assosciatedtypeDeclarations)
 
     let variableDeclarations = protocolDeclaration.memberBlock.members
-      .compactMap { $0.decl.as(VariableDeclSyntax.self) }
+      .compactMap { $0.decl.as(VariableDeclSyntax.self)?.removingLeadingSpaces }
 
     let functionDeclarations = protocolDeclaration.memberBlock.members
-      .compactMap { $0.decl.as(FunctionDeclSyntax.self) }
+      .compactMap { $0.decl.as(FunctionDeclSyntax.self)?.removingLeadingSpaces }
 
     return try ClassDeclSyntax(
       name: identifier,
@@ -162,6 +162,24 @@ struct SpyFactory {
           )
         }
       }
+    )
+  }
+}
+
+private extension SyntaxProtocol {
+  /// - Returns: `self` with leading space `Trivia` removed.
+  var removingLeadingSpaces: Self {
+    with(
+      \.leadingTrivia, Trivia(
+        pieces: leadingTrivia
+          .filter {
+            if case .spaces = $0 {
+              false
+            } else {
+              true
+            }
+          }
+       )
     )
   }
 }
