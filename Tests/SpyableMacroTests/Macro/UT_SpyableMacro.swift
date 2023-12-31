@@ -68,7 +68,7 @@ final class UT_SpyableMacro: XCTestCase {
                 }
             }
             var underlyingAnyProtocol: (any Codable)!
-                var secondName: String?
+            var secondName: String?
             var added: () -> Void {
                 get {
                     underlyingAdded
@@ -78,7 +78,7 @@ final class UT_SpyableMacro: XCTestCase {
                 }
             }
             var underlyingAdded: (() -> Void)!
-                var removed: (() -> Void)?
+            var removed: (() -> Void)?
             var logoutCallsCount = 0
             var logoutCalled: Bool {
                 return logoutCallsCount > 0
@@ -95,7 +95,7 @@ final class UT_SpyableMacro: XCTestCase {
             var initializeNameSecondNameReceivedArguments: (name: String, secondName: String?)?
             var initializeNameSecondNameReceivedInvocations: [(name: String, secondName: String?)] = []
             var initializeNameSecondNameClosure: ((String, String?) -> Void)?
-                func initialize(name: String, secondName: String?) {
+            func initialize(name: String, secondName: String?) {
                 initializeNameSecondNameCallsCount += 1
                 initializeNameSecondNameReceivedArguments = (name, secondName)
                 initializeNameSecondNameReceivedInvocations.append((name, secondName))
@@ -108,7 +108,7 @@ final class UT_SpyableMacro: XCTestCase {
             var fetchConfigThrowableError: (any Error)?
             var fetchConfigReturnValue: [String: String]!
             var fetchConfigClosure: (() async throws -> [String: String])?
-                func fetchConfig() async throws -> [String: String] {
+            func fetchConfig() async throws -> [String: String] {
                 fetchConfigCallsCount += 1
                 if let fetchConfigThrowableError {
                     throw fetchConfigThrowableError
@@ -127,7 +127,7 @@ final class UT_SpyableMacro: XCTestCase {
             var fetchDataReceivedInvocations: [(String, count: Int)] = []
             var fetchDataReturnValue: (() -> Void)!
             var fetchDataClosure: (((String, count: Int)) async -> (() -> Void))?
-                func fetchData(_ name: (String, count: Int)) async -> (() -> Void) {
+            func fetchData(_ name: (String, count: Int)) async -> (() -> Void) {
                 fetchDataCallsCount += 1
                 fetchDataReceivedName = (name)
                 fetchDataReceivedInvocations.append((name))
@@ -144,7 +144,7 @@ final class UT_SpyableMacro: XCTestCase {
             var fetchUsernameContextCompletionReceivedArguments: (context: String, completion: (String) -> Void)?
             var fetchUsernameContextCompletionReceivedInvocations: [(context: String, completion: (String) -> Void)] = []
             var fetchUsernameContextCompletionClosure: ((String, @escaping (String) -> Void) -> Void)?
-                func fetchUsername(context: String, completion: @escaping (String) -> Void) {
+            func fetchUsername(context: String, completion: @escaping (String) -> Void) {
                 fetchUsernameContextCompletionCallsCount += 1
                 fetchUsernameContextCompletionReceivedArguments = (context, completion)
                 fetchUsernameContextCompletionReceivedInvocations.append((context, completion))
@@ -155,7 +155,7 @@ final class UT_SpyableMacro: XCTestCase {
                 return onTapBackContextActionCallsCount > 0
             }
             var onTapBackContextActionClosure: ((String, () -> Void) -> Void)?
-                func onTapBack(context: String, action: () -> Void) {
+            func onTapBack(context: String, action: () -> Void) {
                 onTapBackContextActionCallsCount += 1
                 onTapBackContextActionClosure?(context, action)
             }
@@ -164,7 +164,7 @@ final class UT_SpyableMacro: XCTestCase {
                 return onTapNextContextActionCallsCount > 0
             }
             var onTapNextContextActionClosure: ((String, @Sendable () -> Void) -> Void)?
-                func onTapNext(context: String, action: @Sendable () -> Void) {
+            func onTapNext(context: String, action: @Sendable () -> Void) {
                 onTapNextContextActionCallsCount += 1
                 onTapNextContextActionClosure?(context, action)
             }
@@ -173,7 +173,7 @@ final class UT_SpyableMacro: XCTestCase {
                 return assertCallsCount > 0
             }
             var assertClosure: ((@autoclosure () -> String) -> Void)?
-                func assert(_ message: @autoclosure () -> String) {
+            func assert(_ message: @autoclosure () -> String) {
                 assertCallsCount += 1
                 assertClosure?(message())
             }
