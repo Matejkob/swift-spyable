@@ -129,7 +129,7 @@ struct SpyFactory {
           try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
           try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
 
-          if !parameterList.isEmpty {
+          if parameterList.supportsParameterTracking {
             try receivedArgumentsFactory.variableDeclaration(
               variablePrefix: variablePrefix,
               parameterList: parameterList

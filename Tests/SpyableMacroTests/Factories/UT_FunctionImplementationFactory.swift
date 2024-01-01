@@ -133,4 +133,52 @@ final class UT_FunctionImplementationFactory: XCTestCase {
       """
     )
   }
+
+  func testDeclarationWithEscapingAutoClosure() throws {
+    let variablePrefix = "functionName"
+
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      "func foo(action: @autoclosure @escaping () -> Void)"
+    ) {}
+
+    let result = FunctionImplementationFactory().declaration(
+      variablePrefix: variablePrefix,
+      protocolFunctionDeclaration: protocolFunctionDeclaration
+    )
+
+    assertBuildResult(
+      result,
+      """
+      func foo(action: @autoclosure @escaping () -> Void) {
+          functionNameCallsCount += 1
+          functionNameReceivedAction = (action)
+          functionNameReceivedInvocations.append((action))
+          functionNameClosure?(action())
+      }
+      """
+    )
+  }
+
+  func testDeclarationWithNonEscapingClosure() throws {
+    let variablePrefix = "functionName"
+
+    let protocolFunctionDeclaration = try FunctionDeclSyntax(
+      "func foo(action: () -> Void)"
+    ) {}
+
+    let result = FunctionImplementationFactory().declaration(
+      variablePrefix: variablePrefix,
+      protocolFunctionDeclaration: protocolFunctionDeclaration
+    )
+
+    assertBuildResult(
+      result,
+      """
+      func foo(action: () -> Void) {
+          functionNameCallsCount += 1
+          functionNameClosure?(action)
+      }
+      """
+    )
+  }
 }

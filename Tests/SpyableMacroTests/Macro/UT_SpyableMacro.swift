@@ -33,6 +33,10 @@ final class UT_SpyableMacro: XCTestCase {
           func initialize(name: String, secondName: String?)
           func fetchConfig() async throws -> [String: String]
           func fetchData(_ name: (String, count: Int)) async -> (() -> Void)
+          func fetchUsername(context: String, completion: @escaping (String) -> Void)
+          func onTapBack(context: String, action: () -> Void)
+          func onTapNext(context: String, action: @Sendable () -> Void)
+          func assert(_ message: @autoclosure () -> String)
       }
       """
 
@@ -132,6 +136,46 @@ final class UT_SpyableMacro: XCTestCase {
                 } else {
                     return fetchDataReturnValue
                 }
+            }
+            var fetchUsernameContextCompletionCallsCount = 0
+            var fetchUsernameContextCompletionCalled: Bool {
+                return fetchUsernameContextCompletionCallsCount > 0
+            }
+            var fetchUsernameContextCompletionReceivedArguments: (context: String, completion: (String) -> Void)?
+            var fetchUsernameContextCompletionReceivedInvocations: [(context: String, completion: (String) -> Void)] = []
+            var fetchUsernameContextCompletionClosure: ((String, @escaping (String) -> Void) -> Void)?
+            func fetchUsername(context: String, completion: @escaping (String) -> Void) {
+                fetchUsernameContextCompletionCallsCount += 1
+                fetchUsernameContextCompletionReceivedArguments = (context, completion)
+                fetchUsernameContextCompletionReceivedInvocations.append((context, completion))
+                fetchUsernameContextCompletionClosure?(context, completion)
+            }
+            var onTapBackContextActionCallsCount = 0
+            var onTapBackContextActionCalled: Bool {
+                return onTapBackContextActionCallsCount > 0
+            }
+            var onTapBackContextActionClosure: ((String, () -> Void) -> Void)?
+            func onTapBack(context: String, action: () -> Void) {
+                onTapBackContextActionCallsCount += 1
+                onTapBackContextActionClosure?(context, action)
+            }
+            var onTapNextContextActionCallsCount = 0
+            var onTapNextContextActionCalled: Bool {
+                return onTapNextContextActionCallsCount > 0
+            }
+            var onTapNextContextActionClosure: ((String, @Sendable () -> Void) -> Void)?
+            func onTapNext(context: String, action: @Sendable () -> Void) {
+                onTapNextContextActionCallsCount += 1
+                onTapNextContextActionClosure?(context, action)
+            }
+            var assertCallsCount = 0
+            var assertCalled: Bool {
+                return assertCallsCount > 0
+            }
+            var assertClosure: ((@autoclosure () -> String) -> Void)?
+            func assert(_ message: @autoclosure () -> String) {
+                assertCallsCount += 1
+                assertClosure?(message())
             }
         }
         """,

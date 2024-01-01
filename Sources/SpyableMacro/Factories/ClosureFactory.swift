@@ -87,9 +87,14 @@ struct ClosureFactory {
 
         if parameter.isInoutParameter {
           LabeledExprSyntax(
-            expression: InOutExprSyntax(expression: DeclReferenceExprSyntax(baseName: baseName)))
+            expression: InOutExprSyntax(
+              expression: DeclReferenceExprSyntax(baseName: baseName)
+            )
+          )
         } else {
-          LabeledExprSyntax(expression: DeclReferenceExprSyntax(baseName: baseName))
+          let trailingTrivia: Trivia? = parameter.usesAutoclosure ? "()" : nil
+
+          LabeledExprSyntax(expression: DeclReferenceExprSyntax(baseName: baseName), trailingTrivia: trailingTrivia)
         }
       }
     }

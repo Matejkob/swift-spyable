@@ -88,6 +88,70 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+  func testDeclarationEscapingAutoClosureArgument() throws {
+    let declaration = DeclSyntax(
+      """
+      protocol ViewModelProtocol {
+      func foo(action: @escaping @autoclosure () -> Void)
+      }
+      """
+    )
+    let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
+
+    let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
+
+    assertBuildResult(
+      result,
+      """
+      class ViewModelProtocolSpy: ViewModelProtocol {
+          var fooActionCallsCount = 0
+          var fooActionCalled: Bool {
+              return fooActionCallsCount > 0
+          }
+          var fooActionReceivedAction: (() -> Void)?
+          var fooActionReceivedInvocations: [() -> Void] = []
+          var fooActionClosure: ((@escaping @autoclosure () -> Void) -> Void)?
+          func foo(action: @escaping @autoclosure () -> Void) {
+              fooActionCallsCount += 1
+              fooActionReceivedAction = (action)
+              fooActionReceivedInvocations.append((action))
+              fooActionClosure?(action())
+          }
+      }
+      """
+    )
+  }
+
+  func testDeclarationNonescapingClosureArgument() throws {
+    let declaration = DeclSyntax(
+      """
+      protocol ViewModelProtocol {
+      func foo(action: () -> Void)
+      }
+      """
+    )
+    let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
+
+    let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
+
+    assertBuildResult(
+      result,
+      """
+      class ViewModelProtocolSpy: ViewModelProtocol {
+          var fooActionCallsCount = 0
+          var fooActionCalled: Bool {
+              return fooActionCallsCount > 0
+          }
+          var fooActionClosure: ((() -> Void) -> Void)?
+          func foo(action: () -> Void) {
+              fooActionCallsCount += 1
+              fooActionClosure?(action)
+          }
+      }
+      """
+    )
+  }
+
   func testDeclarationReturnValue() throws {
     let declaration = DeclSyntax(
       """

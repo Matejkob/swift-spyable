@@ -76,7 +76,7 @@ struct FunctionImplementationFactory {
 
       callsCountFactory.incrementVariableExpression(variablePrefix: variablePrefix)
 
-      if !parameterList.isEmpty {
+      if parameterList.supportsParameterTracking {
         receivedArgumentsFactory.assignValueToVariableExpression(
           variablePrefix: variablePrefix,
           parameterList: parameterList
