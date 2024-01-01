@@ -94,7 +94,8 @@ struct ClosureFactory {
         } else {
           let trailingTrivia: Trivia? = parameter.usesAutoclosure ? "()" : nil
 
-          LabeledExprSyntax(expression: DeclReferenceExprSyntax(baseName: baseName), trailingTrivia: trailingTrivia)
+          LabeledExprSyntax(
+            expression: DeclReferenceExprSyntax(baseName: baseName), trailingTrivia: trailingTrivia)
         }
       }
     }

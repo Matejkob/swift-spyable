@@ -13,7 +13,8 @@ extension FunctionParameterSyntax {
       return true
     }
     guard let attributedType = type.as(AttributedTypeSyntax.self),
-          attributedType.baseType.is(FunctionTypeSyntax.self) else {
+      attributedType.baseType.is(FunctionTypeSyntax.self)
+    else {
       return false
     }
 
@@ -29,8 +30,8 @@ extension FunctionParameterSyntax {
   }
 }
 
-private extension AttributeListSyntax.Element {
-  func attributeNameTextMatches(_ name: String) -> Bool {
+extension AttributeListSyntax.Element {
+  fileprivate func attributeNameTextMatches(_ name: String) -> Bool {
     self.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text == name
   }
 }
