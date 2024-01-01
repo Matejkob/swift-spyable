@@ -4,107 +4,72 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_FunctionImplementationFactory: XCTestCase {
+
+  // MARK: - Function Declaration
+
   func testDeclaration() throws {
-    let variablePrefix = "functionName"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      "func foo()"
-    ) {}
-
-    let result = FunctionImplementationFactory().declaration(
-      variablePrefix: variablePrefix,
-      protocolFunctionDeclaration: protocolFunctionDeclaration
-    )
-
-    assertBuildResult(
-      result,
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo()",
+      prefixForVariable: "_prefix_",
+      expectingFunctionDeclaration: """
       func foo() {
-          functionNameCallsCount += 1
-          functionNameClosure?()
+          _prefix_CallsCount += 1
+          _prefix_Closure?()
       }
       """
     )
   }
 
   func testDeclarationArguments() throws {
-    let variablePrefix = "func_name"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      "func foo(text: String, count: Int)"
-    ) {}
-
-    let result = FunctionImplementationFactory().declaration(
-      variablePrefix: variablePrefix,
-      protocolFunctionDeclaration: protocolFunctionDeclaration
-    )
-
-    assertBuildResult(
-      result,
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(text: String, count: Int)",
+      prefixForVariable: "_prefix_",
+      expectingFunctionDeclaration: """
       func foo(text: String, count: Int) {
-          func_nameCallsCount += 1
-          func_nameReceivedArguments = (text, count)
-          func_nameReceivedInvocations.append((text, count))
-          func_nameClosure?(text, count)
+          _prefix_CallsCount += 1
+          _prefix_ReceivedArguments = (text, count)
+          _prefix_ReceivedInvocations.append((text, count))
+          _prefix_Closure?(text, count)
       }
       """
     )
   }
 
   func testDeclarationReturnValue() throws {
-    let variablePrefix = "funcName"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      "func foo() -> (text: String, tuple: (count: Int?, Date))"
-    ) {}
-
-    let result = FunctionImplementationFactory().declaration(
-      variablePrefix: variablePrefix,
-      protocolFunctionDeclaration: protocolFunctionDeclaration
-    )
-
-    assertBuildResult(
-      result,
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo() -> (text: String, tuple: (count: Int?, Date))",
+      prefixForVariable: "_prefix_",
+      expectingFunctionDeclaration: """
       func foo() -> (text: String, tuple: (count: Int?, Date)) {
-          funcNameCallsCount += 1
-          if funcNameClosure != nil {
-              return funcNameClosure!()
+          _prefix_CallsCount += 1
+          if _prefix_Closure != nil {
+              return _prefix_Closure!()
           } else {
-              return funcNameReturnValue
+              return _prefix_ReturnValue
           }
       }
       """
     )
   }
 
-  func testDeclarationReturnValueAsyncThrows() async throws {
-    let variablePrefix = "foo"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      "func foo(_ bar: String) async throws -> (text: String, tuple: (count: Int?, Date))"
-    ) {}
-
-    let result = FunctionImplementationFactory().declaration(
-      variablePrefix: variablePrefix,
-      protocolFunctionDeclaration: protocolFunctionDeclaration
-    )
-
-    assertBuildResult(
-      result,
-      """
+  func testDeclarationReturnValueAsyncThrows() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: """
+      func foo(_ bar: String) async throws -> (text: String, tuple: (count: Int?, Date))
+      """,
+      prefixForVariable: "_prefix_",
+      expectingFunctionDeclaration: """
       func foo(_ bar: String) async throws -> (text: String, tuple: (count: Int?, Date)) {
-          fooCallsCount += 1
-          fooReceivedBar = (bar)
-          fooReceivedInvocations.append((bar))
-          if let fooThrowableError {
-              throw fooThrowableError
+          _prefix_CallsCount += 1
+          _prefix_ReceivedBar = (bar)
+          _prefix_ReceivedInvocations.append((bar))
+          if let _prefix_ThrowableError {
+              throw _prefix_ThrowableError
           }
-          if fooClosure != nil {
-              return try await fooClosure!(bar)
+          if _prefix_Closure != nil {
+              return try await _prefix_Closure!(bar)
           } else {
-              return fooReturnValue
+              return _prefix_ReturnValue
           }
       }
       """
@@ -112,73 +77,62 @@ final class UT_FunctionImplementationFactory: XCTestCase {
   }
 
   func testDeclarationWithMutatingKeyword() throws {
-    let variablePrefix = "functionName"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      "mutating func foo()"
-    ) {}
-
-    let result = FunctionImplementationFactory().declaration(
-      variablePrefix: variablePrefix,
-      protocolFunctionDeclaration: protocolFunctionDeclaration
-    )
-
-    assertBuildResult(
-      result,
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "mutating func foo()",
+      prefixForVariable: "_prefix_",
+      expectingFunctionDeclaration: """
       func foo() {
-          functionNameCallsCount += 1
-          functionNameClosure?()
+          _prefix_CallsCount += 1
+          _prefix_Closure?()
       }
       """
     )
   }
 
   func testDeclarationWithEscapingAutoClosure() throws {
-    let variablePrefix = "functionName"
-
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      "func foo(action: @autoclosure @escaping () -> Void)"
-    ) {}
-
-    let result = FunctionImplementationFactory().declaration(
-      variablePrefix: variablePrefix,
-      protocolFunctionDeclaration: protocolFunctionDeclaration
-    )
-
-    assertBuildResult(
-      result,
-      """
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(action: @autoclosure @escaping () -> Void)",
+      prefixForVariable: "_prefix_",
+      expectingFunctionDeclaration: """
       func foo(action: @autoclosure @escaping () -> Void) {
-          functionNameCallsCount += 1
-          functionNameReceivedAction = (action)
-          functionNameReceivedInvocations.append((action))
-          functionNameClosure?(action())
+          _prefix_CallsCount += 1
+          _prefix_ReceivedAction = (action)
+          _prefix_ReceivedInvocations.append((action))
+          _prefix_Closure?(action())
       }
       """
     )
   }
 
   func testDeclarationWithNonEscapingClosure() throws {
-    let variablePrefix = "functionName"
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(action: () -> Void)",
+      prefixForVariable: "_prefix_",
+      expectingFunctionDeclaration: """
+      func foo(action: () -> Void) {
+          _prefix_CallsCount += 1
+          _prefix_Closure?(action)
+      }
+      """
+    )
+  }
+  
+  // MARK: - Helper Methods for Assertions
 
-    let protocolFunctionDeclaration = try FunctionDeclSyntax(
-      "func foo(action: () -> Void)"
-    ) {}
+  private func assertProtocolFunction(
+    withFunctionDeclaration functionDeclaration: String,
+    prefixForVariable variablePrefix: String,
+    expectingFunctionDeclaration expectedDeclaration: String,
+    file: StaticString = #file,
+    line: UInt = #line
+  ) throws {
+    let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
     let result = FunctionImplementationFactory().declaration(
       variablePrefix: variablePrefix,
       protocolFunctionDeclaration: protocolFunctionDeclaration
     )
 
-    assertBuildResult(
-      result,
-      """
-      func foo(action: () -> Void) {
-          functionNameCallsCount += 1
-          functionNameClosure?(action)
-      }
-      """
-    )
+    assertBuildResult(result, expectedDeclaration, file: file, line: line)
   }
 }
