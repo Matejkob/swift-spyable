@@ -30,26 +30,28 @@ import SwiftSyntaxBuilder
 struct ClosureFactory {
   func variableDeclaration(
     variablePrefix: String,
-    functionSignature: FunctionSignatureSyntax
+    protocolFunctionDeclaration: FunctionDeclSyntax
   ) throws -> VariableDeclSyntax {
+    let functionSignature = protocolFunctionDeclaration.signature
+    let genericTypes = protocolFunctionDeclaration.genericTypes
+
     let elements = TupleTypeElementListSyntax {
       TupleTypeElementSyntax(
         type: FunctionTypeSyntax(
           parameters: TupleTypeElementListSyntax {
             for parameter in functionSignature.parameterClause.parameters {
-              TupleTypeElementSyntax(type: parameter.type)
+              TupleTypeElementSyntax(
+                type: parameter.type.erasingGenericTypes(genericTypes)
+              )
             }
           },
           effectSpecifiers: TypeEffectSpecifiersSyntax(
             asyncSpecifier: functionSignature.effectSpecifiers?.asyncSpecifier,
             throwsSpecifier: functionSignature.effectSpecifiers?.throwsSpecifier
           ),
-          returnClause: functionSignature.returnClause
-            ?? ReturnClauseSyntax(
-              type: IdentifierTypeSyntax(
-                name: .identifier("Void")
-              )
-            )
+          returnClause: returnClause(
+            protocolFunctionDeclaration: protocolFunctionDeclaration
+          )
         )
       )
     }
@@ -61,10 +63,28 @@ struct ClosureFactory {
     )
   }
 
+  private func returnClause(
+    protocolFunctionDeclaration: FunctionDeclSyntax
+  ) -> ReturnClauseSyntax {
+    let functionSignature = protocolFunctionDeclaration.signature
+    let genericTypes = protocolFunctionDeclaration.genericTypes
+
+    return if let returnClause = functionSignature.returnClause {
+      returnClause.with(\.type, returnClause.type.erasingGenericTypes(genericTypes))
+    } else {
+      ReturnClauseSyntax(
+        type: IdentifierTypeSyntax(
+          name: .identifier("Void")
+        )
+      )
+    }
+  }
+
   func callExpression(
     variablePrefix: String,
-    functionSignature: FunctionSignatureSyntax
+    protocolFunctionDeclaration: FunctionDeclSyntax
   ) -> ExprSyntaxProtocol {
+    let functionSignature = protocolFunctionDeclaration.signature
     let calledExpression: ExprSyntaxProtocol
 
     if functionSignature.returnClause == nil {
@@ -113,6 +133,14 @@ struct ClosureFactory {
 
     if functionSignature.effectSpecifiers?.throwsSpecifier != nil {
       expression = TryExprSyntax(expression: expression)
+    }
+
+    if let forceCastType = protocolFunctionDeclaration.forceCastType {
+      expression = AsExprSyntax(
+        expression: expression,
+        questionOrExclamationMark: .exclamationMarkToken(trailingTrivia: .space),
+        type: forceCastType
+      )
     }
 
     return expression

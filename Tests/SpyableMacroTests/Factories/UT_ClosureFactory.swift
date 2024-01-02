@@ -55,19 +55,22 @@ final class UT_ClosureFactory: XCTestCase {
     )
   }
 
+  func testVariableDeclarationWithGenericParameter() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_<T>(value: T)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: ((Any) -> Void)?"
+    )
+  }
+
   func testVariableDeclarationEverything() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """
-        func _ignore_(
-            text: inout String,
-            product: (UInt?, name: String),
-            added: (() -> Void)?,
-            removed: @autoclosure @escaping () -> Bool
-        ) async throws -> (text: String, output: (() -> Void)?)
+        func _ignore_<T>(text: inout String, value: T, product: (UInt?, name: String), added: (() -> Void)?, removed: @autoclosure @escaping () -> Bool) async throws -> String?
         """,
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-        var _prefix_Closure: ((inout String, (UInt?, name: String), (() -> Void)?, @autoclosure @escaping () -> Bool) async throws -> (text: String, output: (() -> Void)?) )?
+        var _prefix_Closure: ((inout String, Any, (UInt?, name: String), (() -> Void)?, @autoclosure @escaping () -> Bool) async throws -> String? )?
         """
     )
   }
@@ -114,13 +117,21 @@ final class UT_ClosureFactory: XCTestCase {
     )
   }
 
+  func testCallExpressionWithGenericParameter() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_<T>(value: T)",
+      prefixForVariable: "_prefix_",
+      expectingCallExpression: "_prefix_Closure?(value)"
+    )
+  }
+
   func testCallExpressionEverything() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """
-        func _ignore_(text: inout String, product: (UInt?, name: String), added: (() -> Void)?, removed: @autoclosure @escaping () -> Bool) async throws -> String?
+        func _ignore_<T>(value: inout T, product: (UInt?, name: String), added: (() -> Void)?, removed: @autoclosure @escaping () -> Bool) async throws -> String?
         """,
       prefixForVariable: "_prefix_",
-      expectingCallExpression: "try await _prefix_Closure!(&text, product, added, removed())"
+      expectingCallExpression: "try await _prefix_Closure!(&value, product, added, removed())"
     )
   }
 
@@ -137,7 +148,7 @@ final class UT_ClosureFactory: XCTestCase {
 
     let result = try ClosureFactory().variableDeclaration(
       variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
+      protocolFunctionDeclaration: protocolFunctionDeclaration
     )
 
     assertBuildResult(result, expectedDeclaration, file: file, line: line)
@@ -154,7 +165,7 @@ final class UT_ClosureFactory: XCTestCase {
 
     let result = ClosureFactory().callExpression(
       variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
+      protocolFunctionDeclaration: protocolFunctionDeclaration
     )
 
     assertBuildResult(result, expectedExpression, file: file, line: line)

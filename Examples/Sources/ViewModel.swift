@@ -11,6 +11,7 @@ protocol ServiceProtocol {
   func initialize(name: String, _ secondName: String?)
   func fetchConfig(arg: UInt8) async throws -> [String: String]
   func fetchData(_ name: (String, count: Int)) async -> (() -> Void)
+  func wrapDataInArray<T>(_ data: T) -> Array<T>
 }
 
 final class ViewModel {
@@ -36,5 +37,9 @@ final class ViewModel {
 
     _ = try await service.fetchConfig(arg: 2)
     config.removeAll()
+  }
+  
+  func wrapData<T>(_ data: T) -> Array<T> {
+    service.wrapDataInArray(data)
   }
 }
