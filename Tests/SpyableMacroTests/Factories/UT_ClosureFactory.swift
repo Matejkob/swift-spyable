@@ -72,23 +72,6 @@ final class UT_ClosureFactory: XCTestCase {
     )
   }
 
-  private func assertProtocolFunction(
-    withFunctionDeclaration functionDeclaration: String,
-    prefixForVariable variablePrefix: String,
-    expectingVariableDeclaration expectedDeclaration: String,
-    file: StaticString = #file,
-    line: UInt = #line
-  ) throws {
-    let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
-
-    let result = try ClosureFactory().variableDeclaration(
-      variablePrefix: variablePrefix,
-      functionSignature: protocolFunctionDeclaration.signature
-    )
-
-    assertBuildResult(result, expectedDeclaration, file: file, line: line)
-  }
-
   // MARK: - Call Expression
 
   func testCallExpression() throws {
@@ -139,6 +122,25 @@ final class UT_ClosureFactory: XCTestCase {
       prefixForVariable: "_prefix_",
       expectingCallExpression: "try await _prefix_Closure!(&text, product, added, removed())"
     )
+  }
+
+  // MARK: - Helper Methods for Assertions
+
+  private func assertProtocolFunction(
+    withFunctionDeclaration functionDeclaration: String,
+    prefixForVariable variablePrefix: String,
+    expectingVariableDeclaration expectedDeclaration: String,
+    file: StaticString = #file,
+    line: UInt = #line
+  ) throws {
+    let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
+
+    let result = try ClosureFactory().variableDeclaration(
+      variablePrefix: variablePrefix,
+      functionSignature: protocolFunctionDeclaration.signature
+    )
+
+    assertBuildResult(result, expectedDeclaration, file: file, line: line)
   }
 
   private func assertProtocolFunction(
