@@ -49,6 +49,26 @@ final class UT_TypeSyntax_ErasingGenericTypes: XCTestCase {
     XCTAssertEqual(typeSyntaxDescription(with: "String"), " [String] ")
   }
 
+  func testErasingGenericTypes_WithGenericArgumentClauseSyntax() {
+    func typeSyntaxDescription(with identifier: String) -> String {
+      TypeSyntax(
+        IdentifierTypeSyntax(
+          leadingTrivia: .space,
+          name: .identifier("Array"),
+          genericArgumentClause: GenericArgumentClauseSyntax {
+            GenericArgumentSyntax(argument: TypeSyntax(stringLiteral: identifier))
+          },
+          trailingTrivia: .space
+        )
+      )
+      .erasingGenericTypes(["T"])
+      .description
+    }
+
+    XCTAssertEqual(typeSyntaxDescription(with: "T"), " Array<Any> ")
+    XCTAssertEqual(typeSyntaxDescription(with: "String"), " Array<String> ")
+  }
+
   func testErasingGenericTypes_WithTupleTypeSyntax() {
     func typeSyntaxDescription(with identifier: String) -> String {
       TypeSyntax(

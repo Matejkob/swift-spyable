@@ -51,6 +51,26 @@ final class UT_TypeSyntax_ContainsGenericType: XCTestCase {
     XCTAssertFalse(typeSyntax(with: "String", containsGenericType: ["T"]))
   }
 
+  func testContainsGenericType_WithGenericArgumentClauseSyntax() {
+    func typeSyntax(
+      with identifier: String,
+      containsGenericType genericTypes: Set<String>
+    ) -> Bool {
+      TypeSyntax(
+        IdentifierTypeSyntax(
+          name: .identifier("Array"),
+          genericArgumentClause: GenericArgumentClauseSyntax {
+            GenericArgumentSyntax(argument: TypeSyntax(stringLiteral: identifier))
+          }
+        )
+      )
+      .containsGenericType(from: genericTypes)
+    }
+
+    XCTAssertTrue(typeSyntax(with: "T", containsGenericType: ["T"]))
+    XCTAssertFalse(typeSyntax(with: "String", containsGenericType: ["T"]))
+  }
+
   func testContainsGenericType_WithTupleTypeSyntax() {
     func typeSyntax(
       with identifier: String,
