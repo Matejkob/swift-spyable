@@ -48,11 +48,19 @@ final class UT_VariablesImplementationFactory: XCTestCase {
     )
   }
 
+  func testVariableDelcarationsWithAccess() throws {
+    try assertProtocolVariable(
+      withVariableDeclaration: "public var foo: String? { get }",
+      expectingVariableDeclaration: "public var foo: String?"
+    )
+  }
+
   func testVariablesDeclarationsWithMultiBindings() throws {
     let protocolVariableDeclaration = try VariableDeclSyntax("var foo: String?, bar: Int")
 
     XCTAssertThrowsError(
       try VariablesImplementationFactory().variablesDeclarations(
+        modifiers: [],
         protocolVariableDeclaration: protocolVariableDeclaration
       )
     ) { error in
@@ -68,6 +76,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
 
     XCTAssertThrowsError(
       try VariablesImplementationFactory().variablesDeclarations(
+        modifiers: [],
         protocolVariableDeclaration: protocolVariableDeclaration
       )
     ) { error in
@@ -89,6 +98,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
     let protocolVariableDeclaration = try VariableDeclSyntax("\(raw: variableDeclaration)")
 
     let result = try VariablesImplementationFactory().variablesDeclarations(
+      modifiers: [],
       protocolVariableDeclaration: protocolVariableDeclaration
     )
 

@@ -47,6 +47,7 @@ struct VariablesImplementationFactory {
 
   @MemberBlockItemListBuilder
   func variablesDeclarations(
+    modifiers: DeclModifierListSyntax,
     protocolVariableDeclaration: VariableDeclSyntax
   ) throws -> MemberBlockItemListSyntax {
     if protocolVariableDeclaration.bindings.count == 1 {
@@ -56,7 +57,7 @@ struct VariablesImplementationFactory {
       if binding.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true {
         accessorRemovalVisitor.visit(protocolVariableDeclaration)
       } else {
-        try protocolVariableDeclarationWithGetterAndSetter(binding: binding)
+        try protocolVariableDeclarationWithGetterAndSetter(modifiers: modifiers, binding: binding)
 
         try underlyingVariableDeclaration(binding: binding)
       }
@@ -67,11 +68,12 @@ struct VariablesImplementationFactory {
   }
 
   private func protocolVariableDeclarationWithGetterAndSetter(
+    modifiers: DeclModifierListSyntax,
     binding: PatternBindingSyntax
   ) throws -> VariableDeclSyntax {
     try VariableDeclSyntax(
       """
-      var \(binding.pattern.trimmed)\(binding.typeAnnotation!.trimmed) {
+      \(modifiers)var \(binding.pattern.trimmed)\(binding.typeAnnotation!.trimmed) {
           get { \(raw: underlyingVariableName(binding: binding)) }
           set { \(raw: underlyingVariableName(binding: binding)) = newValue }
       }

@@ -234,6 +234,29 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+  func testDeclarationVariablePublic() throws {
+    try assertProtocol(
+      withDeclaration: """
+        public protocol ServiceProtocol {
+            var data: Data { get }
+        }
+        """,
+      expectingClassDeclaration: """
+        public class ServiceProtocolSpy: ServiceProtocol {
+            public var data: Data {
+                get {
+                    underlyingData
+                }
+                set {
+                    underlyingData = newValue
+                }
+            }
+            var underlyingData: (Data)!
+        }
+        """
+    )
+  }
+
   func testDeclarationOptionalVariable() throws {
     try assertProtocol(
       withDeclaration: """

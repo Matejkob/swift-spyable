@@ -50,7 +50,7 @@ final class UT_SpyableMacro: XCTestCase {
         \(protocolDeclaration)
 
         public class ServiceProtocolSpy: ServiceProtocol {
-            var name: String {
+            public var name: String {
                 get {
                     underlyingName
                 }
@@ -59,7 +59,7 @@ final class UT_SpyableMacro: XCTestCase {
                 }
             }
             var underlyingName: (String)!
-            var anyProtocol: any Codable {
+            public var anyProtocol: any Codable {
                 get {
                     underlyingAnyProtocol
                 }
@@ -69,7 +69,7 @@ final class UT_SpyableMacro: XCTestCase {
             }
             var underlyingAnyProtocol: (any Codable)!
             var secondName: String?
-            var added: () -> Void {
+            public var added: () -> Void {
                 get {
                     underlyingAdded
                 }
