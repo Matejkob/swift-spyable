@@ -49,7 +49,7 @@ final class UT_SpyableMacro: XCTestCase {
 
         \(protocolDeclaration)
 
-        class ServiceProtocolSpy: ServiceProtocol {
+        public class ServiceProtocolSpy: ServiceProtocol {
             var name: String {
                 get {
                     underlyingName
@@ -199,10 +199,56 @@ final class UT_SpyableMacro: XCTestCase {
         \(protocolDeclaration)
 
         #if CUSTOM
-        class ServiceProtocolSpy: ServiceProtocol {
+        public class ServiceProtocolSpy: ServiceProtocol {
             var variable: Bool?
         }
         #endif
+        """,
+      macros: sut
+    )
+  }
+
+  func testMacroWithNoFlag() {
+    let protocolDeclaration = """
+      public protocol ServiceProtocol {
+          var variable: Bool? { get set }
+      }
+      """
+    assertMacroExpansion(
+      """
+      @Spyable(behindPreprocessorFlag: nil)
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        \(protocolDeclaration)
+
+        public class ServiceProtocolSpy: ServiceProtocol {
+            var variable: Bool?
+        }
+        """,
+      macros: sut
+    )
+  }
+
+  func testMacroInternal() {
+    let protocolDeclaration = """
+      protocol ServiceProtocol {
+          var variable: Bool? { get set }
+      }
+      """
+    assertMacroExpansion(
+      """
+      @Spyable(behindPreprocessorFlag: nil)
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        \(protocolDeclaration)
+
+        class ServiceProtocolSpy: ServiceProtocol {
+            var variable: Bool?
+        }
         """,
       macros: sut
     )
