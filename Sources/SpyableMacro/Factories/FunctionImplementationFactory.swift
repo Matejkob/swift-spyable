@@ -64,12 +64,20 @@ struct FunctionImplementationFactory {
   private let returnValueFactory = ReturnValueFactory()
 
   func declaration(
+    modifiers: DeclModifierListSyntax,
     variablePrefix: String,
     protocolFunctionDeclaration: FunctionDeclSyntax
   ) -> FunctionDeclSyntax {
     var spyFunctionDeclaration = protocolFunctionDeclaration
 
-    spyFunctionDeclaration.modifiers = protocolFunctionDeclaration.modifiers.removingMutatingKeyword
+    spyFunctionDeclaration.modifiers = DeclModifierListSyntax {
+      for protoModifier in modifiers {
+        protoModifier
+      }
+      for functionModifier in protocolFunctionDeclaration.modifiers.removingMutatingKeyword {
+        functionModifier
+      }
+    }
 
     spyFunctionDeclaration.body = CodeBlockSyntax {
       let parameterList = protocolFunctionDeclaration.signature.parameterClause.parameters

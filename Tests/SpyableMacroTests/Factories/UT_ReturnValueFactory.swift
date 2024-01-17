@@ -48,6 +48,7 @@ final class UT_ReturnValueFactory: XCTestCase {
     line: UInt = #line
   ) throws {
     let result = try ReturnValueFactory().variableDeclaration(
+      modifiers: [],
       variablePrefix: variablePrefix,
       functionReturnType: functionReturnType
     )

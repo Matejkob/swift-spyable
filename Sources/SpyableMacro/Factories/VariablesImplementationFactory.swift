@@ -55,11 +55,15 @@ struct VariablesImplementationFactory {
       let binding = protocolVariableDeclaration.bindings.first!
 
       if binding.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true {
-        accessorRemovalVisitor.visit(protocolVariableDeclaration)
+        if let variableDecl = accessorRemovalVisitor.visit(protocolVariableDeclaration).as(
+          VariableDeclSyntax.self)
+        {
+          variableDecl.settingModifiers(modifiers: modifiers)
+        }
       } else {
         try protocolVariableDeclarationWithGetterAndSetter(modifiers: modifiers, binding: binding)
 
-        try underlyingVariableDeclaration(binding: binding)
+        try underlyingVariableDeclaration(modifiers: modifiers, binding: binding)
       }
     } else {
       // As far as I know variable declaration in a protocol should have exactly one binding.
@@ -71,24 +75,29 @@ struct VariablesImplementationFactory {
     modifiers: DeclModifierListSyntax,
     binding: PatternBindingSyntax
   ) throws -> VariableDeclSyntax {
-    try VariableDeclSyntax(
+    var decl = try VariableDeclSyntax(
       """
-      \(modifiers)var \(binding.pattern.trimmed)\(binding.typeAnnotation!.trimmed) {
+      var \(binding.pattern.trimmed)\(binding.typeAnnotation!.trimmed) {
           get { \(raw: underlyingVariableName(binding: binding)) }
           set { \(raw: underlyingVariableName(binding: binding)) = newValue }
       }
       """
     )
+    decl.modifiers = modifiers
+    return decl
   }
 
   private func underlyingVariableDeclaration(
+    modifiers: DeclModifierListSyntax,
     binding: PatternBindingListSyntax.Element
   ) throws -> VariableDeclSyntax {
-    try VariableDeclSyntax(
+    var decl = try VariableDeclSyntax(
       """
       var \(raw: underlyingVariableName(binding: binding)): (\(binding.typeAnnotation!.type.trimmed))!
       """
     )
+    decl.modifiers = modifiers
+    return decl
   }
 
   private func underlyingVariableName(binding: PatternBindingListSyntax.Element) throws -> String {
@@ -100,6 +109,14 @@ struct VariablesImplementationFactory {
     let identifierText = identifierPattern.identifier.text
 
     return "underlying" + identifierText.prefix(1).uppercased() + identifierText.dropFirst()
+  }
+}
+
+extension VariableDeclSyntax {
+  fileprivate func settingModifiers(modifiers: DeclModifierListSyntax) -> VariableDeclSyntax {
+    var copy = self
+    copy.modifiers = modifiers
+    return copy
   }
 }
 

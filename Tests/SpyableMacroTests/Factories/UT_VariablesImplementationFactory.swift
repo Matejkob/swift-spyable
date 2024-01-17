@@ -51,7 +51,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
   func testVariableDelcarationsWithAccess() throws {
     try assertProtocolVariable(
       withVariableDeclaration: "public var foo: String? { get }",
-      expectingVariableDeclaration: "public var foo: String?"
+      expectingVariableDeclaration: "var foo: String?"
     )
   }
 

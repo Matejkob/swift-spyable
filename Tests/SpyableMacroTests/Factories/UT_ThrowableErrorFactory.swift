@@ -10,12 +10,29 @@ final class UT_ThrowableErrorFactory: XCTestCase {
   func testVariableDeclaration() throws {
     let variablePrefix = "functionName"
 
-    let result = try ThrowableErrorFactory().variableDeclaration(variablePrefix: variablePrefix)
+    let result = try ThrowableErrorFactory().variableDeclaration(
+      modifiers: [], variablePrefix: variablePrefix)
 
     assertBuildResult(
       result,
       """
       var functionNameThrowableError: (any Error)?
+      """
+    )
+  }
+
+  func testVariableDeclarationWithAccess() throws {
+    let variablePrefix = "functionName"
+
+    let result = try ThrowableErrorFactory().variableDeclaration(
+      modifiers: [.init(name: .init(stringLiteral: "public"))],
+      variablePrefix: variablePrefix
+    )
+
+    assertBuildResult(
+      result,
+      """
+      public var functionNameThrowableError: (any Error)?
       """
     )
   }

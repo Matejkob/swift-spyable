@@ -20,6 +20,19 @@ final class UT_FunctionImplementationFactory: XCTestCase {
     )
   }
 
+  func testDeclarationAccessModifiers() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "public func foo()",
+      prefixForVariable: "_prefix_",
+      expectingFunctionDeclaration: """
+        public func foo() {
+            _prefix_CallsCount += 1
+            _prefix_Closure?()
+        }
+        """
+    )
+  }
+
   func testDeclarationArguments() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func foo(text: String, count: Int)",
@@ -129,6 +142,7 @@ final class UT_FunctionImplementationFactory: XCTestCase {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
     let result = FunctionImplementationFactory().declaration(
+      modifiers: [],
       variablePrefix: variablePrefix,
       protocolFunctionDeclaration: protocolFunctionDeclaration
     )

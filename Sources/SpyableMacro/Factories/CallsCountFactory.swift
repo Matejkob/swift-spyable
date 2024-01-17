@@ -21,12 +21,16 @@ import SwiftSyntaxBuilder
 /// ```
 /// and an argument `variablePrefix` equal to `foo`.
 struct CallsCountFactory {
-  func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
-    try VariableDeclSyntax(
+  func variableDeclaration(modifiers: DeclModifierListSyntax, variablePrefix: String) throws
+    -> VariableDeclSyntax
+  {
+    var decl = try VariableDeclSyntax(
       """
       var \(variableIdentifier(variablePrefix: variablePrefix)) = 0
       """
     )
+    decl.modifiers = modifiers
+    return decl
   }
 
   func incrementVariableExpression(variablePrefix: String) -> ExprSyntax {

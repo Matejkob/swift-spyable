@@ -129,37 +129,45 @@ struct SpyFactory {
           let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
           let parameterList = functionDeclaration.signature.parameterClause.parameters
 
-          try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
-          try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
+          try callsCountFactory.variableDeclaration(
+            modifiers: modifiers, variablePrefix: variablePrefix)
+          try calledFactory.variableDeclaration(
+            modifiers: modifiers, variablePrefix: variablePrefix)
 
           if parameterList.supportsParameterTracking {
             try receivedArgumentsFactory.variableDeclaration(
+              modifiers: modifiers,
               variablePrefix: variablePrefix,
               parameterList: parameterList
             )
             try receivedInvocationsFactory.variableDeclaration(
+              modifiers: modifiers,
               variablePrefix: variablePrefix,
               parameterList: parameterList
             )
           }
 
           if functionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
-            try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
+            try throwableErrorFactory.variableDeclaration(
+              modifiers: modifiers, variablePrefix: variablePrefix)
           }
 
           if let returnType = functionDeclaration.signature.returnClause?.type {
             try returnValueFactory.variableDeclaration(
+              modifiers: modifiers,
               variablePrefix: variablePrefix,
               functionReturnType: returnType
             )
           }
 
           try closureFactory.variableDeclaration(
+            modifiers: modifiers,
             variablePrefix: variablePrefix,
             functionSignature: functionDeclaration.signature
           )
 
           functionImplementationFactory.declaration(
+            modifiers: modifiers,
             variablePrefix: variablePrefix,
             protocolFunctionDeclaration: functionDeclaration
           )

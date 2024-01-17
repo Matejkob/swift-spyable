@@ -251,7 +251,7 @@ final class UT_SpyFactory: XCTestCase {
                     underlyingData = newValue
                 }
             }
-            var underlyingData: (Data)!
+            public var underlyingData: (Data)!
         }
         """
     )

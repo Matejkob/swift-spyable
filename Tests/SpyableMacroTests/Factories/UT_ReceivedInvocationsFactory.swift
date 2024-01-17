@@ -132,6 +132,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
     let result = try ReceivedInvocationsFactory().variableDeclaration(
+      modifiers: [],
       variablePrefix: variablePrefix,
       parameterList: protocolFunctionDeclaration.signature.parameterClause.parameters
     )
