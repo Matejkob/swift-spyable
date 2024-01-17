@@ -118,6 +118,12 @@ struct SpyFactory {
         )
       },
       memberBlockBuilder: {
+        InitializerDeclSyntax(
+          modifiers: modifiers,
+          signature: FunctionSignatureSyntax(parameterClause: .init(parameters: [])),
+          body: CodeBlockSyntax(statements: [])
+        )
+
         for variableDeclaration in variableDeclarations {
           try variablesImplementationFactory.variablesDeclarations(
             modifiers: modifiers,

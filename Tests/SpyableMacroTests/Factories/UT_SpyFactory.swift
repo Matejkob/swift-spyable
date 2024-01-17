@@ -10,6 +10,8 @@ final class UT_SpyFactory: XCTestCase {
       withDeclaration: "protocol Foo {}",
       expectingClassDeclaration: """
         class FooSpy: Foo {
+            init() {
+            }
         }
         """
     )
@@ -24,6 +26,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class ServiceSpy: Service {
+            init() {
+            }
             var fetchCallsCount = 0
             var fetchCalled: Bool {
                 return fetchCallsCount > 0
@@ -47,6 +51,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class ViewModelProtocolSpy: ViewModelProtocol {
+            init() {
+            }
             var fooTextCountCallsCount = 0
             var fooTextCountCalled: Bool {
                 return fooTextCountCallsCount > 0
@@ -74,6 +80,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class ViewModelProtocolSpy: ViewModelProtocol {
+            init() {
+            }
             var fooActionCallsCount = 0
             var fooActionCalled: Bool {
                 return fooActionCallsCount > 0
@@ -101,6 +109,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class ViewModelProtocolSpy: ViewModelProtocol {
+            init() {
+            }
             var fooActionCallsCount = 0
             var fooActionCalled: Bool {
                 return fooActionCallsCount > 0
@@ -124,6 +134,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class BarSpy: Bar {
+            init() {
+            }
             var printCallsCount = 0
             var printCalled: Bool {
                 return printCallsCount > 0
@@ -152,6 +164,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class ServiceProtocolSpy: ServiceProtocol {
+            init() {
+            }
             var fooTextCountCallsCount = 0
             var fooTextCountCalled: Bool {
                 return fooTextCountCallsCount > 0
@@ -184,6 +198,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class ServiceProtocolSpy: ServiceProtocol {
+            init() {
+            }
             var fooCallsCount = 0
             var fooCalled: Bool {
                 return fooCallsCount > 0
@@ -220,6 +236,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class ServiceProtocolSpy: ServiceProtocol {
+            init() {
+            }
             var data: Data {
                 get {
                     underlyingData
@@ -243,6 +261,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         public class ServiceProtocolSpy: ServiceProtocol {
+            public init() {
+            }
             public var data: Data {
                 get {
                     underlyingData
@@ -266,6 +286,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class ServiceProtocolSpy: ServiceProtocol {
+            init() {
+            }
             var data: Data?
         }
         """
@@ -281,6 +303,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class ServiceProtocolSpy: ServiceProtocol {
+            init() {
+            }
             var completion: () -> Void {
                 get {
                     underlyingCompletion
@@ -306,6 +330,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class FooSpy<Key: Hashable>: Foo {
+            init() {
+            }
         }
         """
     )
@@ -321,6 +347,8 @@ final class UT_SpyFactory: XCTestCase {
         """,
       expectingClassDeclaration: """
         class FooSpy<Key: Hashable, Value>: Foo {
+            init() {
+            }
         }
         """
     )
