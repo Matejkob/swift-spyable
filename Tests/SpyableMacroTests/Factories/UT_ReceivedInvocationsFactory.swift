@@ -15,6 +15,15 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
     )
   }
 
+  func testVariableDeclarationWithModifiers() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(bar: String?)",
+      prefixForVariable: "_prefix_",
+      modifiers: [.init(name: "fileprivate")],
+      expectingVariableDeclaration: "fileprivate var _prefix_ReceivedInvocations: [String?] = []"
+    )
+  }
+
   func testVariableDeclarationSingleArgumentTupleType() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func foo(_ tuple: (text: String, (Decimal?, date: Date))?)",
@@ -125,6 +134,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
   private func assertProtocolFunction(
     withFunctionDeclaration functionDeclaration: String,
     prefixForVariable variablePrefix: String,
+    modifiers: DeclModifierListSyntax = [],
     expectingVariableDeclaration expectedDeclaration: String,
     file: StaticString = #file,
     line: UInt = #line
@@ -132,7 +142,7 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
     let result = try ReceivedInvocationsFactory().variableDeclaration(
-      modifiers: [],
+      modifiers: modifiers,
       variablePrefix: variablePrefix,
       parameterList: protocolFunctionDeclaration.signature.parameterClause.parameters
     )
