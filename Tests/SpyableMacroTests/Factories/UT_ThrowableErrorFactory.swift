@@ -25,7 +25,7 @@ final class UT_ThrowableErrorFactory: XCTestCase {
     let variablePrefix = "functionName"
 
     let result = try ThrowableErrorFactory().variableDeclaration(
-      modifiers: [.init(name: .init(stringLiteral: "public"))],
+      modifiers: [.init(name: "public")],
       variablePrefix: variablePrefix
     )
 
