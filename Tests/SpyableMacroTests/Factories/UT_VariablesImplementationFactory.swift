@@ -48,10 +48,11 @@ final class UT_VariablesImplementationFactory: XCTestCase {
     )
   }
 
-  func testVariableDelcarationsWithAccess() throws {
+  func testVariableDelcarationsWithModifiers() throws {
     try assertProtocolVariable(
-      withVariableDeclaration: "public var foo: String? { get }",
-      expectingVariableDeclaration: "var foo: String?"
+      withVariableDeclaration: "var foo: String? { get }",
+      modifiers: [.init(name: "fileprivate")],
+      expectingVariableDeclaration: "fileprivate var foo: String?"
     )
   }
 
@@ -91,6 +92,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
 
   private func assertProtocolVariable(
     withVariableDeclaration variableDeclaration: String,
+    modifiers: DeclModifierListSyntax = [],
     expectingVariableDeclaration expectedDeclaration: String,
     file: StaticString = #file,
     line: UInt = #line
@@ -98,7 +100,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
     let protocolVariableDeclaration = try VariableDeclSyntax("\(raw: variableDeclaration)")
 
     let result = try VariablesImplementationFactory().variablesDeclarations(
-      modifiers: [],
+      modifiers: modifiers,
       protocolVariableDeclaration: protocolVariableDeclaration
     )
 
