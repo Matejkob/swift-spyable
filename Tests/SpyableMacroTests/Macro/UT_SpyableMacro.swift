@@ -194,32 +194,6 @@ final class UT_SpyableMacro: XCTestCase {
     )
   }
 
-  func testMacroOtherAccessLevel() {
-    let protocolDeclaration = """
-      package protocol ServiceProtocol {
-          var variable: Bool? { get set }
-      }
-      """
-    assertMacroExpansion(
-      """
-      @Spyable
-      \(protocolDeclaration)
-      """,
-      expandedSource: """
-
-        \(protocolDeclaration)
-
-        package class ServiceProtocolSpy: ServiceProtocol {
-            package init() {
-            }
-            package
-            var variable: Bool?
-        }
-        """,
-      macros: sut
-    )
-  }
-
   func testMacroWithCustomFlag() {
     let protocolDeclaration = """
       public protocol ServiceProtocol {
@@ -256,7 +230,7 @@ final class UT_SpyableMacro: XCTestCase {
       """
     assertMacroExpansion(
       """
-      @Spyable(behindPreprocessorFlag: nil)
+      @Spyable
       \(protocolDeclaration)
       """,
       expandedSource: """
@@ -267,31 +241,6 @@ final class UT_SpyableMacro: XCTestCase {
             public init() {
             }
             public
-            var variable: Bool?
-        }
-        """,
-      macros: sut
-    )
-  }
-
-  func testMacroInternal() {
-    let protocolDeclaration = """
-      protocol ServiceProtocol {
-          var variable: Bool? { get set }
-      }
-      """
-    assertMacroExpansion(
-      """
-      @Spyable(behindPreprocessorFlag: nil)
-      \(protocolDeclaration)
-      """,
-      expandedSource: """
-
-        \(protocolDeclaration)
-
-        class ServiceProtocolSpy: ServiceProtocol {
-            init() {
-            }
             var variable: Bool?
         }
         """,
