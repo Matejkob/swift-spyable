@@ -52,13 +52,12 @@ struct ReturnValueFactory {
         )
       }
 
-    var decl = try VariableDeclSyntax(
+    return try VariableDeclSyntax(
       """
       var \(variableIdentifier(variablePrefix: variablePrefix))\(typeAnnotation)
       """
     )
-    decl.modifiers = modifiers
-    return decl
+    .applying(modifiers: modifiers)
   }
 
   func returnStatement(variablePrefix: String) -> StmtSyntax {

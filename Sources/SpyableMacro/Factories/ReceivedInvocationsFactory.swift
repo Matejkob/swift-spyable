@@ -49,13 +49,12 @@ struct ReceivedInvocationsFactory {
     let identifier = variableIdentifier(variablePrefix: variablePrefix)
     let elementType = arrayElementType(parameterList: parameterList)
 
-    var decl = try VariableDeclSyntax(
+    return try VariableDeclSyntax(
       """
       var \(identifier): [\(elementType)] = []
       """
     )
-    decl.modifiers = modifiers
-    return decl
+    .applying(modifiers: modifiers)
   }
 
   private func arrayElementType(parameterList: FunctionParameterListSyntax) -> TypeSyntaxProtocol {

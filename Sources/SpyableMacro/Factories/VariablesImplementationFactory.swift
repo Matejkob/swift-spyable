@@ -110,14 +110,6 @@ struct VariablesImplementationFactory {
   }
 }
 
-extension VariableDeclSyntax {
-  fileprivate func applying(modifiers: DeclModifierListSyntax) -> VariableDeclSyntax {
-    var copy = self
-    copy.modifiers = modifiers
-    return copy
-  }
-}
-
 private class AccessorRemovalVisitor: SyntaxRewriter {
   override func visit(_ node: PatternBindingSyntax) -> PatternBindingSyntax {
     let superResult = super.visit(node)

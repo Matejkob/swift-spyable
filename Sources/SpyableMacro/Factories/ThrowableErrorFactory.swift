@@ -32,13 +32,12 @@ struct ThrowableErrorFactory {
   func variableDeclaration(modifiers: DeclModifierListSyntax, variablePrefix: String) throws
     -> VariableDeclSyntax
   {
-    var decl = try VariableDeclSyntax(
+    try VariableDeclSyntax(
       """
       var \(variableIdentifier(variablePrefix: variablePrefix)): (any Error)?
       """
     )
-    decl.modifiers = modifiers
-    return decl
+    .applying(modifiers: modifiers)
   }
 
   func throwErrorExpression(variablePrefix: String) -> ExprSyntax {

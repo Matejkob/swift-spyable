@@ -28,14 +28,13 @@ struct CalledFactory {
   func variableDeclaration(modifiers: DeclModifierListSyntax, variablePrefix: String) throws
     -> VariableDeclSyntax
   {
-    var decl = try VariableDeclSyntax(
+    try VariableDeclSyntax(
       """
       var \(raw: variablePrefix)Called: Bool {
           return \(raw: variablePrefix)CallsCount > 0
       }
       """
     )
-    decl.modifiers = modifiers
-    return decl
+    .applying(modifiers: modifiers)
   }
 }

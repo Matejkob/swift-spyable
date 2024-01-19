@@ -55,13 +55,12 @@ struct ClosureFactory {
       )
     }
 
-    var decl = try VariableDeclSyntax(
+    return try VariableDeclSyntax(
       """
       var \(variableIdentifier(variablePrefix: variablePrefix)): (\(elements))?
       """
     )
-    decl.modifiers = modifiers
-    return decl
+    .applying(modifiers: modifiers)
   }
 
   func callExpression(

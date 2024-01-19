@@ -47,13 +47,12 @@ struct ReceivedArgumentsFactory {
     )
     let type = variableType(parameterList: parameterList)
 
-    var decl = try VariableDeclSyntax(
+    return try VariableDeclSyntax(
       """
       var \(identifier): \(type)
       """
     )
-    decl.modifiers = modifiers
-    return decl
+    .applying(modifiers: modifiers)
   }
 
   private func variableType(parameterList: FunctionParameterListSyntax) -> TypeSyntaxProtocol {

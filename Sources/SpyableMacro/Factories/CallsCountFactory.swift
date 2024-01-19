@@ -24,13 +24,12 @@ struct CallsCountFactory {
   func variableDeclaration(modifiers: DeclModifierListSyntax, variablePrefix: String) throws
     -> VariableDeclSyntax
   {
-    var decl = try VariableDeclSyntax(
+    try VariableDeclSyntax(
       """
       var \(variableIdentifier(variablePrefix: variablePrefix)) = 0
       """
     )
-    decl.modifiers = modifiers
-    return decl
+    .applying(modifiers: modifiers)
   }
 
   func incrementVariableExpression(variablePrefix: String) -> ExprSyntax {
