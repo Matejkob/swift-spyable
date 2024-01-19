@@ -58,7 +58,7 @@ struct VariablesImplementationFactory {
         if let variableDecl = accessorRemovalVisitor.visit(protocolVariableDeclaration).as(
           VariableDeclSyntax.self)
         {
-          variableDecl.settingModifiers(modifiers: modifiers)
+          variableDecl.applying(modifiers: modifiers)
         }
       } else {
         try protocolVariableDeclarationWithGetterAndSetter(modifiers: modifiers, binding: binding)
@@ -75,7 +75,7 @@ struct VariablesImplementationFactory {
     modifiers: DeclModifierListSyntax,
     binding: PatternBindingSyntax
   ) throws -> VariableDeclSyntax {
-    var decl = try VariableDeclSyntax(
+    try VariableDeclSyntax(
       """
       var \(binding.pattern.trimmed)\(binding.typeAnnotation!.trimmed) {
           get { \(raw: underlyingVariableName(binding: binding)) }
@@ -83,21 +83,19 @@ struct VariablesImplementationFactory {
       }
       """
     )
-    decl.modifiers = modifiers
-    return decl
+    .applying(modifiers: modifiers)
   }
 
   private func underlyingVariableDeclaration(
     modifiers: DeclModifierListSyntax,
     binding: PatternBindingListSyntax.Element
   ) throws -> VariableDeclSyntax {
-    var decl = try VariableDeclSyntax(
+    try VariableDeclSyntax(
       """
       var \(raw: underlyingVariableName(binding: binding)): (\(binding.typeAnnotation!.type.trimmed))!
       """
     )
-    decl.modifiers = modifiers
-    return decl
+    .applying(modifiers: modifiers)
   }
 
   private func underlyingVariableName(binding: PatternBindingListSyntax.Element) throws -> String {
@@ -113,7 +111,7 @@ struct VariablesImplementationFactory {
 }
 
 extension VariableDeclSyntax {
-  fileprivate func settingModifiers(modifiers: DeclModifierListSyntax) -> VariableDeclSyntax {
+  fileprivate func applying(modifiers: DeclModifierListSyntax) -> VariableDeclSyntax {
     var copy = self
     copy.modifiers = modifiers
     return copy
