@@ -15,6 +15,15 @@ final class UT_ReturnValueFactory: XCTestCase {
     )
   }
 
+  func testVariableDeclarationModifiers() throws {
+    try assert(
+      functionReturnType: "(text: String, count: UInt)",
+      prefixForVariable: "_prefix_",
+      modifiers: [.init(name: "public")],
+      expectingVariableDeclaration: "public var _prefix_ReturnValue: (text: String, count: UInt)!"
+    )
+  }
+
   func testVariableDeclarationOptionType() throws {
     try assert(
       functionReturnType: "String?",
@@ -43,12 +52,13 @@ final class UT_ReturnValueFactory: XCTestCase {
   private func assert(
     functionReturnType: TypeSyntax,
     prefixForVariable variablePrefix: String,
+    modifiers: DeclModifierListSyntax = [],
     expectingVariableDeclaration expectedDeclaration: String,
     file: StaticString = #file,
     line: UInt = #line
   ) throws {
     let result = try ReturnValueFactory().variableDeclaration(
-      modifiers: [],
+      modifiers: modifiers,
       variablePrefix: variablePrefix,
       functionReturnType: functionReturnType
     )
