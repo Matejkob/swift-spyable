@@ -252,31 +252,6 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
-  func testDeclarationVariablePublic() throws {
-    try assertProtocol(
-      withDeclaration: """
-        public protocol ServiceProtocol {
-            var data: Data { get }
-        }
-        """,
-      expectingClassDeclaration: """
-        public class ServiceProtocolSpy: ServiceProtocol {
-            public init() {
-            }
-            public var data: Data {
-                get {
-                    underlyingData
-                }
-                set {
-                    underlyingData = newValue
-                }
-            }
-            public var underlyingData: (Data)!
-        }
-        """
-    )
-  }
-
   func testDeclarationOptionalVariable() throws {
     try assertProtocol(
       withDeclaration: """
@@ -314,6 +289,83 @@ final class UT_SpyFactory: XCTestCase {
                 }
             }
             var underlyingCompletion: (() -> Void)!
+        }
+        """
+    )
+  }
+
+  // MARK: - Access Level
+
+  func testDeclarationPublicAccess() throws {
+    try assertProtocol(
+      withDeclaration: """
+        public protocol ServiceProtocol {
+            var data: Data { get }
+        }
+        """,
+      expectingClassDeclaration: """
+        public class ServiceProtocolSpy: ServiceProtocol {
+            public init() {
+            }
+            public var data: Data {
+                get {
+                    underlyingData
+                }
+                set {
+                    underlyingData = newValue
+                }
+            }
+            public var underlyingData: (Data)!
+        }
+        """
+    )
+  }
+
+  func testDeclarationPackageAccess() throws {
+    try assertProtocol(
+      withDeclaration: """
+        package protocol ServiceProtocol {
+            var data: Data { get }
+        }
+        """,
+      expectingClassDeclaration: """
+        package class ServiceProtocolSpy: ServiceProtocol {
+            package init() {
+            }
+            package var data: Data {
+                get {
+                    underlyingData
+                }
+                set {
+                    underlyingData = newValue
+                }
+            }
+            package var underlyingData: (Data)!
+        }
+        """
+    )
+  }
+
+  func testDeclarationPrivateAccess() throws {
+    try assertProtocol(
+      withDeclaration: """
+        private protocol ServiceProtocol {
+            var data: Data { get }
+        }
+        """,
+      expectingClassDeclaration: """
+        private class ServiceProtocolSpy: ServiceProtocol {
+            fileprivate init() {
+            }
+            fileprivate var data: Data {
+                get {
+                    underlyingData
+                }
+                set {
+                    underlyingData = newValue
+                }
+            }
+            fileprivate var underlyingData: (Data)!
         }
         """
     )

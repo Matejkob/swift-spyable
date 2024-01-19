@@ -93,7 +93,6 @@ struct SpyFactory {
   private let functionImplementationFactory = FunctionImplementationFactory()
 
   func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) throws -> ClassDeclSyntax {
-    let modifiers = protocolDeclaration.modifiers
     let identifier = TokenSyntax.identifier(protocolDeclaration.name.text + "Spy")
 
     let assosciatedtypeDeclarations = protocolDeclaration.memberBlock.members.compactMap {
@@ -108,8 +107,10 @@ struct SpyFactory {
     let functionDeclarations = protocolDeclaration.memberBlock.members
       .compactMap { $0.decl.as(FunctionDeclSyntax.self)?.removingLeadingSpaces }
 
+    let memberModifiers = protocolDeclaration.modifiers.replacingPrivateWithFileprivate
+
     return try ClassDeclSyntax(
-      modifiers: modifiers,
+      modifiers: protocolDeclaration.modifiers,
       name: identifier,
       genericParameterClause: genericParameterClause,
       inheritanceClause: InheritanceClauseSyntax {
@@ -119,14 +120,14 @@ struct SpyFactory {
       },
       memberBlockBuilder: {
         InitializerDeclSyntax(
-          modifiers: modifiers,
+          modifiers: memberModifiers,
           signature: FunctionSignatureSyntax(parameterClause: .init(parameters: [])),
           body: CodeBlockSyntax(statements: [])
         )
 
         for variableDeclaration in variableDeclarations {
           try variablesImplementationFactory.variablesDeclarations(
-            modifiers: modifiers,
+            modifiers: memberModifiers,
             protocolVariableDeclaration: variableDeclaration
           )
         }
@@ -136,18 +137,18 @@ struct SpyFactory {
           let parameterList = functionDeclaration.signature.parameterClause.parameters
 
           try callsCountFactory.variableDeclaration(
-            modifiers: modifiers, variablePrefix: variablePrefix)
+            modifiers: memberModifiers, variablePrefix: variablePrefix)
           try calledFactory.variableDeclaration(
-            modifiers: modifiers, variablePrefix: variablePrefix)
+            modifiers: memberModifiers, variablePrefix: variablePrefix)
 
           if parameterList.supportsParameterTracking {
             try receivedArgumentsFactory.variableDeclaration(
-              modifiers: modifiers,
+              modifiers: memberModifiers,
               variablePrefix: variablePrefix,
               parameterList: parameterList
             )
             try receivedInvocationsFactory.variableDeclaration(
-              modifiers: modifiers,
+              modifiers: memberModifiers,
               variablePrefix: variablePrefix,
               parameterList: parameterList
             )
@@ -155,25 +156,25 @@ struct SpyFactory {
 
           if functionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
             try throwableErrorFactory.variableDeclaration(
-              modifiers: modifiers, variablePrefix: variablePrefix)
+              modifiers: memberModifiers, variablePrefix: variablePrefix)
           }
 
           if let returnType = functionDeclaration.signature.returnClause?.type {
             try returnValueFactory.variableDeclaration(
-              modifiers: modifiers,
+              modifiers: memberModifiers,
               variablePrefix: variablePrefix,
               functionReturnType: returnType
             )
           }
 
           try closureFactory.variableDeclaration(
-            modifiers: modifiers,
+            modifiers: memberModifiers,
             variablePrefix: variablePrefix,
             functionSignature: functionDeclaration.signature
           )
 
           functionImplementationFactory.declaration(
-            modifiers: modifiers,
+            modifiers: memberModifiers,
             variablePrefix: variablePrefix,
             protocolFunctionDeclaration: functionDeclaration
           )
@@ -200,5 +201,18 @@ extension SyntaxProtocol {
           }
       )
     )
+  }
+}
+
+extension DeclModifierListSyntax {
+  fileprivate var replacingPrivateWithFileprivate: Self {
+    DeclModifierListSyntax(
+      map {
+        if $0.name.text == TokenSyntax.keyword(.private).text {
+          return .init(name: .keyword(.fileprivate))
+        } else {
+          return $0
+        }
+      })
   }
 }
