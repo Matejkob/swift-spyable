@@ -42,6 +42,7 @@ import SwiftSyntaxBuilder
 ///         about the arguments in the last invocation, use `ReceivedArgumentsFactory`.
 struct ReceivedInvocationsFactory {
   func variableDeclaration(
+    modifiers: DeclModifierListSyntax,
     variablePrefix: String,
     parameterList: FunctionParameterListSyntax
   ) throws -> VariableDeclSyntax {
@@ -53,6 +54,7 @@ struct ReceivedInvocationsFactory {
       var \(identifier): [\(elementType)] = []
       """
     )
+    .applying(modifiers: modifiers)
   }
 
   private func arrayElementType(parameterList: FunctionParameterListSyntax) -> TypeSyntaxProtocol {

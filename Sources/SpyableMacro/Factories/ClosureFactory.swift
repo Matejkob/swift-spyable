@@ -29,6 +29,7 @@ import SwiftSyntaxBuilder
 ///         interacts correctly with the function.
 struct ClosureFactory {
   func variableDeclaration(
+    modifiers: DeclModifierListSyntax,
     variablePrefix: String,
     functionSignature: FunctionSignatureSyntax
   ) throws -> VariableDeclSyntax {
@@ -59,6 +60,7 @@ struct ClosureFactory {
       var \(variableIdentifier(variablePrefix: variablePrefix)): (\(elements))?
       """
     )
+    .applying(modifiers: modifiers)
   }
 
   func callExpression(

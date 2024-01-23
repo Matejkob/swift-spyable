@@ -37,6 +37,7 @@ import SwiftSyntaxBuilder
 /// and an argument `variablePrefix` equal to `bar`.
 struct ReceivedArgumentsFactory {
   func variableDeclaration(
+    modifiers: DeclModifierListSyntax,
     variablePrefix: String,
     parameterList: FunctionParameterListSyntax
   ) throws -> VariableDeclSyntax {
@@ -51,6 +52,7 @@ struct ReceivedArgumentsFactory {
       var \(identifier): \(type)
       """
     )
+    .applying(modifiers: modifiers)
   }
 
   private func variableType(parameterList: FunctionParameterListSyntax) -> TypeSyntaxProtocol {

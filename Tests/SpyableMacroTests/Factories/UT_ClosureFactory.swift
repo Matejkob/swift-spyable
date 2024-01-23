@@ -136,6 +136,7 @@ final class UT_ClosureFactory: XCTestCase {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
     let result = try ClosureFactory().variableDeclaration(
+      modifiers: [],
       variablePrefix: variablePrefix,
       functionSignature: protocolFunctionDeclaration.signature
     )

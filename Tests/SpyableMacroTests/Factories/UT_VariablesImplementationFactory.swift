@@ -48,11 +48,20 @@ final class UT_VariablesImplementationFactory: XCTestCase {
     )
   }
 
+  func testVariableDelcarationsWithModifiers() throws {
+    try assertProtocolVariable(
+      withVariableDeclaration: "var foo: String? { get }",
+      modifiers: [.init(name: "fileprivate")],
+      expectingVariableDeclaration: "fileprivate var foo: String?"
+    )
+  }
+
   func testVariablesDeclarationsWithMultiBindings() throws {
     let protocolVariableDeclaration = try VariableDeclSyntax("var foo: String?, bar: Int")
 
     XCTAssertThrowsError(
       try VariablesImplementationFactory().variablesDeclarations(
+        modifiers: [],
         protocolVariableDeclaration: protocolVariableDeclaration
       )
     ) { error in
@@ -68,6 +77,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
 
     XCTAssertThrowsError(
       try VariablesImplementationFactory().variablesDeclarations(
+        modifiers: [],
         protocolVariableDeclaration: protocolVariableDeclaration
       )
     ) { error in
@@ -82,6 +92,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
 
   private func assertProtocolVariable(
     withVariableDeclaration variableDeclaration: String,
+    modifiers: DeclModifierListSyntax = [],
     expectingVariableDeclaration expectedDeclaration: String,
     file: StaticString = #file,
     line: UInt = #line
@@ -89,6 +100,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
     let protocolVariableDeclaration = try VariableDeclSyntax("\(raw: variableDeclaration)")
 
     let result = try VariablesImplementationFactory().variablesDeclarations(
+      modifiers: modifiers,
       protocolVariableDeclaration: protocolVariableDeclaration
     )
 

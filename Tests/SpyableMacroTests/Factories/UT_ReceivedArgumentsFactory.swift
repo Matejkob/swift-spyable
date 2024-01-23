@@ -15,6 +15,14 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
     )
   }
 
+  func testVariableDeclarationAccess() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(bar: String)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReceivedBar: String?"
+    )
+  }
+
   func testVariableDeclarationSingleOptionalArgument() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func foo(_ price: Decimal?)",
@@ -157,6 +165,7 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
     let result = try ReceivedArgumentsFactory().variableDeclaration(
+      modifiers: [],
       variablePrefix: variablePrefix,
       parameterList: protocolFunctionDeclaration.signature.parameterClause.parameters
     )

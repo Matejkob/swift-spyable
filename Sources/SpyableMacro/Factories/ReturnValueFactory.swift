@@ -39,6 +39,7 @@ import SwiftSyntaxBuilder
 ///         correctly to different returned values.
 struct ReturnValueFactory {
   func variableDeclaration(
+    modifiers: DeclModifierListSyntax,
     variablePrefix: String,
     functionReturnType: TypeSyntax
   ) throws -> VariableDeclSyntax {
@@ -56,6 +57,7 @@ struct ReturnValueFactory {
       var \(variableIdentifier(variablePrefix: variablePrefix))\(typeAnnotation)
       """
     )
+    .applying(modifiers: modifiers)
   }
 
   func returnStatement(variablePrefix: String) -> StmtSyntax {

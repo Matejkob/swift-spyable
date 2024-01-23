@@ -107,7 +107,10 @@ struct SpyFactory {
     let functionDeclarations = protocolDeclaration.memberBlock.members
       .compactMap { $0.decl.as(FunctionDeclSyntax.self)?.removingLeadingSpaces }
 
+    let memberModifiers = protocolDeclaration.modifiers.replacingPrivateWithFileprivate
+
     return try ClassDeclSyntax(
+      modifiers: protocolDeclaration.modifiers,
       name: identifier,
       genericParameterClause: genericParameterClause,
       inheritanceClause: InheritanceClauseSyntax {
@@ -116,8 +119,15 @@ struct SpyFactory {
         )
       },
       memberBlockBuilder: {
+        InitializerDeclSyntax(
+          modifiers: memberModifiers,
+          signature: FunctionSignatureSyntax(parameterClause: .init(parameters: [])),
+          body: CodeBlockSyntax(statements: [])
+        )
+
         for variableDeclaration in variableDeclarations {
           try variablesImplementationFactory.variablesDeclarations(
+            modifiers: memberModifiers,
             protocolVariableDeclaration: variableDeclaration
           )
         }
@@ -126,37 +136,45 @@ struct SpyFactory {
           let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
           let parameterList = functionDeclaration.signature.parameterClause.parameters
 
-          try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
-          try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
+          try callsCountFactory.variableDeclaration(
+            modifiers: memberModifiers, variablePrefix: variablePrefix)
+          try calledFactory.variableDeclaration(
+            modifiers: memberModifiers, variablePrefix: variablePrefix)
 
           if parameterList.supportsParameterTracking {
             try receivedArgumentsFactory.variableDeclaration(
+              modifiers: memberModifiers,
               variablePrefix: variablePrefix,
               parameterList: parameterList
             )
             try receivedInvocationsFactory.variableDeclaration(
+              modifiers: memberModifiers,
               variablePrefix: variablePrefix,
               parameterList: parameterList
             )
           }
 
           if functionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
-            try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
+            try throwableErrorFactory.variableDeclaration(
+              modifiers: memberModifiers, variablePrefix: variablePrefix)
           }
 
           if let returnType = functionDeclaration.signature.returnClause?.type {
             try returnValueFactory.variableDeclaration(
+              modifiers: memberModifiers,
               variablePrefix: variablePrefix,
               functionReturnType: returnType
             )
           }
 
           try closureFactory.variableDeclaration(
+            modifiers: memberModifiers,
             variablePrefix: variablePrefix,
             functionSignature: functionDeclaration.signature
           )
 
           functionImplementationFactory.declaration(
+            modifiers: memberModifiers,
             variablePrefix: variablePrefix,
             protocolFunctionDeclaration: functionDeclaration
           )
@@ -183,5 +201,18 @@ extension SyntaxProtocol {
           }
       )
     )
+  }
+}
+
+extension DeclModifierListSyntax {
+  fileprivate var replacingPrivateWithFileprivate: Self {
+    DeclModifierListSyntax(
+      map {
+        if $0.name.text == TokenSyntax.keyword(.private).text {
+          return .init(name: .keyword(.fileprivate))
+        } else {
+          return $0
+        }
+      })
   }
 }
