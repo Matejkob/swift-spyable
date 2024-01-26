@@ -207,7 +207,7 @@ final class UT_SpyableMacro: XCTestCase {
       macros: sut
     )
   }
-  
+
   func testMacroWithFlagMultipleAttributes() {
     let protocolDeclaration = """
       public protocol ServiceProtocol {
@@ -222,11 +222,11 @@ final class UT_SpyableMacro: XCTestCase {
       \(protocolDeclaration)
       """,
       expandedSource: """
-        
+
         @MainActor
         @available(*, deprecated)
         \(protocolDeclaration)
-        
+
         #if CUSTOM
         class ServiceProtocolSpy: ServiceProtocol {
             var variable: Bool?
