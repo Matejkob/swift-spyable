@@ -207,4 +207,33 @@ final class UT_SpyableMacro: XCTestCase {
       macros: sut
     )
   }
+  
+  func testMacroWithFlagMultipleAttributes() {
+    let protocolDeclaration = """
+      public protocol ServiceProtocol {
+          var variable: Bool? { get set }
+      }
+      """
+    assertMacroExpansion(
+      """
+      @MainActor
+      @Spyable(behindPreprocessorFlag: "CUSTOM")
+      @available(*, deprecated)
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+        
+        @MainActor
+        @available(*, deprecated)
+        \(protocolDeclaration)
+        
+        #if CUSTOM
+        class ServiceProtocolSpy: ServiceProtocol {
+            var variable: Bool?
+        }
+        #endif
+        """,
+      macros: sut
+    )
+  }
 }
