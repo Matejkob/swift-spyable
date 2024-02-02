@@ -1,6 +1,6 @@
 import Spyable
 
-@Spyable
+@Spyable(behindPreprocessorFlag: "DEBUG")
 protocol ServiceProtocol {
   var name: String { get }
   var anyProtocol: any Codable { get set }

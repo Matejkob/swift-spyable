@@ -183,12 +183,49 @@ final class UT_SpyableMacro: XCTestCase {
     )
   }
 
-  func testMacroWithFlag() {
-    let protocolDeclaration = """
-      public protocol ServiceProtocol {
-          var variable: Bool? { get set }
-      }
+  // MARK: - `behindPreprocessorFlag` argument
+
+  func testMacroWithNoArgument() {
+    let protocolDeclaration = "protocol MyProtocol {}"
+
+    assertMacroExpansion(
       """
+      @Spyable()
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        \(protocolDeclaration)
+
+        class MyProtocolSpy: MyProtocol {
+        }
+        """,
+      macros: sut
+    )
+  }
+
+  func testMacroWithNoBehindPreprocessorFlagArgument() {
+    let protocolDeclaration = "protocol MyProtocol {}"
+
+    assertMacroExpansion(
+      """
+      @Spyable(someOtherArgument: 1)
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        \(protocolDeclaration)
+
+        class MyProtocolSpy: MyProtocol {
+        }
+        """,
+      macros: sut
+    )
+  }
+
+  func testMacroWithBehindPreprocessorFlagArgument() {
+    let protocolDeclaration = "protocol MyProtocol {}"
+
     assertMacroExpansion(
       """
       @Spyable(behindPreprocessorFlag: "CUSTOM")
@@ -199,8 +236,7 @@ final class UT_SpyableMacro: XCTestCase {
         \(protocolDeclaration)
 
         #if CUSTOM
-        class ServiceProtocolSpy: ServiceProtocol {
-            var variable: Bool?
+        class MyProtocolSpy: MyProtocol {
         }
         #endif
         """,
@@ -208,12 +244,9 @@ final class UT_SpyableMacro: XCTestCase {
     )
   }
 
-  func testMacroWithFlagMultipleAttributes() {
-    let protocolDeclaration = """
-      public protocol ServiceProtocol {
-          var variable: Bool? { get set }
-      }
-      """
+  func testMacroWithBehindPreprocessorFlagArgumentAndOtherAttributes() {
+    let protocolDeclaration = "protocol MyProtocol {}"
+
     assertMacroExpansion(
       """
       @MainActor
@@ -228,11 +261,78 @@ final class UT_SpyableMacro: XCTestCase {
         \(protocolDeclaration)
 
         #if CUSTOM
-        class ServiceProtocolSpy: ServiceProtocol {
-            var variable: Bool?
+        class MyProtocolSpy: MyProtocol {
         }
         #endif
         """,
+      macros: sut
+    )
+  }
+
+  func testMacroWithBehindPreprocessorFlagArgumentWithInterpolation() {
+    let protocolDeclaration = "protocol MyProtocol {}"
+
+    assertMacroExpansion(
+      #"""
+      @Spyable(behindPreprocessorFlag: "CUSTOM\(123)FLAG")
+      \#(protocolDeclaration)
+      """#,
+      expandedSource: """
+
+        \(protocolDeclaration)
+
+        class MyProtocolSpy: MyProtocol {
+        }
+        """,
+      diagnostics: [
+        DiagnosticSpec(
+          message: "The `behindPreprocessorFlag` argument requires a static string literal",
+          line: 1,
+          column: 1,
+          notes: [
+            NoteSpec(
+            message: "Provide a literal string value without any dynamic expressions or interpolations to meet the static string literal requirement.",
+            line: 1,
+            column: 34
+          )
+          ]
+        )
+      ],
+      macros: sut
+    )
+  }
+
+  func testMacroWithBehindPreprocessorFlagArgumentFromVariable() {
+    let protocolDeclaration = "protocol MyProtocol {}"
+
+    assertMacroExpansion(
+      """
+      let myCustomFlag = "DEBUG"
+
+      @Spyable(behindPreprocessorFlag: myCustomFlag)
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+        let myCustomFlag = "DEBUG"
+        \(protocolDeclaration)
+
+        class MyProtocolSpy: MyProtocol {
+        }
+        """,
+      diagnostics: [
+        DiagnosticSpec(
+          message: "The `behindPreprocessorFlag` argument requires a static string literal",
+          line: 3,
+          column: 1,
+          notes: [
+            NoteSpec(
+            message: "Provide a literal string value without any dynamic expressions or interpolations to meet the static string literal requirement.",
+            line: 3,
+            column: 34
+          )
+          ]
+        )
+      ],
       macros: sut
     )
   }
