@@ -31,9 +31,10 @@ enum SpyableDiagnostic: String, DiagnosticMessage, Error {
   var severity: DiagnosticSeverity {
     switch self {
     case .onlyApplicableToProtocol,
-        .variableDeclInProtocolWithNotSingleBinding,
-        .variableDeclInProtocolWithNotIdentifierPattern,
-        .behindPreprocessorFlagArgumentRequiresStaticStringLiteral: .error
+      .variableDeclInProtocolWithNotSingleBinding,
+      .variableDeclInProtocolWithNotIdentifierPattern,
+      .behindPreprocessorFlagArgumentRequiresStaticStringLiteral:
+      .error
     }
   }
 

@@ -291,10 +291,11 @@ final class UT_SpyableMacro: XCTestCase {
           column: 1,
           notes: [
             NoteSpec(
-            message: "Provide a literal string value without any dynamic expressions or interpolations to meet the static string literal requirement.",
-            line: 1,
-            column: 34
-          )
+              message:
+                "Provide a literal string value without any dynamic expressions or interpolations to meet the static string literal requirement.",
+              line: 1,
+              column: 34
+            )
           ]
         )
       ],
@@ -326,10 +327,11 @@ final class UT_SpyableMacro: XCTestCase {
           column: 1,
           notes: [
             NoteSpec(
-            message: "Provide a literal string value without any dynamic expressions or interpolations to meet the static string literal requirement.",
-            line: 3,
-            column: 34
-          )
+              message:
+                "Provide a literal string value without any dynamic expressions or interpolations to meet the static string literal requirement.",
+              line: 3,
+              column: 34
+            )
           ]
         )
       ],

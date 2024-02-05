@@ -1,6 +1,6 @@
+import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
-import SwiftDiagnostics
 
 /// A utility  responsible for extracting specific syntax elements from Swift Syntax.
 ///
@@ -48,9 +48,11 @@ struct Extractor {
       return nil
     }
 
-    guard let behindPreprocessorFlagArgument = argumentList.first(where: { argument in
-      argument.label?.text == "behindPreprocessorFlag"
-    }) else {
+    guard
+      let behindPreprocessorFlagArgument = argumentList.first(where: { argument in
+        argument.label?.text == "behindPreprocessorFlag"
+      })
+    else {
       // The `behindPreprocessorFlag` argument is missing.
       return nil
     }
@@ -60,8 +62,9 @@ struct Extractor {
       .segments
 
     guard let segments,
-          segments.count == 1,
-          case let .stringSegment(literalSegment)? = segments.first else {
+      segments.count == 1,
+      case let .stringSegment(literalSegment)? = segments.first
+    else {
       // The `behindPreprocessorFlag` argument's value is not a static string literal.
       context.diagnose(
         Diagnostic(
