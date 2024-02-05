@@ -26,15 +26,15 @@ public enum SpyableMacro: PeerMacro {
   private static let spyFactory = SpyFactory()
 
   public static func expansion(
-    of _: AttributeSyntax,
+    of node: AttributeSyntax,
     providingPeersOf declaration: some DeclSyntaxProtocol,
-    in _: some MacroExpansionContext
+    in context: some MacroExpansionContext
   ) throws -> [DeclSyntax] {
     let protocolDeclaration = try extractor.extractProtocolDeclaration(from: declaration)
 
     let spyClassDeclaration = try spyFactory.classDeclaration(for: protocolDeclaration)
 
-    if let flag = declaration.preprocessorFlag {
+    if let flag = try extractor.extractPreprocessorFlag(from: node, in: context) {
       return [
         DeclSyntax(
           IfConfigDeclSyntax(
@@ -55,23 +55,5 @@ public enum SpyableMacro: PeerMacro {
     } else {
       return [DeclSyntax(spyClassDeclaration)]
     }
-  }
-}
-
-extension DeclSyntaxProtocol {
-  /// - Returns: The preprocessor `flag` parameter that can be optionally provided via `@Spyable(flag:)`.
-  fileprivate var preprocessorFlag: String? {
-    self
-      .as(ProtocolDeclSyntax.self)?.attributes.first {
-        $0.as(AttributeSyntax.self)?.attributeName
-          .as(IdentifierTypeSyntax.self)?.name.text == "Spyable"
-      }?
-      .as(AttributeSyntax.self)?.arguments?
-      .as(LabeledExprListSyntax.self)?.first {
-        $0.label?.text == "behindPreprocessorFlag"
-      }?
-      .as(LabeledExprSyntax.self)?.expression
-      .as(StringLiteralExprSyntax.self)?.segments.first?
-      .as(StringSegmentSyntax.self)?.content.text
   }
 }
