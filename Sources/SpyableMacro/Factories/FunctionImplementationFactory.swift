@@ -61,6 +61,7 @@ struct FunctionImplementationFactory {
   private let receivedInvocationsFactory = ReceivedInvocationsFactory()
   private let throwableErrorFactory = ThrowableErrorFactory()
   private let closureFactory = ClosureFactory()
+  private let expectationFactory = ExpectationFactory()
   private let returnValueFactory = ReturnValueFactory()
 
   func declaration(
@@ -102,6 +103,8 @@ struct FunctionImplementationFactory {
           protocolFunctionDeclaration: protocolFunctionDeclaration
         )
       }
+        
+      expectationFactory.fulfillExpectationExpression(variablePrefix: variablePrefix)
     }
 
     return spyFunctionDeclaration

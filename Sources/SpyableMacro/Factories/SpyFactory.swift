@@ -90,6 +90,7 @@ struct SpyFactory {
   private let throwableErrorFactory = ThrowableErrorFactory()
   private let returnValueFactory = ReturnValueFactory()
   private let closureFactory = ClosureFactory()
+  private let expectationFactory = ExpectationFactory()
   private let functionImplementationFactory = FunctionImplementationFactory()
 
   func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) throws -> ClassDeclSyntax {
@@ -152,6 +153,11 @@ struct SpyFactory {
           }
 
           try closureFactory.variableDeclaration(
+            variablePrefix: variablePrefix,
+            functionSignature: functionDeclaration.signature
+          )
+            
+          try expectationFactory.variableDeclaration(
             variablePrefix: variablePrefix,
             functionSignature: functionDeclaration.signature
           )
