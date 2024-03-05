@@ -19,14 +19,14 @@ enum SpyableNoteMessage: String, NoteMessage {
   }
 
   #if canImport(SwiftSyntax510)
-  /// Unique identifier for each note message, aligning with the corresponding diagnostic message for clarity.
-  var noteID: MessageID {
-    MessageID(domain: "SpyableMacro", id: rawValue + "NoteMessage")
-  }
+    /// Unique identifier for each note message, aligning with the corresponding diagnostic message for clarity.
+    var noteID: MessageID {
+      MessageID(domain: "SpyableMacro", id: rawValue + "NoteMessage")
+    }
   #else
-  /// Unique identifier for each note message, aligning with the corresponding diagnostic message for clarity.
-  var fixItID: MessageID {
-    MessageID(domain: "SpyableMacro", id: rawValue + "NoteMessage")
-  }
+    /// Unique identifier for each note message, aligning with the corresponding diagnostic message for clarity.
+    var fixItID: MessageID {
+      MessageID(domain: "SpyableMacro", id: rawValue + "NoteMessage")
+    }
   #endif
 }
