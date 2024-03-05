@@ -168,26 +168,25 @@ The latest documentation for this library is available [here](https://swiftpacka
 
 ## Installation
 
-> Warning: Xcode beta 15.x command line tools are required. 
+### Integrating with Xcode Projects
 
-**For Xcode project**
+To incorporate Spyable into your Xcode project, add it as a package dependency:
 
-If you are using Xcode beta 15.x command line tools, you can add
- [swift-spyable](https://github.com/Matejkob/swift-spyable) macro to your project as a package.
+```
+https://github.com/Matejkob/swift-spyable
+```
 
-> `https://github.com/Matejkob/swift-spyable`
+### Using with Swift Package Manager (SwiftPM)
 
-**For Swift Package Manager**
+For projects utilizing Swift Package Manager, you can include Spyable by modifying your `Package.swift` file. Add the following to your `dependencies` array:
 
-In `Package.swift` add:
-
-``` swift
+```swift
 dependencies: [
-  .package(url: "https://github.com/Matejkob/swift-spyable", from: "0.1.0")
+  .package(url: "https://github.com/Matejkob/swift-spyable", from: "0.3.0")
 ]
 ```
 
-and then add the product to any target that needs access to the macro:
+Next, to use Spyable in your project, append the product to the appropriate target(s) in your `Package.swift`:
 
 ```swift
 .product(name: "Spyable", package: "swift-spyable"),
