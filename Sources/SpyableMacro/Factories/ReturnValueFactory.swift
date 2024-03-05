@@ -58,12 +58,21 @@ struct ReturnValueFactory {
     )
   }
 
-  func returnStatement(variablePrefix: String) -> StmtSyntax {
-    StmtSyntax(
-      """
-      return \(variableIdentifier(variablePrefix: variablePrefix))
-      """
+  func returnStatement(
+    variablePrefix: String,
+    forceCastType: TypeSyntax? = nil
+  ) -> StmtSyntaxProtocol {
+    var expression: ExprSyntaxProtocol = DeclReferenceExprSyntax(
+      baseName: variableIdentifier(variablePrefix: variablePrefix)
     )
+    if let forceCastType {
+      expression = AsExprSyntax(
+        expression: expression,
+        questionOrExclamationMark: .exclamationMarkToken(trailingTrivia: .space),
+        type: forceCastType
+      )
+    }
+    return ReturnStmtSyntax(expression: expression)
   }
 
   private func variableIdentifier(variablePrefix: String) -> TokenSyntax {

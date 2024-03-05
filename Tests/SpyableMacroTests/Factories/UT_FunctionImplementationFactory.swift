@@ -52,6 +52,25 @@ final class UT_FunctionImplementationFactory: XCTestCase {
     )
   }
 
+  func testDeclarationGenerics() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo<T, U>(value: T) -> U",
+      prefixForVariable: "_prefix_",
+      expectingFunctionDeclaration: """
+        func foo<T, U>(value: T) -> U {
+            _prefix_CallsCount += 1
+            _prefix_ReceivedValue = (value)
+            _prefix_ReceivedInvocations.append((value))
+            if _prefix_Closure != nil {
+                return _prefix_Closure!(value) as! U
+            } else {
+                return _prefix_ReturnValue as! U
+            }
+        }
+        """
+    )
+  }
+
   func testDeclarationReturnValueAsyncThrows() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """

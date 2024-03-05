@@ -65,6 +65,45 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+  func testDeclarationGenericArgument() throws {
+    let declaration = DeclSyntax(
+      """
+      protocol ViewModelProtocol {
+      func foo<T, U>(text: String, value: T) -> U
+      }
+      """
+    )
+    let protocolDeclaration = try XCTUnwrap(ProtocolDeclSyntax(declaration))
+
+    let result = try SpyFactory().classDeclaration(for: protocolDeclaration)
+
+    assertBuildResult(
+      result,
+      """
+      class ViewModelProtocolSpy: ViewModelProtocol {
+          var fooTextValueCallsCount = 0
+          var fooTextValueCalled: Bool {
+              return fooTextValueCallsCount > 0
+          }
+          var fooTextValueReceivedArguments: (text: String, value: Any)?
+          var fooTextValueReceivedInvocations: [(text: String, value: Any)] = []
+          var fooTextValueReturnValue: Any!
+          var fooTextValueClosure: ((String, Any) -> Any)?
+          func foo<T, U>(text: String, value: T) -> U {
+              fooTextValueCallsCount += 1
+              fooTextValueReceivedArguments = (text, value)
+              fooTextValueReceivedInvocations.append((text, value))
+              if fooTextValueClosure != nil {
+                  return fooTextValueClosure!(text, value) as! U
+              } else {
+                  return fooTextValueReturnValue as! U
+              }
+          }
+      }
+      """
+    )
+  }
+
   func testDeclarationEscapingAutoClosureArgument() throws {
     try assertProtocol(
       withDeclaration: """

@@ -23,6 +23,14 @@ final class UT_ReceivedArgumentsFactory: XCTestCase {
     )
   }
 
+  func testVariableDeclarationSingleGenericArgument() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo<T>(bar: T)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReceivedBar: T?"
+    )
+  }
+
   func testVariableDeclarationSingleArgumentDoubleParameterName() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func foo(firstName secondName: (String, Int))",

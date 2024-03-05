@@ -105,6 +105,78 @@ func testFetchConfig() async throws {
 }
 ```
 
+### Generic Functions
+Generic functions are supported, but require some care to use, as they get treated a little differently from other functionality.
+
+Given a function:
+
+```swift
+func foo<T, U>(_ bar: T) -> U
+```
+
+The following will be created in a spy:
+
+```swift
+class MyProtocolSpy: MyProtocol {
+  var fooCallsCount = 0
+  var fooCalled: Bool {
+      return fooCallsCount > 0
+  }
+  var fooReceivedBar: Any?
+  var fooReceivedInvocations: [Any] = []
+  var fooReturnValue: Any!
+  var fooClosure: ((Any) -> Any)?
+  func foo<T, U>(_ bar: T) -> U {
+    fooCallsCount += 1
+    fooReceivedBar = (bar)
+    fooReceivedInvocations.append((bar))
+    if fooClosure != nil {
+      return fooClosure!(bar) as! U
+    } else {
+      return fooReturnValue as! U
+    }
+  }
+}
+```
+Uses of `T` and `U` get substituted with `Any` because generics specified only by a function can't be stored as a property in the function's class. Using `Any` lets us store injected closures, invocations, etc.
+
+Force casts get used to turn an injected closure or returnValue property from `Any` into an expected type. This means that *it's essential that expected types match up with values given to these injected properties*.
+
+##### Example:
+Given the following code:
+
+```swift
+@Spyable
+protocol ServiceProtocol {
+  func wrapDataInArray<T>(_ data: T) -> Array<T>
+}
+
+struct ViewModel {
+  let service: ServiceProtocol
+
+  func wrapData<T>(_ data: T) -> Array<T> {
+    service.wrapDataInArray(data)
+  }
+}
+```
+
+A test for ViewModel's `wrapData()` function could look like this:
+
+```swift
+func testWrapData() {
+  // Important: When using generics, mocked return value types must match the types that are being returned in the use of the spy.
+  serviceSpy.wrapDataInArrayReturnValue = [123]
+  XCTAssertEqual(sut.wrapData(1), [123])
+  XCTAssertEqual(serviceSpy.wrapDataInArrayReceivedData as? Int, 1)
+
+  // ⚠️ The following would be incorrect, and cause a fatal error, because an Array<String> will be returned by wrapData(), but here we'd be providing an Array<Int> to wrapDataInArrayReturnValue. ⚠️
+  // XCTAssertEqual(sut.wrapData("hi"), ["hello"])
+}
+```
+
+> [!TIP]
+> If you see a crash at force casting within a spy's generic function implementation, it most likely means that types are mismatched.
+
 ## Advanced Usage
 
 ### Restricting the Availability of Spies
