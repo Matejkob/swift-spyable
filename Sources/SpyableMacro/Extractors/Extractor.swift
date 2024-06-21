@@ -32,7 +32,7 @@ struct Extractor {
   /// This method analyzes an `AttributeSyntax` to find an argument labeled `behindPreprocessorFlag`.
   /// If found, it verifies that the argument's value is a static string literal. It then returns
   /// this string value. If the specific argument is not found, or if its value is not a static string,
-  /// the method provides relevant diagnostics and returns `nil`.
+  /// the method provides relevant diagnostics and returns `DEBUG`.
   ///
   /// - Parameters:
   ///   - attribute: The attribute syntax to analyze.
@@ -54,7 +54,7 @@ struct Extractor {
       })
     else {
       // The `behindPreprocessorFlag` argument is missing.
-      return nil
+      return "DEBUG"
     }
 
     let segments = behindPreprocessorFlagArgument.expression
