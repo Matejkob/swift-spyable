@@ -45,7 +45,7 @@ struct Extractor {
   ) throws -> String? {
     guard case let .argumentList(argumentList) = attribute.arguments else {
       // No arguments are present in the attribute.
-      return nil
+      return "DEBUG"
     }
 
     guard
