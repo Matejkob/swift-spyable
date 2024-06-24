@@ -14,6 +14,7 @@ protocol ServiceProtocol {
   func save(name: any Codable, surname: any Codable)
   func insert(name: (any Codable)?, surname: (any Codable)?)
   func append(name: (any Codable) -> (any Codable)?)
+  func get() async throws -> any Codable
 }
 
 final class ViewModel {
