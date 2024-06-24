@@ -11,6 +11,9 @@ protocol ServiceProtocol {
   func initialize(name: String, _ secondName: String?)
   func fetchConfig(arg: UInt8) async throws -> [String: String]
   func fetchData(_ name: (String, count: Int)) async -> (() -> Void)
+  func save(name: any Codable, surname: any Codable)
+  func insert(name: (any Codable)?, surname: (any Codable)?)
+  func append(name: (any Codable) -> (any Codable)?)
 }
 
 final class ViewModel {
