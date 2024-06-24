@@ -72,6 +72,15 @@ struct ReceivedArgumentsFactory {
           ),
           questionMark: .postfixQuestionMarkToken()
         )
+      } else if onlyParameterType.is(SomeOrAnyTypeSyntax.self) {
+        variableType = OptionalTypeSyntax(
+          wrappedType: TupleTypeSyntax(
+            elements: TupleTypeElementListSyntax {
+              TupleTypeElementSyntax(type: onlyParameterType)
+            }
+          ),
+          questionMark: .postfixQuestionMarkToken()
+        )
       } else {
         variableType = OptionalTypeSyntax(
           wrappedType: onlyParameterType,

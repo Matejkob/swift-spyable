@@ -65,6 +65,33 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+  func testDeclarationExistentialTypeArguments() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ViewModelProtocol {
+            func foo(model: any ModelProtocol)
+        }
+        """,
+      expectingClassDeclaration: """
+        class ViewModelProtocolSpy: ViewModelProtocol {
+            var fooModelCallsCount = 0
+            var fooModelCalled: Bool {
+                return fooModelCallsCount > 0
+            }
+            var fooModelReceivedModel: (any ModelProtocol)?
+            var fooModelReceivedInvocations: [any ModelProtocol] = []
+            var fooModelClosure: ((any ModelProtocol) -> Void)?
+            func foo(model: any ModelProtocol) {
+                fooModelCallsCount += 1
+                fooModelReceivedModel = (model)
+                fooModelReceivedInvocations.append((model))
+                fooModelClosure?(model)
+            }
+        }
+        """
+    )
+  }
+
   func testDeclarationEscapingAutoClosureArgument() throws {
     try assertProtocol(
       withDeclaration: """
