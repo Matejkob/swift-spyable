@@ -357,6 +357,29 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+  func testDeclarationExistentialVariable() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ServiceProtocol {
+            var data: any Codable { get set }
+        }
+        """,
+      expectingClassDeclaration: """
+        class ServiceProtocolSpy: ServiceProtocol {
+            var data: any Codable {
+                get {
+                    underlyingData
+                }
+                set {
+                    underlyingData = newValue
+                }
+            }
+            var underlyingData: (any Codable)!
+        }
+        """
+    )
+  }
+
   func testDeclarationClosureVariable() throws {
     try assertProtocol(
       withDeclaration: """
