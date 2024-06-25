@@ -347,6 +347,34 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+  func testDeclarationReturnsForcedUnwrappedType() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ServiceProtocol {
+            func foo() -> String!
+        }
+        """,
+      expectingClassDeclaration: """
+        class ServiceProtocolSpy: ServiceProtocol {
+            var fooCallsCount = 0
+            var fooCalled: Bool {
+                return fooCallsCount > 0
+            }
+            var fooReturnValue: String!
+            var fooClosure: (() -> String?)?
+            func foo() -> String! {
+                fooCallsCount += 1
+                if fooClosure != nil {
+                    return fooClosure!()
+                } else {
+                    return fooReturnValue
+                }
+            }
+        }
+        """
+    )
+  }
+
   func testDeclarationVariable() throws {
     try assertProtocol(
       withDeclaration: """

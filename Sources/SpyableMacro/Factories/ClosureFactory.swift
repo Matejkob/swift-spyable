@@ -32,6 +32,37 @@ struct ClosureFactory {
     variablePrefix: String,
     functionSignature: FunctionSignatureSyntax
   ) throws -> VariableDeclSyntax {
+    let returnClause: ReturnClauseSyntax
+    if let functionReturnClause = functionSignature.returnClause {
+      /*
+       func f() -> String!
+       */
+      if let implicitlyUnwrappedType = functionReturnClause.type.as(ImplicitlyUnwrappedOptionalTypeSyntax.self) {
+        var functionReturnClause = functionReturnClause
+        /*
+         `() -> String!` is not a valid code
+         so we have to convert it to `() -> String?
+         */
+        functionReturnClause.type = TypeSyntax(OptionalTypeSyntax(wrappedType: implicitlyUnwrappedType.wrappedType))
+        returnClause = functionReturnClause
+      /*
+       func f() -> Any
+       func f() -> Any?
+       */
+      } else {
+        returnClause = functionReturnClause
+      }
+    /*
+     func f()
+     */
+    } else {
+      returnClause = ReturnClauseSyntax(
+        type: IdentifierTypeSyntax(
+          name: .identifier("Void")
+        )
+      )
+    }
+
     let elements = TupleTypeElementListSyntax {
       TupleTypeElementSyntax(
         type: FunctionTypeSyntax(
@@ -44,12 +75,7 @@ struct ClosureFactory {
             asyncSpecifier: functionSignature.effectSpecifiers?.asyncSpecifier,
             throwsSpecifier: functionSignature.effectSpecifiers?.throwsSpecifier
           ),
-          returnClause: functionSignature.returnClause
-            ?? ReturnClauseSyntax(
-              type: IdentifierTypeSyntax(
-                name: .identifier("Void")
-              )
-            )
+          returnClause: returnClause
         )
       )
     }

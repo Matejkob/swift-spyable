@@ -55,6 +55,22 @@ final class UT_ClosureFactory: XCTestCase {
     )
   }
 
+  func testVariableDeclarationOptionalTypeReturnValue() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_() -> Data?",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: (() -> Data? )?"
+    )
+  }
+
+  func testVariableDeclarationForcedUnwrappedOptionalTypeReturnValue() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_() -> Data!",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: (() -> Data?)?"
+    )
+  }
+
   func testVariableDeclarationEverything() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: """
