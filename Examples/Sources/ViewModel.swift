@@ -15,6 +15,7 @@ protocol ServiceProtocol {
   func insert(name: (any Codable)?, surname: (any Codable)?)
   func append(name: (any Codable) -> (any Codable)?)
   func get() async throws -> any Codable
+  func read() -> String!
 }
 
 final class ViewModel {
