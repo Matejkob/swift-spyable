@@ -319,6 +319,34 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+  func testDeclarationReturnsExistential() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ServiceProtocol {
+            func foo() -> any Codable
+        }
+        """,
+      expectingClassDeclaration: """
+        class ServiceProtocolSpy: ServiceProtocol {
+            var fooCallsCount = 0
+            var fooCalled: Bool {
+                return fooCallsCount > 0
+            }
+            var fooReturnValue: (any Codable)!
+            var fooClosure: (() -> any Codable)?
+            func foo() -> any Codable {
+                fooCallsCount += 1
+                if fooClosure != nil {
+                    return fooClosure!()
+                } else {
+                    return fooReturnValue
+                }
+            }
+        }
+        """
+    )
+  }
+
   func testDeclarationVariable() throws {
     try assertProtocol(
       withDeclaration: """
