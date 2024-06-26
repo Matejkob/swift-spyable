@@ -53,8 +53,16 @@ struct VariablesImplementationFactory {
       // Since the count of `bindings` is exactly 1, it is safe to force unwrap it.
       let binding = protocolVariableDeclaration.bindings.first!
 
-      if binding.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true {
+      /*
+       var name: String?
+       var name: String!
+       */
+      if binding.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true ||
+          binding.typeAnnotation?.type.is(ImplicitlyUnwrappedOptionalTypeSyntax.self) == true {
         accessorRemovalVisitor.visit(protocolVariableDeclaration)
+      /*
+       var name: String
+       */
       } else {
         try protocolVariableDeclarationWithGetterAndSetter(binding: binding)
 
