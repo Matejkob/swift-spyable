@@ -34,6 +34,7 @@ struct ClosureFactory {
   ) throws -> VariableDeclSyntax {
     let functionSignature = protocolFunctionDeclaration.signature
     let genericTypes = protocolFunctionDeclaration.genericTypes
+    let returnClause = returnClause(protocolFunctionDeclaration: protocolFunctionDeclaration)
 
     let elements = TupleTypeElementListSyntax {
       TupleTypeElementSyntax(
@@ -49,9 +50,7 @@ struct ClosureFactory {
             asyncSpecifier: functionSignature.effectSpecifiers?.asyncSpecifier,
             throwsSpecifier: functionSignature.effectSpecifiers?.throwsSpecifier
           ),
-          returnClause: returnClause(
-            protocolFunctionDeclaration: protocolFunctionDeclaration
-          )
+          returnClause: returnClause
         )
       )
     }
@@ -69,10 +68,30 @@ struct ClosureFactory {
     let functionSignature = protocolFunctionDeclaration.signature
     let genericTypes = protocolFunctionDeclaration.genericTypes
 
-    return if let returnClause = functionSignature.returnClause {
-      returnClause.with(\.type, returnClause.type.erasingGenericTypes(genericTypes))
+    if let functionReturnClause = functionSignature.returnClause {
+      /*
+       func f() -> String!
+       */
+      if let implicitlyUnwrappedType = functionReturnClause.type.as(ImplicitlyUnwrappedOptionalTypeSyntax.self) {
+        var functionReturnClause = functionReturnClause
+        /*
+         `() -> String!` is not a valid code
+         so we have to convert it to `() -> String?
+         */
+        functionReturnClause.type = TypeSyntax(OptionalTypeSyntax(wrappedType: implicitlyUnwrappedType.wrappedType))
+        return functionReturnClause
+        /*
+         func f() -> Any
+         func f() -> Any?
+         */
+      } else {
+        return functionReturnClause.with(\.type, functionReturnClause.type.erasingGenericTypes(genericTypes))
+      }
+      /*
+       func f()
+       */
     } else {
-      ReturnClauseSyntax(
+      return ReturnClauseSyntax(
         type: IdentifierTypeSyntax(
           name: .identifier("Void")
         )
