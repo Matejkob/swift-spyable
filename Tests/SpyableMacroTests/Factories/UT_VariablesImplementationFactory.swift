@@ -31,6 +31,13 @@ final class UT_VariablesImplementationFactory: XCTestCase {
     )
   }
 
+  func testVariablesDeclarationsForcedUnwrapped() throws {
+    try assertProtocolVariable(
+      withVariableDeclaration: "var foo: String! { get }",
+      expectingVariableDeclaration: "var foo: String!"
+    )
+  }
+
   func testVariablesDeclarationsClosure() throws {
     try assertProtocolVariable(
       withVariableDeclaration: "var completion: () -> Void { get }",

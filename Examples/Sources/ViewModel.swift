@@ -5,6 +5,7 @@ protocol ServiceProtocol {
   var name: String { get }
   var anyProtocol: any Codable { get set }
   var secondName: String? { get }
+  var address: String! { get }
   var added: () -> Void { get set }
   var removed: (() -> Void)? { get set }
 
