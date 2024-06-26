@@ -57,10 +57,11 @@ struct VariablesImplementationFactory {
        var name: String?
        var name: String!
        */
-      if binding.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true ||
-          binding.typeAnnotation?.type.is(ImplicitlyUnwrappedOptionalTypeSyntax.self) == true {
+      if binding.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true
+        || binding.typeAnnotation?.type.is(ImplicitlyUnwrappedOptionalTypeSyntax.self) == true
+      {
         accessorRemovalVisitor.visit(protocolVariableDeclaration)
-      /*
+        /*
        var name: String
        */
       } else {
