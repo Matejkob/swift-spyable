@@ -122,12 +122,12 @@ graph TD
     B -- SPIES_ENABLED = 1 --> E[Test Build]
     C -- SPIES_ENABLED = 1 --> F[Preview Build]
 
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#bbf,stroke:#333,stroke-width:2px
-    style C fill:#bfb,stroke:#333,stroke-width:2px
-    style D fill:#fbb,stroke:#333,stroke-width:2px
-    style E fill:#bbf,stroke:#333,stroke-width:2px
-    style F fill:#bfb,stroke:#333,stroke-width:2px
+    style A fill:#ff9999,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#99ccff,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#99ffcc,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#ffcc99,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#99ccff,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#99ffcc,stroke:#333,stroke-width:2px,color:#000
 ```
 
 Set this flag under "Active Compilation Conditions" for both test and preview targets.
