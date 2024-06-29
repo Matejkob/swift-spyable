@@ -148,6 +148,7 @@ jobs:
           files: ./coverage_report.lcov
 
   check-macro-compatibility:
+    name: Check Macro Compatibility
     runs-on: macos-latest
     steps:
       - name: Checkout repository
