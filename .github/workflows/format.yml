@@ -40,18 +40,10 @@ jobs:
             exit 0
           fi
 
-#      - name: Commit changes
-#        run: |
-#          git config user.name "Mateusz Bąk"
-#          git config user.email "bakmatthew@icloud.com"
-#          git checkout -b format-changes
-#          git add -A
-#          git commit -m "Apply swift-format changes"
-#          git push --set-upstream origin format-changes
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Apply swift-format changes"
           title: "Apply swift-format changes"
+          body: "This pull request contains changes made by swift-format."
