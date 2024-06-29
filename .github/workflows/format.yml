@@ -1,0 +1,49 @@
+name: Format
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: format-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  swift_format:
+    name: Swift Format
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+
+      - name: Install swift-format
+        run: brew install swift-format
+
+      - name: Run swift-format
+        id: swift_format
+        run: |
+          swift format \
+          --ignore-unparsable-files \
+          --in-place \
+          --recursive \
+          ./Package.swift ./Sources ./Tests ./Examples
+
+          if ! git diff --exit-code; then
+            echo "Formatting changes detected."
+          else
+            echo "No formatting changes detected."
+            exit 0
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Apply swift-format changes"
+          title: "Apply swift-format changes"
+          body: "This pull request contains changes made by swift-format."
