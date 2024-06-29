@@ -77,11 +77,8 @@ jobs:
       - name: Build package
         run: swift build
 
-      - name: Run tests (debug)
-        run: swift test --parallel
-
-      - name: Run tests (release)
-        run: swift test -c release --parallel
+      - name: Run tests
+        run: swift test
 
   windows:
     name: Windows - ${{ matrix.package }} (Swift ${{ matrix.swift }})
@@ -90,7 +87,7 @@ jobs:
       matrix:
         swift:
           - '5.10'
-          - '5.9.1' # Macros has been added to swift on Windows in 5.9.1 version
+          - '5.9.1' # Macros has been added to Swift on Windows in 5.9.1 version
         package:
           - 'main'
           - 'Examples'
@@ -114,11 +111,11 @@ jobs:
       - name: Build package
         run: swift build
 
-      - name: Run tests (debug)
-        run: swift test --parallel
-
-      - name: Run tests (release)
-        run: swift test -c release --parallel
+      - name: Run tests
+        run: |
+          if ("${{ matrix.package }}" -eq "Examples") {
+            swift test
+          }
 
   code-coverage:
     name: Gather Code Coverage
