@@ -47,7 +47,7 @@ jobs:
           git checkout -b format-changes
           git add -A
           git commit -m "Apply swift-format changes"
-          git push
+          git push --set-upstream origin format-changes
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
