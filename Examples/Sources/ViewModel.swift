@@ -6,7 +6,7 @@ protocol ServiceProtocol {
   var anyProtocol: any Codable { get set }
   var secondName: String? { get }
   var address: String! { get }
-  var added: () -> Void               { get set }
+  var added: () -> Void { get set }
   var removed: (() -> Void)? { get set }
 
   func initialize(name: String, _ secondName: String?)
@@ -18,16 +18,6 @@ protocol ServiceProtocol {
   func get() async throws -> any Codable
   func read() -> String!
 }
-
-
-
-
-
-
-
-
-
-
 
 final class ViewModel {
   private let service: ServiceProtocol
