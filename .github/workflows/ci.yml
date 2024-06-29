@@ -146,3 +146,17 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage_report.lcov
+
+  check-macro-compatibility:
+    name: Check Macro Compatibility
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Run Swift Macro Compatibility Check
+        uses: Matejkob/swift-macro-compatibility-check@v0.1.0
+        with:
+          run-tests: true
+          major-versions-only: false
+          
