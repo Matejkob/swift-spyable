@@ -20,6 +20,7 @@ jobs:
       matrix:
         xcode:
           - '15.4'
+          - '15.0'
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v4
@@ -50,16 +51,38 @@ jobs:
           verbose: true
 
   linux:
+    name: Ubuntu (Swift ${{ matrix.swift }})
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         swift:
           - '5.10'
-    name: Ubuntu (Swift ${{ matrix.swift }})
-    runs-on: ubuntu-latest
+          - '5.9'
     container: swift:${{ matrix.swift }}
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v4
+      - name: Run tests
+        run: swift test --parallel
+      - name: Run tests (release)
+        run: swift test -c release --parallel
+
+  windows:
+    name: Windows (Swift ${{ matrix.swift }})
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        swift:
+          - '5.10'
+          - '5.9'
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v4
+      - name: Install Swift
+        uses: compnerd/gha-setup-swift@main
+        with:
+          branch: swift-${{ matrix.swift }}-release
+          tag: ${{ matrix.swift }}-RELEASE
       - name: Run tests
         run: swift test --parallel
       - name: Run tests (release)
