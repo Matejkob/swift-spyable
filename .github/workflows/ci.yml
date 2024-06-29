@@ -151,6 +151,7 @@ jobs:
     strategy:
       matrix:
         swift-syntax-version: ['508.0.0', '509.0.0', '510.0.0']
+      fail-fast: false  
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
