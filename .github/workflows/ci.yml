@@ -157,6 +157,6 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Run Macro Compatibility Check
-      uses: Matejkob/swift-macro-compatibility-check@v1
+      uses: Matejkob/swift-macro-compatibility-check@v1.1
       with:
         swift-syntax-version: ${{ matrix.swift-syntax-version }}
