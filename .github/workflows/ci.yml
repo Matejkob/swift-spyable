@@ -146,3 +146,16 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage_report.lcov
+
+  check-compatibility:
+    strategy:
+      matrix:
+        swift-syntax-version: ['508.0.0', '509.0.0', '510.0.0']
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Macro Compatibility Check
+      uses: Matejkob/swift-macro-compatibility-check@v1
+      with:
+        swift-syntax-version: ${{ matrix.swift-syntax-version }}
