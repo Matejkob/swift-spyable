@@ -56,4 +56,4 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Run Macro Compatibility Check
-      uses: Matejkob/swift-macro-compatibility-check@v1.1.2
+      uses: Matejkob/swift-macro-compatibility-check@v1.1.3
