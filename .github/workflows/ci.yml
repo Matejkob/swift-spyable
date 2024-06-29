@@ -108,7 +108,7 @@ jobs:
       matrix:
         swift:
           - '5.10'
-          - '5.9'
+          - '5.9.1' # Macros has been added to swift on Windows in 5.9.1 version
         package: ['main', 'examples']
     steps:
       - name: Checkout repository
