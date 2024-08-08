@@ -1,6 +1,6 @@
 # Spyable
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/Matejkob/swift-spyable/Test_SwiftPM.yml?label=CI&logo=GitHub)
+[![GitHub Workflow Status](https://github.com/Matejkob/swift-spyable/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Matejkob/swift-spyable/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/Matejkob/swift-spyable/graph/badge.svg?token=YRMM1BDQ85)](https://codecov.io/gh/Matejkob/swift-spyable)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FMatejkob%2Fswift-spyable%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/Matejkob/swift-spyable)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FMatejkob%2Fswift-spyable%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/Matejkob/swift-spyable)
@@ -194,12 +194,12 @@ graph TD
     B -- SPIES_ENABLED = 1 --> E[Test Build]
     C -- SPIES_ENABLED = 1 --> F[Preview Build]
 
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#bbf,stroke:#333,stroke-width:2px
-    style C fill:#bfb,stroke:#333,stroke-width:2px
-    style D fill:#fbb,stroke:#333,stroke-width:2px
-    style E fill:#bbf,stroke:#333,stroke-width:2px
-    style F fill:#bfb,stroke:#333,stroke-width:2px
+    style A fill:#ff9999,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#99ccff,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#99ffcc,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#ffcc99,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#99ccff,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#99ffcc,stroke:#333,stroke-width:2px,color:#000
 ```
 
 Set this flag under "Active Compilation Conditions" for both test and preview targets.
