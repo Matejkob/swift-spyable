@@ -42,9 +42,33 @@ struct ReturnValueFactory {
     variablePrefix: String,
     functionReturnType: TypeSyntax
   ) throws -> VariableDeclSyntax {
+    /*
+     func f() -> String?
+     */
     let typeAnnotation =
       if functionReturnType.is(OptionalTypeSyntax.self) {
         TypeAnnotationSyntax(type: functionReturnType)
+        /*
+     func f() -> String!
+     */
+      } else if functionReturnType.is(ImplicitlyUnwrappedOptionalTypeSyntax.self) {
+        TypeAnnotationSyntax(type: functionReturnType)
+        /*
+     func f() -> any Codable
+     */
+      } else if functionReturnType.is(SomeOrAnyTypeSyntax.self) {
+        TypeAnnotationSyntax(
+          type: ImplicitlyUnwrappedOptionalTypeSyntax(
+            wrappedType: TupleTypeSyntax(
+              elements: TupleTypeElementListSyntax {
+                TupleTypeElementSyntax(type: functionReturnType)
+              }
+            )
+          )
+        )
+        /*
+     func f() -> String
+     */
       } else {
         TypeAnnotationSyntax(
           type: ImplicitlyUnwrappedOptionalTypeSyntax(wrappedType: functionReturnType)

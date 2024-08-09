@@ -65,6 +65,114 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+  func testDeclarationExistentialTypeArguments() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ViewModelProtocol {
+            func foo(model: any ModelProtocol)
+        }
+        """,
+      expectingClassDeclaration: """
+        class ViewModelProtocolSpy: ViewModelProtocol {
+            var fooModelCallsCount = 0
+            var fooModelCalled: Bool {
+                return fooModelCallsCount > 0
+            }
+            var fooModelReceivedModel: (any ModelProtocol)?
+            var fooModelReceivedInvocations: [any ModelProtocol] = []
+            var fooModelClosure: ((any ModelProtocol) -> Void)?
+            func foo(model: any ModelProtocol) {
+                fooModelCallsCount += 1
+                fooModelReceivedModel = (model)
+                fooModelReceivedInvocations.append((model))
+                fooModelClosure?(model)
+            }
+        }
+        """
+    )
+  }
+
+  func testDeclarationOptionalExistentialTypeArguments() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ViewModelProtocol {
+            func foo(model: (any ModelProtocol)?)
+        }
+        """,
+      expectingClassDeclaration: """
+        class ViewModelProtocolSpy: ViewModelProtocol {
+            var fooModelCallsCount = 0
+            var fooModelCalled: Bool {
+                return fooModelCallsCount > 0
+            }
+            var fooModelReceivedModel: (any ModelProtocol)?
+            var fooModelReceivedInvocations: [(any ModelProtocol)?] = []
+            var fooModelClosure: (((any ModelProtocol)?) -> Void)?
+            func foo(model: (any ModelProtocol)?) {
+                fooModelCallsCount += 1
+                fooModelReceivedModel = (model)
+                fooModelReceivedInvocations.append((model))
+                fooModelClosure?(model)
+            }
+        }
+        """
+    )
+  }
+
+  func testDeclarationOpaqueTypeArgument() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ViewModelProtocol {
+            func foo(model: some ModelProtocol)
+        }
+        """,
+      expectingClassDeclaration: """
+        class ViewModelProtocolSpy: ViewModelProtocol {
+            var fooModelCallsCount = 0
+            var fooModelCalled: Bool {
+                return fooModelCallsCount > 0
+            }
+            var fooModelReceivedModel: (some ModelProtocol)?
+            var fooModelReceivedInvocations: [some ModelProtocol] = []
+            var fooModelClosure: ((some ModelProtocol) -> Void)?
+            func foo(model: some ModelProtocol) {
+                fooModelCallsCount += 1
+                fooModelReceivedModel = (model)
+                fooModelReceivedInvocations.append((model))
+                fooModelClosure?(model)
+            }
+        }
+        """
+    )
+  }
+
+  func testDeclarationOptionalOpaqueTypeArgument() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ViewModelProtocol {
+            func foo(model: (some ModelProtocol)?)
+        }
+        """,
+      expectingClassDeclaration: """
+        class ViewModelProtocolSpy: ViewModelProtocol {
+            var fooModelCallsCount = 0
+            var fooModelCalled: Bool {
+                return fooModelCallsCount > 0
+            }
+            var fooModelReceivedModel: (some ModelProtocol)?
+            var fooModelReceivedInvocations: [(some ModelProtocol)?] = []
+            var fooModelClosure: (((some ModelProtocol)?) -> Void)?
+            func foo(model: (some ModelProtocol)?) {
+                fooModelCallsCount += 1
+                fooModelReceivedModel = (model)
+                fooModelReceivedInvocations.append((model))
+                fooModelClosure?(model)
+            }
+        }
+        """
+    )
+  }
+
   func testDeclarationEscapingAutoClosureArgument() throws {
     try assertProtocol(
       withDeclaration: """
@@ -211,6 +319,62 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+  func testDeclarationReturnsExistential() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ServiceProtocol {
+            func foo() -> any Codable
+        }
+        """,
+      expectingClassDeclaration: """
+        class ServiceProtocolSpy: ServiceProtocol {
+            var fooCallsCount = 0
+            var fooCalled: Bool {
+                return fooCallsCount > 0
+            }
+            var fooReturnValue: (any Codable)!
+            var fooClosure: (() -> any Codable)?
+            func foo() -> any Codable {
+                fooCallsCount += 1
+                if fooClosure != nil {
+                    return fooClosure!()
+                } else {
+                    return fooReturnValue
+                }
+            }
+        }
+        """
+    )
+  }
+
+  func testDeclarationReturnsForcedUnwrappedType() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ServiceProtocol {
+            func foo() -> String!
+        }
+        """,
+      expectingClassDeclaration: """
+        class ServiceProtocolSpy: ServiceProtocol {
+            var fooCallsCount = 0
+            var fooCalled: Bool {
+                return fooCallsCount > 0
+            }
+            var fooReturnValue: String!
+            var fooClosure: (() -> String?)?
+            func foo() -> String! {
+                fooCallsCount += 1
+                if fooClosure != nil {
+                    return fooClosure!()
+                } else {
+                    return fooReturnValue
+                }
+            }
+        }
+        """
+    )
+  }
+
   func testDeclarationVariable() throws {
     try assertProtocol(
       withDeclaration: """
@@ -244,6 +408,44 @@ final class UT_SpyFactory: XCTestCase {
       expectingClassDeclaration: """
         class ServiceProtocolSpy: ServiceProtocol {
             var data: Data?
+        }
+        """
+    )
+  }
+
+  func testDeclarationForcedUnwrappedVariable() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ServiceProtocol {
+            var data: String! { get set }
+        }
+        """,
+      expectingClassDeclaration: """
+        class ServiceProtocolSpy: ServiceProtocol {
+            var data: String!
+        }
+        """
+    )
+  }
+
+  func testDeclarationExistentialVariable() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ServiceProtocol {
+            var data: any Codable { get set }
+        }
+        """,
+      expectingClassDeclaration: """
+        class ServiceProtocolSpy: ServiceProtocol {
+            var data: any Codable {
+                get {
+                    underlyingData
+                }
+                set {
+                    underlyingData = newValue
+                }
+            }
+            var underlyingData: (any Codable)!
         }
         """
     )

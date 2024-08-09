@@ -15,11 +15,27 @@ final class UT_ReturnValueFactory: XCTestCase {
     )
   }
 
-  func testVariableDeclarationOptionType() throws {
+  func testVariableDeclarationOptionalType() throws {
     try assert(
       functionReturnType: "String?",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: "var _prefix_ReturnValue: String?"
+    )
+  }
+
+  func testVariableDeclarationForcedUnwrappedType() throws {
+    try assert(
+      functionReturnType: "String!",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReturnValue: String!"
+    )
+  }
+
+  func testVariableDeclarationExistentialType() throws {
+    try assert(
+      functionReturnType: "any Codable",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReturnValue: (any Codable)!"
     )
   }
 
