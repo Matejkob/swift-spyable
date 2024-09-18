@@ -155,7 +155,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Run Swift Macro Compatibility Check
-        uses: Matejkob/swift-macro-compatibility-check@main
+        uses: Matejkob/swift-macro-compatibility-check@separate-script-file
         with:
           run-tests: true
           major-versions-only: false
