@@ -25,8 +25,8 @@ enum SpyableNoteMessage: String, NoteMessage {
     }
   #else
     /// Unique identifier for each note message, aligning with the corresponding diagnostic message for clarity.
-    //var fixItID: MessageID {
-    //  MessageID(domain: "SpyableMacro", id: rawValue + "NoteMessage")
-    //}
+    var fixItID: MessageID {
+      MessageID(domain: "SpyableMacro", id: rawValue + "NoteMessage")
+    }
   #endif
 }
