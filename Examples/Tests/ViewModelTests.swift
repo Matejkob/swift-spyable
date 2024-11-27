@@ -55,6 +55,16 @@ final class ViewModelTests: XCTestCase {
       XCTFail("Unexpected error catched")
     }
   }
+
+  func testWrapData() {
+    // Important: When using generics, mocked return value types must match the types that are being returned in the use of the spy.
+    serviceSpy.wrapDataInArrayReturnValue = [123]
+    XCTAssertEqual(sut.wrapData(1), [123])
+    XCTAssertEqual(serviceSpy.wrapDataInArrayReceivedData as? Int, 1)
+    
+    // ⚠️ The following would cause a fatal error, because an Array<String> will be returned by wrapData(), but we provided an Array<Int> to wrapDataInArrayReturnValue. ⚠️
+    // XCTAssertEqual(sut.wrapData("hi"), ["hello"])
+  }
 }
 
 extension ViewModelTests {

@@ -30,48 +30,20 @@ import SwiftSyntaxBuilder
 struct ClosureFactory {
   func variableDeclaration(
     variablePrefix: String,
-    functionSignature: FunctionSignatureSyntax
+    protocolFunctionDeclaration: FunctionDeclSyntax
   ) throws -> VariableDeclSyntax {
-    let returnClause: ReturnClauseSyntax
-    if let functionReturnClause = functionSignature.returnClause {
-      /*
-       func f() -> String!
-       */
-      if let implicitlyUnwrappedType = functionReturnClause.type.as(
-        ImplicitlyUnwrappedOptionalTypeSyntax.self)
-      {
-        var functionReturnClause = functionReturnClause
-        /*
-         `() -> String!` is not a valid code
-         so we have to convert it to `() -> String?
-         */
-        functionReturnClause.type = TypeSyntax(
-          OptionalTypeSyntax(wrappedType: implicitlyUnwrappedType.wrappedType))
-        returnClause = functionReturnClause
-        /*
-       func f() -> Any
-       func f() -> Any?
-       */
-      } else {
-        returnClause = functionReturnClause
-      }
-      /*
-     func f()
-     */
-    } else {
-      returnClause = ReturnClauseSyntax(
-        type: IdentifierTypeSyntax(
-          name: .identifier("Void")
-        )
-      )
-    }
+    let functionSignature = protocolFunctionDeclaration.signature
+    let genericTypes = protocolFunctionDeclaration.genericTypes
+    let returnClause = returnClause(protocolFunctionDeclaration: protocolFunctionDeclaration)
 
     let elements = TupleTypeElementListSyntax {
       TupleTypeElementSyntax(
         type: FunctionTypeSyntax(
           parameters: TupleTypeElementListSyntax {
             for parameter in functionSignature.parameterClause.parameters {
-              TupleTypeElementSyntax(type: parameter.type)
+              TupleTypeElementSyntax(
+                type: parameter.type.erasingGenericTypes(genericTypes)
+              )
             }
           },
           effectSpecifiers: TypeEffectSpecifiersSyntax(
@@ -90,10 +62,48 @@ struct ClosureFactory {
     )
   }
 
+  private func returnClause(
+    protocolFunctionDeclaration: FunctionDeclSyntax
+  ) -> ReturnClauseSyntax {
+    let functionSignature = protocolFunctionDeclaration.signature
+    let genericTypes = protocolFunctionDeclaration.genericTypes
+
+    if let functionReturnClause = functionSignature.returnClause {
+      /*
+       func f() -> String!
+       */
+      if let implicitlyUnwrappedType = functionReturnClause.type.as(ImplicitlyUnwrappedOptionalTypeSyntax.self) {
+        var functionReturnClause = functionReturnClause
+        /*
+         `() -> String!` is not a valid code
+         so we have to convert it to `() -> String?
+         */
+        functionReturnClause.type = TypeSyntax(OptionalTypeSyntax(wrappedType: implicitlyUnwrappedType.wrappedType))
+        return functionReturnClause
+        /*
+         func f() -> Any
+         func f() -> Any?
+         */
+      } else {
+        return functionReturnClause.with(\.type, functionReturnClause.type.erasingGenericTypes(genericTypes))
+      }
+      /*
+       func f()
+       */
+    } else {
+      return ReturnClauseSyntax(
+        type: IdentifierTypeSyntax(
+          name: .identifier("Void")
+        )
+      )
+    }
+  }
+
   func callExpression(
     variablePrefix: String,
-    functionSignature: FunctionSignatureSyntax
+    protocolFunctionDeclaration: FunctionDeclSyntax
   ) -> ExprSyntaxProtocol {
+    let functionSignature = protocolFunctionDeclaration.signature
     let calledExpression: ExprSyntaxProtocol
 
     if functionSignature.returnClause == nil {
@@ -142,6 +152,14 @@ struct ClosureFactory {
 
     if functionSignature.effectSpecifiers?.throwsSpecifier != nil {
       expression = TryExprSyntax(expression: expression)
+    }
+
+    if let forceCastType = protocolFunctionDeclaration.forceCastType {
+      expression = AsExprSyntax(
+        expression: expression,
+        questionOrExclamationMark: .exclamationMarkToken(trailingTrivia: .space),
+        type: forceCastType
+      )
     }
 
     return expression

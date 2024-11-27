@@ -37,6 +37,7 @@ final class UT_SpyableMacro: XCTestCase {
           func onTapBack(context: String, action: () -> Void)
           func onTapNext(context: String, action: @Sendable () -> Void)
           func assert(_ message: @autoclosure () -> String)
+          func useGenerics<T, U>(values1: [T], values2: Array<U>, values3: (T, U, Int))
       }
       """
 
@@ -176,6 +177,19 @@ final class UT_SpyableMacro: XCTestCase {
             func assert(_ message: @autoclosure () -> String) {
                 assertCallsCount += 1
                 assertClosure?(message())
+            }
+            var useGenericsValues1Values2Values3CallsCount = 0
+            var useGenericsValues1Values2Values3Called: Bool {
+                return useGenericsValues1Values2Values3CallsCount > 0
+            }
+            var useGenericsValues1Values2Values3ReceivedArguments: (values1: [Any], values2: Array<Any>, values3: (Any, Any, Int))?
+            var useGenericsValues1Values2Values3ReceivedInvocations: [(values1: [Any], values2: Array<Any>, values3: (Any, Any, Int))] = []
+            var useGenericsValues1Values2Values3Closure: (([Any], Array<Any>, (Any, Any, Int)) -> Void)?
+            func useGenerics<T, U>(values1: [T], values2: Array<U>, values3: (T, U, Int)) {
+                useGenericsValues1Values2Values3CallsCount += 1
+                useGenericsValues1Values2Values3ReceivedArguments = (values1, values2, values3)
+                useGenericsValues1Values2Values3ReceivedInvocations.append((values1, values2, values3))
+                useGenericsValues1Values2Values3Closure?(values1, values2, values3)
             }
         }
         """,
