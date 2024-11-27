@@ -125,7 +125,8 @@ struct SpyFactory {
         for functionDeclaration in functionDeclarations {
           let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
           let genericTypes = functionDeclaration.genericTypes
-          let parameterList = parameterList(protocolFunctionDeclaration: functionDeclaration, genericTypes: genericTypes)
+          let parameterList = parameterList(
+            protocolFunctionDeclaration: functionDeclaration, genericTypes: genericTypes)
 
           try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
           try calledFactory.variableDeclaration(variablePrefix: variablePrefix)

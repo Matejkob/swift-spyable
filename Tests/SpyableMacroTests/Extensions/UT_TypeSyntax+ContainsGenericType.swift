@@ -77,11 +77,13 @@ final class UT_TypeSyntax_ContainsGenericType: XCTestCase {
       containsGenericType genericTypes: Set<String>
     ) -> Bool {
       TypeSyntax(
-        TupleTypeSyntax(elements: TupleTypeElementListSyntax {
-          TupleTypeElementSyntax(type: IdentifierTypeSyntax(
-            name: .identifier(identifier)
-          ))
-        })
+        TupleTypeSyntax(
+          elements: TupleTypeElementListSyntax {
+            TupleTypeElementSyntax(
+              type: IdentifierTypeSyntax(
+                name: .identifier(identifier)
+              ))
+          })
       )
       .containsGenericType(from: genericTypes)
     }
