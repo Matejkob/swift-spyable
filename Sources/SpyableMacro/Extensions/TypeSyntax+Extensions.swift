@@ -28,7 +28,8 @@ extension TypeSyntax {
     guard !genericTypes.isEmpty else { return self }
 
     // TODO: An improvement upon this could be to throw an error here, instead of falling back to `self`. This could be ultimately used to emit a diagnostic about the unsupported TypeSyntax for a better user experience.
-    return TypeSyntax(fromProtocol: asTypeSyntaxSupportingGenerics?.erasingGenericTypes(genericTypes)) ?? self
+    return TypeSyntax(
+      fromProtocol: asTypeSyntaxSupportingGenerics?.erasingGenericTypes(genericTypes)) ?? self
   }
 
   /// Recurses through type syntaxes to find all `IdentifierTypeSyntax` leaves, and checks each of them to see if its name exists in `genericTypes`.
@@ -39,8 +40,10 @@ extension TypeSyntax {
   func containsGenericType(from genericTypes: Set<String>) -> Bool {
     guard !genericTypes.isEmpty else { return false }
 
-    return if let type = self.as(IdentifierTypeSyntax.self),
-       genericTypes.contains(type.name.text) {
+    return
+      if let type = self.as(IdentifierTypeSyntax.self),
+      genericTypes.contains(type.name.text)
+    {
       true
     } else {
       nestedTypeSyntaxes.contains { $0.containsGenericType(from: genericTypes) }
@@ -64,7 +67,7 @@ private protocol TypeSyntaxSupportingGenerics: TypeSyntaxProtocol {
 }
 
 private let typeSyntaxesSupportingGenerics: [TypeSyntaxSupportingGenerics.Type] = [
-  IdentifierTypeSyntax.self, // Start with IdentifierTypeSyntax for the sake of efficiency when looping through this array, as it's the most common TypeSyntax.
+  IdentifierTypeSyntax.self,  // Start with IdentifierTypeSyntax for the sake of efficiency when looping through this array, as it's the most common TypeSyntax.
   ArrayTypeSyntax.self,
   GenericArgumentClauseSyntax.self,
   TupleTypeSyntax.self,
@@ -82,7 +85,7 @@ extension IdentifierTypeSyntax: TypeSyntaxSupportingGenerics {
     if let genericArgumentClause {
       copy = copy.with(
         \.genericArgumentClause,
-         genericArgumentClause.erasingGenericTypes(genericTypes)
+        genericArgumentClause.erasingGenericTypes(genericTypes)
       )
     }
     return copy
@@ -105,14 +108,14 @@ extension GenericArgumentClauseSyntax: TypeSyntaxSupportingGenerics {
   fileprivate func erasingGenericTypes(_ genericTypes: Set<String>) -> Self {
     with(
       \.arguments,
-       GenericArgumentListSyntax {
-         for argumentElement in arguments {
-           argumentElement.with(
+      GenericArgumentListSyntax {
+        for argumentElement in arguments {
+          argumentElement.with(
             \.argument,
-             argumentElement.argument.erasingGenericTypes(genericTypes)
-           )
-         }
-       }
+            argumentElement.argument.erasingGenericTypes(genericTypes)
+          )
+        }
+      }
     )
   }
 }
@@ -124,13 +127,13 @@ extension TupleTypeSyntax: TypeSyntaxSupportingGenerics {
   fileprivate func erasingGenericTypes(_ genericTypes: Set<String>) -> Self {
     with(
       \.elements,
-       TupleTypeElementListSyntax {
-         for element in elements {
-           element.with(
+      TupleTypeElementListSyntax {
+        for element in elements {
+          element.with(
             \.type,
-             element.type.erasingGenericTypes(genericTypes))
-         }
-       }
+            element.type.erasingGenericTypes(genericTypes))
+        }
+      }
     )
   }
 }

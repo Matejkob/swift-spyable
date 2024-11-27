@@ -17,7 +17,7 @@ protocol ServiceProtocol {
   func append(name: (any Codable) -> (any Codable)?)
   func get() async throws -> any Codable
   func read() -> String!
-  func wrapDataInArray<T>(_ data: T) -> Array<T>
+  func wrapDataInArray<T>(_ data: T) -> [T]
 }
 
 final class ViewModel {
@@ -44,8 +44,8 @@ final class ViewModel {
     _ = try await service.fetchConfig(arg: 2)
     config.removeAll()
   }
-  
-  func wrapData<T>(_ data: T) -> Array<T> {
+
+  func wrapData<T>(_ data: T) -> [T] {
     service.wrapDataInArray(data)
   }
 }

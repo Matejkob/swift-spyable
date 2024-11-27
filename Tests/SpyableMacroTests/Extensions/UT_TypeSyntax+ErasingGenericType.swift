@@ -75,13 +75,15 @@ final class UT_TypeSyntax_ErasingGenericTypes: XCTestCase {
         TupleTypeSyntax(
           leadingTrivia: .space,
           elements: TupleTypeElementListSyntax {
-            TupleTypeElementSyntax(type: IdentifierTypeSyntax(
-              name: .identifier(identifier)
-            ))
-            TupleTypeElementSyntax(type: IdentifierTypeSyntax(
-              leadingTrivia: .space,
-              name: .identifier("Unerased")
-            ))
+            TupleTypeElementSyntax(
+              type: IdentifierTypeSyntax(
+                name: .identifier(identifier)
+              ))
+            TupleTypeElementSyntax(
+              type: IdentifierTypeSyntax(
+                leadingTrivia: .space,
+                name: .identifier("Unerased")
+              ))
           },
           trailingTrivia: .space
         )
