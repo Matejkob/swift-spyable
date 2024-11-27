@@ -23,8 +23,8 @@ jobs:
     strategy:
       matrix:
         xcode:
+          - '16.0'
           - '15.4'
-          - '15.0'
         package:
           - 'main'
           - 'Examples'
@@ -57,6 +57,7 @@ jobs:
     strategy:
       matrix:
         swift:
+          - '6.0'
           - '5.10'
           - '5.9'
         package:
@@ -86,6 +87,7 @@ jobs:
     strategy:
       matrix:
         swift:
+          - '6.0'
           - '5.10'
           - '5.9.1' # Macros has been added to Swift on Windows in 5.9.1 version
         package:
@@ -112,8 +114,8 @@ jobs:
         run: swift build
 
 # Looks like tests don't work on Windows
-#      - name: Run tests
-#        run: swift test
+      # - name: Run tests
+        # run: swift test
 
   code-coverage:
     name: Gather Code Coverage
@@ -155,7 +157,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Run Swift Macro Compatibility Check
-        uses: Matejkob/swift-macro-compatibility-check@swift-syntax-600-pre-release
+        uses: Matejkob/swift-macro-compatibility-check@v1
         with:
           run-tests: true
           major-versions-only: false
