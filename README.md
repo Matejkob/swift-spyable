@@ -89,27 +89,31 @@ func testFetchConfig() async throws {
 }
 ```
 
-### Generic Functions
-Generic functions are supported, but require some care to use, as they get treated a little differently from other functionality.
+## Advanced Usage
 
-Given a function:
+### Generic Functions
+
+Spyable supports generic functions, but their implementation involves special handling. Due to limitations in Swift, generic parameters in a function are replaced with `Any` in the spy class to store arguments, return values, and closures.
+
+For example:
 
 ```swift
 func foo<T, U>(_ bar: T) -> U
 ```
 
-The following will be created in a spy:
+Generates the following spy:
 
 ```swift
 class MyProtocolSpy: MyProtocol {
   var fooCallsCount = 0
   var fooCalled: Bool {
-      return fooCallsCount > 0
+    return fooCallsCount > 0
   }
   var fooReceivedBar: Any?
   var fooReceivedInvocations: [Any] = []
   var fooReturnValue: Any!
   var fooClosure: ((Any) -> Any)?
+
   func foo<T, U>(_ bar: T) -> U {
     fooCallsCount += 1
     fooReceivedBar = (bar)
@@ -122,12 +126,13 @@ class MyProtocolSpy: MyProtocol {
   }
 }
 ```
-Uses of `T` and `U` get substituted with `Any` because generics specified only by a function can't be stored as a property in the function's class. Using `Any` lets us store injected closures, invocations, etc.
 
-Force casts get used to turn an injected closure or returnValue property from `Any` into an expected type. This means that *it's essential that expected types match up with values given to these injected properties*.
+#### Important Notes:
 
-##### Example:
-Given the following code:
+1. **Type Matching**: 
+   Ensure the expected types align with the injected `returnValue` or `closure`. Mismatched types will result in runtime crashes due to force casting.
+
+2. **Example**:
 
 ```swift
 @Spyable
@@ -144,24 +149,21 @@ struct ViewModel {
 }
 ```
 
-A test for ViewModel's `wrapData()` function could look like this:
+Test for `wrapData()`:
 
 ```swift
 func testWrapData() {
-  // Important: When using generics, mocked return value types must match the types that are being returned in the use of the spy.
   serviceSpy.wrapDataInArrayReturnValue = [123]
   XCTAssertEqual(sut.wrapData(1), [123])
   XCTAssertEqual(serviceSpy.wrapDataInArrayReceivedData as? Int, 1)
 
-  // ⚠️ The following would be incorrect, and cause a fatal error, because an Array<String> will be returned by wrapData(), but here we'd be providing an Array<Int> to wrapDataInArrayReturnValue. ⚠️
-  // XCTAssertEqual(sut.wrapData("hi"), ["hello"])
+  // Incorrect usage: mismatched type
+  // serviceSpy.wrapDataInArrayReturnValue = ["hello"] // ⚠️ Causes runtime error
 }
 ```
 
 > [!TIP]
-> If you see a crash at force casting within a spy's generic function implementation, it most likely means that types are mismatched.
-
-## Advanced Usage
+> If you see a crash in the generic function, check the type alignment between expected and injected values.
 
 ### Restricting Spy Availability
 
