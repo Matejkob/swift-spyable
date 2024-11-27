@@ -72,20 +72,24 @@ struct ClosureFactory {
       /*
        func f() -> String!
        */
-      if let implicitlyUnwrappedType = functionReturnClause.type.as(ImplicitlyUnwrappedOptionalTypeSyntax.self) {
+      if let implicitlyUnwrappedType = functionReturnClause.type.as(
+        ImplicitlyUnwrappedOptionalTypeSyntax.self)
+      {
         var functionReturnClause = functionReturnClause
         /*
          `() -> String!` is not a valid code
          so we have to convert it to `() -> String?
          */
-        functionReturnClause.type = TypeSyntax(OptionalTypeSyntax(wrappedType: implicitlyUnwrappedType.wrappedType))
+        functionReturnClause.type = TypeSyntax(
+          OptionalTypeSyntax(wrappedType: implicitlyUnwrappedType.wrappedType))
         return functionReturnClause
         /*
          func f() -> Any
          func f() -> Any?
          */
       } else {
-        return functionReturnClause.with(\.type, functionReturnClause.type.erasingGenericTypes(genericTypes))
+        return functionReturnClause.with(
+          \.type, functionReturnClause.type.erasingGenericTypes(genericTypes))
       }
       /*
        func f()

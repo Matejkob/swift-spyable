@@ -12,8 +12,9 @@ extension FunctionDeclSyntax {
   /// Ex: `func foo() -> T` will create `var fooReturnValue: Any!`, which will be used in the spy method implementation as `fooReturnValue as! T`
   var forceCastType: TypeSyntax? {
     guard !genericTypes.isEmpty,
-          let returnType = signature.returnClause?.type,
-          returnType.containsGenericType(from: genericTypes) == true else {
+      let returnType = signature.returnClause?.type,
+      returnType.containsGenericType(from: genericTypes) == true
+    else {
       return nil
     }
     return returnType.trimmed

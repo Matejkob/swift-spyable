@@ -61,7 +61,7 @@ final class ViewModelTests: XCTestCase {
     serviceSpy.wrapDataInArrayReturnValue = [123]
     XCTAssertEqual(sut.wrapData(1), [123])
     XCTAssertEqual(serviceSpy.wrapDataInArrayReceivedData as? Int, 1)
-    
+
     // ⚠️ The following would cause a fatal error, because an Array<String> will be returned by wrapData(), but we provided an Array<Int> to wrapDataInArrayReturnValue. ⚠️
     // XCTAssertEqual(sut.wrapData("hi"), ["hello"])
   }
