@@ -116,6 +116,13 @@ struct SpyFactory {
         )
       },
       memberBlockBuilder: {
+        InitializerDeclSyntax(
+          signature: FunctionSignatureSyntax(
+            parameterClause: FunctionParameterClauseSyntax(parameters: [])
+          ),
+          bodyBuilder: {}
+        )
+
         for variableDeclaration in variableDeclarations {
           try variablesImplementationFactory.variablesDeclarations(
             protocolVariableDeclaration: variableDeclaration

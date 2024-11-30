@@ -60,10 +60,10 @@ struct VariablesImplementationFactory {
       {
         let accessorRemovalVisitor = AccessorRemovalVisitor()
         accessorRemovalVisitor.visit(protocolVariableDeclaration)
-        /*
-       var name: String
-       */
       } else {
+        /*
+         var name: String
+        */
         try protocolVariableDeclarationWithGetterAndSetter(binding: binding)
 
         try underlyingVariableDeclaration(binding: binding)
