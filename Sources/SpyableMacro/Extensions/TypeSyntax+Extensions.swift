@@ -101,6 +101,8 @@ extension ArrayTypeSyntax: TypeSyntaxSupportingGenerics {
   }
 }
 
+extension GenericArgumentClauseSyntax: @retroactive TypeSyntaxProtocol {}
+
 extension GenericArgumentClauseSyntax: TypeSyntaxSupportingGenerics {
   fileprivate var nestedTypeSyntaxes: [TypeSyntax] {
     arguments.map { $0.argument }
