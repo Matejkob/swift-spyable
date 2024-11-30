@@ -101,7 +101,9 @@ extension ArrayTypeSyntax: TypeSyntaxSupportingGenerics {
   }
 }
 
+#if compiler(>=6.0)
 extension GenericArgumentClauseSyntax: @retroactive TypeSyntaxProtocol {}
+#endif
 
 extension GenericArgumentClauseSyntax: TypeSyntaxSupportingGenerics {
   fileprivate var nestedTypeSyntaxes: [TypeSyntax] {
