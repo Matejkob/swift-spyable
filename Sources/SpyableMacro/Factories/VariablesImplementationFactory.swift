@@ -43,8 +43,6 @@ import SwiftSyntaxBuilder
 /// - Important: The variable declaration must have exactly one binding. Any deviation from this will result in
 ///              an error diagnostic produced by the macro.
 struct VariablesImplementationFactory {
-  private let accessorRemovalVisitor = AccessorRemovalVisitor()
-
   @MemberBlockItemListBuilder
   func variablesDeclarations(
     protocolVariableDeclaration: VariableDeclSyntax
@@ -60,6 +58,7 @@ struct VariablesImplementationFactory {
       if binding.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true
         || binding.typeAnnotation?.type.is(ImplicitlyUnwrappedOptionalTypeSyntax.self) == true
       {
+        let accessorRemovalVisitor = AccessorRemovalVisitor()
         accessorRemovalVisitor.visit(protocolVariableDeclaration)
         /*
        var name: String

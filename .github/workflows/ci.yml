@@ -23,6 +23,7 @@ jobs:
     strategy:
       matrix:
         xcode:
+          - '16.1'
           - '16.0'
           - '15.4'
         package:
