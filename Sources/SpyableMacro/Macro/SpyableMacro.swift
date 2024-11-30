@@ -32,7 +32,16 @@ public enum SpyableMacro: PeerMacro {
   ) throws -> [DeclSyntax] {
     let protocolDeclaration = try extractor.extractProtocolDeclaration(from: declaration)
 
-    let spyClassDeclaration = try spyFactory.classDeclaration(for: protocolDeclaration)
+    var spyClassDeclaration = try spyFactory.classDeclaration(for: protocolDeclaration)
+
+    if let accessLevel = extractor.extractAccessLevel(from: protocolDeclaration) {
+      let accessLevelModifierRewriter = AccessLevelModifierRewriter(newAccessLevel: accessLevel)
+
+      spyClassDeclaration =
+        accessLevelModifierRewriter
+        .rewrite(spyClassDeclaration)
+        .cast(ClassDeclSyntax.self)
+    }
 
     if let flag = try extractor.extractPreprocessorFlag(from: node, in: context) {
       return [
