@@ -7,14 +7,6 @@ import SwiftSyntaxMacros
 /// This struct provides methods for working with protocol declarations, access levels,
 /// and attributes, simplifying the task of retrieving and validating syntax information.
 struct Extractor {
-  /// Extracts a `ProtocolDeclSyntax` instance from a given declaration.
-  ///
-  /// This method ensures that the provided declaration conforms to `ProtocolDeclSyntax`.
-  /// If the declaration is not a protocol, an error is thrown.
-  ///
-  /// - Parameter declaration: The declaration to examine, conforming to `DeclSyntaxProtocol`.
-  /// - Returns: A `ProtocolDeclSyntax` instance if the input is a protocol declaration.
-  /// - Throws: `SpyableDiagnostic.onlyApplicableToProtocol` if the input is not a protocol.
   func extractProtocolDeclaration(
     from declaration: DeclSyntaxProtocol
   ) throws -> ProtocolDeclSyntax {
@@ -39,17 +31,17 @@ struct Extractor {
   func extractPreprocessorFlag(
     from attribute: AttributeSyntax,
     in context: some MacroExpansionContext
-  ) throws -> String? {
+  ) -> String? {
     guard case let .argumentList(argumentList) = attribute.arguments else {
       // No arguments are present in the attribute.
       return nil
     }
 
-    guard
-      let behindPreprocessorFlagArgument = argumentList.first(where: { argument in
-        argument.label?.text == "behindPreprocessorFlag"
-      })
-    else {
+    let behindPreprocessorFlagArgument = argumentList.first { argument in
+      argument.label?.text == "behindPreprocessorFlag"
+    }
+    
+    guard let behindPreprocessorFlagArgument else {
       // The `behindPreprocessorFlag` argument is missing.
       return nil
     }
@@ -80,6 +72,65 @@ struct Extractor {
     }
 
     return literalSegment.content.text
+  }
+
+  func extractAccessLevel(
+    from attribute: AttributeSyntax,
+    in context: some MacroExpansionContext
+  ) -> DeclModifierSyntax? {
+    guard case let .argumentList(argumentList) = attribute.arguments else {
+      // No arguments are present in the attribute.
+      return nil
+    }
+
+    let accessLevelArgument = argumentList.first { argument in
+      argument.label?.text == "accessLevel"
+    }
+    
+    guard let accessLevelArgument else {
+      // The `accessLevel` argument is missing.
+      return nil
+    }
+
+    guard let memberAccess = accessLevelArgument.expression.as(MemberAccessExprSyntax.self) else {
+      context.diagnose(
+        Diagnostic(
+          node: attribute,
+          message: SpyableDiagnostic.accessLevelArgumentRequiresMemberAccessExpression,
+          highlights: [Syntax(accessLevelArgument.expression)]
+        )
+      )
+      return nil
+    }
+
+    let accessLevelText = memberAccess.declName.baseName.text
+    
+    switch accessLevelText {
+    case "public":
+      return DeclModifierSyntax(name: .keyword(.public))
+      
+    case "package":
+      return DeclModifierSyntax(name: .keyword(.package))
+      
+    case "internal":
+      return DeclModifierSyntax(name: .keyword(.internal))
+      
+    case "fileprivate":
+      return DeclModifierSyntax(name: .keyword(.fileprivate))
+      
+    case "private":
+      return DeclModifierSyntax(name: .keyword(.private))
+      
+    default:
+      context.diagnose(
+        Diagnostic(
+          node: attribute,
+          message: SpyableDiagnostic.accessLevelArgumentUnsupportedAccessLevel,
+          highlights: [Syntax(accessLevelArgument.expression)]
+        )
+      )
+      return nil
+    }
   }
 
   /// Extracts the access level modifier from a protocol declaration.

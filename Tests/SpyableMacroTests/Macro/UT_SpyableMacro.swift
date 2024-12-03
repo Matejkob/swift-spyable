@@ -430,4 +430,129 @@ final class UT_SpyableMacro: XCTestCase {
       )
     }
   }
+  
+  func testMacroWithAccessLevelArgument() {
+    let accessLevelMappings = [
+      (protocolAccessLevel: "public", spyClassAccessLevel: "public"),
+      (protocolAccessLevel: "package", spyClassAccessLevel: "package"),
+      (protocolAccessLevel: "internal", spyClassAccessLevel: "internal"),
+      (protocolAccessLevel: "fileprivate", spyClassAccessLevel: "fileprivate"),
+      (protocolAccessLevel: "private", spyClassAccessLevel: "fileprivate"),
+    ]
+
+    for mapping in accessLevelMappings {
+      let protocolDefinition = """
+        protocol ServiceProtocol {
+            var removed: (() -> Void)? { get set }
+
+            func fetchUsername(context: String, completion: @escaping (String) -> Void)
+        }
+        """
+
+      assertMacroExpansion(
+        """
+        @Spyable(accessLevel: .\(mapping.protocolAccessLevel))
+        \(protocolDefinition)
+        """,
+        expandedSource: """
+
+          \(protocolDefinition)
+
+          \(mapping.spyClassAccessLevel) class ServiceProtocolSpy: ServiceProtocol {
+              \(mapping.spyClassAccessLevel) init() {
+              }
+              \(mapping.spyClassAccessLevel)
+              var removed: (() -> Void)?
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionCallsCount = 0
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionCalled: Bool {
+                  return fetchUsernameContextCompletionCallsCount > 0
+              }
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionReceivedArguments: (context: String, completion: (String) -> Void)?
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionReceivedInvocations: [(context: String, completion: (String) -> Void)] = []
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionClosure: ((String, @escaping (String) -> Void) -> Void)?
+              \(mapping.spyClassAccessLevel)
+
+              func fetchUsername(context: String, completion: @escaping (String) -> Void) {
+                  fetchUsernameContextCompletionCallsCount += 1
+                  fetchUsernameContextCompletionReceivedArguments = (context, completion)
+                  fetchUsernameContextCompletionReceivedInvocations.append((context, completion))
+                  fetchUsernameContextCompletionClosure?(context, completion)
+              }
+          }
+          """,
+        macros: sut
+      )
+    }
+  }
+
+  func testMacroWithAccessLevelArgumentOverridingInheritedAccessLevel() {
+    let protocolDeclaration = """
+      public protocol ServiceProtocol {
+          var removed: (() -> Void)? { get set }
+
+          func fetchUsername(context: String, completion: @escaping (String) -> Void)
+      }
+      """
+
+    assertMacroExpansion(
+      """
+      @Spyable(accessLevel: .fileprivate)
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        \(protocolDeclaration)
+
+        fileprivate class ServiceProtocolSpy: ServiceProtocol {
+            fileprivate init() {
+            }
+            fileprivate
+            var removed: (() -> Void)?
+            fileprivate var fetchUsernameContextCompletionCallsCount = 0
+            fileprivate var fetchUsernameContextCompletionCalled: Bool {
+                return fetchUsernameContextCompletionCallsCount > 0
+            }
+            fileprivate var fetchUsernameContextCompletionReceivedArguments: (context: String, completion: (String) -> Void)?
+            fileprivate var fetchUsernameContextCompletionReceivedInvocations: [(context: String, completion: (String) -> Void)] = []
+            fileprivate var fetchUsernameContextCompletionClosure: ((String, @escaping (String) -> Void) -> Void)?
+            fileprivate
+
+            func fetchUsername(context: String, completion: @escaping (String) -> Void) {
+                fetchUsernameContextCompletionCallsCount += 1
+                fetchUsernameContextCompletionReceivedArguments = (context, completion)
+                fetchUsernameContextCompletionReceivedInvocations.append((context, completion))
+                fetchUsernameContextCompletionClosure?(context, completion)
+            }
+        }
+        """,
+      macros: sut
+    )
+  }
+
+  func testMacroWithAllArgumentsAndOtherAttributes() {
+    let protocolDeclaration = "public protocol MyProtocol {}"
+
+    assertMacroExpansion(
+      """
+      @MainActor
+      @Spyable(behindPreprocessorFlag: "CUSTOM_FLAG", accessLevel: .package)
+      @available(*, deprecated)
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        @MainActor
+        @available(*, deprecated)
+        \(protocolDeclaration)
+
+        #if CUSTOM_FLAG
+        package class MyProtocolSpy: MyProtocol {
+            package init() {
+            }
+        }
+        #endif
+        """,
+      macros: sut
+    )
+  }
 }
