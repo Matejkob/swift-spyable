@@ -5,19 +5,16 @@
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FMatejkob%2Fswift-spyable%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/Matejkob/swift-spyable)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FMatejkob%2Fswift-spyable%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/Matejkob/swift-spyable)
 
-Spyable is a powerful tool for Swift that simplifies and automates the process of creating spies for testing. By using 
-the `@Spyable` annotation on a protocol, the macro generates a spy class that implements the same interface and tracks 
-interactions with its methods and properties.
+Spyable is a powerful tool for Swift that automates the process of creating protocol-conforming classes. Initially designed to simplify testing by generating spies, it is now widely used for various scenarios, such as SwiftUI previews or creating quick dummy implementations.
 
 ## Overview
 
-A "spy" is a test double that replaces a real component and records all interactions for later inspection. It's 
-particularly useful in behavior verification, where the interaction between objects is the subject of the test.
+Spyable enhances your Swift workflow with the following features:
 
-The Spyable macro revolutionizes the process of creating spies in Swift testing:
-
-- **Automatic Spy Generation**: Annotate a protocol with `@Spyable`, and let the macro generate the corresponding spy class.
-- **Interaction Tracking**: The generated spy records method calls, arguments, and return values, making it easy to verify behavior in your tests.
+- **Automatic Spy Generation**: Annotate a protocol with `@Spyable`, and let the macro generate a corresponding spy class.
+- **Access Level Inheritance**: The generated class automatically inherits the protocol's access level.
+- **Explicit Access Control**: Use the `accessLevel` argument to override the inherited access level if needed.
+- **Interaction Tracking**: For testing, the generated spy tracks method calls, arguments, and return values.
 
 ## Quick Start
 
@@ -26,33 +23,33 @@ The Spyable macro revolutionizes the process of creating spies in Swift testing:
 
 ```swift
 @Spyable
-protocol ServiceProtocol {
+public protocol ServiceProtocol {
   var name: String { get }
   func fetchConfig(arg: UInt8) async throws -> [String: String]
 }
 ```
 
-This generates a spy class named `ServiceProtocolSpy` that implements `ServiceProtocol`. The generated class includes 
-properties and methods for tracking method calls, arguments, and return values.
+This generates a spy class named `ServiceProtocolSpy` with a `public` access level. The generated class includes properties and methods for tracking method calls, arguments, and return values.
 
 ```swift
-class ServiceProtocolSpy: ServiceProtocol {
-  var name: String {
+public class ServiceProtocolSpy: ServiceProtocol {
+  public var name: String {
     get { underlyingName }
     set { underlyingName = newValue }
   }
-  var underlyingName: (String)!
+  public var underlyingName: (String)!
 
-  var fetchConfigArgCallsCount = 0
-  var fetchConfigArgCalled: Bool {
+  public var fetchConfigArgCallsCount = 0
+  public var fetchConfigArgCalled: Bool {
     return fetchConfigArgCallsCount > 0
   }
-  var fetchConfigArgReceivedArg: UInt8?
-  var fetchConfigArgReceivedInvocations: [UInt8] = []
-  var fetchConfigArgThrowableError: (any Error)?
-  var fetchConfigArgReturnValue: [String: String]!
-  var fetchConfigArgClosure: ((UInt8) async throws -> [String: String])?
-  func fetchConfig(arg: UInt8) async throws -> [String: String] {
+  public var fetchConfigArgReceivedArg: UInt8?
+  public var fetchConfigArgReceivedInvocations: [UInt8] = []
+  public var fetchConfigArgThrowableError: (any Error)?
+  public var fetchConfigArgReturnValue: [String: String]!
+  public var fetchConfigArgClosure: ((UInt8) async throws -> [String: String])?
+
+  public func fetchConfig(arg: UInt8) async throws -> [String: String] {
     fetchConfigArgCallsCount += 1
     fetchConfigArgReceivedArg = (arg)
     fetchConfigArgReceivedInvocations.append((arg))
@@ -91,128 +88,69 @@ func testFetchConfig() async throws {
 
 ## Advanced Usage
 
-### Generic Functions
+### Access Level Inheritance and Overrides
 
-Spyable supports generic functions, but their implementation involves special handling. Due to limitations in Swift, generic parameters in a function are replaced with `Any` in the spy class to store arguments, return values, and closures.
-
-For example:
-
-```swift
-func foo<T, U>(_ bar: T) -> U
-```
-
-Generates the following spy:
-
-```swift
-class MyProtocolSpy: MyProtocol {
-  var fooCallsCount = 0
-  var fooCalled: Bool {
-    return fooCallsCount > 0
-  }
-  var fooReceivedBar: Any?
-  var fooReceivedInvocations: [Any] = []
-  var fooReturnValue: Any!
-  var fooClosure: ((Any) -> Any)?
-
-  func foo<T, U>(_ bar: T) -> U {
-    fooCallsCount += 1
-    fooReceivedBar = (bar)
-    fooReceivedInvocations.append((bar))
-    if fooClosure != nil {
-      return fooClosure!(bar) as! U
-    } else {
-      return fooReturnValue as! U
-    }
-  }
-}
-```
-
-#### Important Notes:
-
-1. **Type Matching**: 
-   Ensure the expected types align with the injected `returnValue` or `closure`. Mismatched types will result in runtime crashes due to force casting.
-
-2. **Example**:
+By default, the generated spy inherits the access level of the annotated protocol. For example:
 
 ```swift
 @Spyable
-protocol ServiceProtocol {
-  func wrapDataInArray<T>(_ data: T) -> Array<T>
-}
-
-struct ViewModel {
-  let service: ServiceProtocol
-
-  func wrapData<T>(_ data: T) -> Array<T> {
-    service.wrapDataInArray(data)
-  }
+internal protocol InternalProtocol {
+  func doSomething()
 }
 ```
 
-Test for `wrapData()`:
+This generates:
 
 ```swift
-func testWrapData() {
-  serviceSpy.wrapDataInArrayReturnValue = [123]
-  XCTAssertEqual(sut.wrapData(1), [123])
-  XCTAssertEqual(serviceSpy.wrapDataInArrayReceivedData as? Int, 1)
-
-  // Incorrect usage: mismatched type
-  // serviceSpy.wrapDataInArrayReturnValue = ["hello"] // ⚠️ Causes runtime error
+internal class InternalProtocolSpy: InternalProtocol {
+  internal func doSomething() { ... }
 }
 ```
 
-> [!TIP]
-> If you see a crash in the generic function, check the type alignment between expected and injected values.
+You can override this behavior by explicitly specifying an access level:
+
+```swift
+@Spyable(accessLevel: .fileprivate)
+public protocol CustomProtocol {
+  func restrictedTask()
+}
+```
+
+Generates:
+
+```swift
+fileprivate class CustomProtocolSpy: CustomProtocol {
+  fileprivate func restrictedTask() { ... }
+}
+```
+
+Supported values for `accessLevel` are:
+- `.public`
+- `.package`
+- `.internal`
+- `.fileprivate`
+- `.private`
 
 ### Restricting Spy Availability
 
-You can limit where Spyable's generated code can be used by using the `behindPreprocessorFlag` parameter:
+Use the `behindPreprocessorFlag` parameter to wrap the generated code in a preprocessor directive:
 
 ```swift
 @Spyable(behindPreprocessorFlag: "DEBUG")
-protocol MyService {
-  func fetchData() async
+protocol DebugProtocol {
+  func logSomething()
 }
 ```
 
-This wraps the generated spy in an `#if DEBUG` preprocessor macro, preventing its use where the `DEBUG` flag is not defined.
+Generates:
 
-> [!IMPORTANT]
-> The `behindPreprocessorFlag` argument must be a static string literal.
-
-### Xcode Previews Consideration
-
-If you need spies in Xcode Previews while excluding them from production builds, consider using a custom compilation flag (e.g., `SPIES_ENABLED`):
-
-The following diagram illustrates how to set up your project structure with the `SPIES_ENABLED` flag:
-
-```mermaid
-graph TD
-    A[MyFeature] --> B[MyFeatureTests]
-    A --> C[MyFeaturePreviews]
-    
-    A -- SPIES_ENABLED = 0 --> D[Production Build]
-    B -- SPIES_ENABLED = 1 --> E[Test Build]
-    C -- SPIES_ENABLED = 1 --> F[Preview Build]
-
-    style A fill:#ff9999,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#99ccff,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#99ffcc,stroke:#333,stroke-width:2px,color:#000
-    style D fill:#ffcc99,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#99ccff,stroke:#333,stroke-width:2px,color:#000
-    style F fill:#99ffcc,stroke:#333,stroke-width:2px,color:#000
+```swift
+#if DEBUG
+internal class DebugProtocolSpy: DebugProtocol {
+  internal func logSomething() { ... }
+}
+#endif
 ```
-
-Set this flag under "Active Compilation Conditions" for both test and preview targets.
-
-## Examples
-
-Find examples of how to use Spyable [here](./Examples).
-
-## Documentation
-
-The latest documentation is available [here](https://swiftpackageindex.com/Matejkob/swift-spyable/0.1.2/documentation/spyable).
 
 ## Installation
 
