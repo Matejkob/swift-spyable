@@ -430,7 +430,7 @@ final class UT_SpyableMacro: XCTestCase {
       )
     }
   }
-  
+
   func testMacroWithAccessLevelArgument() {
     let accessLevelMappings = [
       (protocolAccessLevel: "public", spyClassAccessLevel: "public"),

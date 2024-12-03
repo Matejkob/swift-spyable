@@ -40,7 +40,7 @@ struct Extractor {
     let behindPreprocessorFlagArgument = argumentList.first { argument in
       argument.label?.text == "behindPreprocessorFlag"
     }
-    
+
     guard let behindPreprocessorFlagArgument else {
       // The `behindPreprocessorFlag` argument is missing.
       return nil
@@ -86,7 +86,7 @@ struct Extractor {
     let accessLevelArgument = argumentList.first { argument in
       argument.label?.text == "accessLevel"
     }
-    
+
     guard let accessLevelArgument else {
       // The `accessLevel` argument is missing.
       return nil
@@ -104,23 +104,23 @@ struct Extractor {
     }
 
     let accessLevelText = memberAccess.declName.baseName.text
-    
+
     switch accessLevelText {
     case "public":
       return DeclModifierSyntax(name: .keyword(.public))
-      
+
     case "package":
       return DeclModifierSyntax(name: .keyword(.package))
-      
+
     case "internal":
       return DeclModifierSyntax(name: .keyword(.internal))
-      
+
     case "fileprivate":
       return DeclModifierSyntax(name: .keyword(.fileprivate))
-      
+
     case "private":
       return DeclModifierSyntax(name: .keyword(.private))
-      
+
     default:
       context.diagnose(
         Diagnostic(
