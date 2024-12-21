@@ -42,6 +42,56 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+  func testDeclarationWithSendable() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol Service: Sendable {
+            func fetch()
+        }
+        """,
+      expectingClassDeclaration: """
+        class ServiceSpy: Service, @unchecked Sendable {
+            init() {
+            }
+            var fetchCallsCount = 0
+            var fetchCalled: Bool {
+                return fetchCallsCount > 0
+            }
+            var fetchClosure: (() -> Void)?
+            func fetch() {
+                fetchCallsCount += 1
+                fetchClosure?()
+            }
+        }
+        """
+    )
+  }
+
+  func testDeclarationWithUncheckedSendable() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol Service: @unchecked Sendable {
+            func fetch()
+        }
+        """,
+      expectingClassDeclaration: """
+        class ServiceSpy: Service, @unchecked Sendable {
+            init() {
+            }
+            var fetchCallsCount = 0
+            var fetchCalled: Bool {
+                return fetchCallsCount > 0
+            }
+            var fetchClosure: (() -> Void)?
+            func fetch() {
+                fetchCallsCount += 1
+                fetchClosure?()
+            }
+        }
+        """
+    )
+  }
+
   func testDeclarationArguments() throws {
     try assertProtocol(
       withDeclaration: """
