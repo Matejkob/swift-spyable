@@ -9,7 +9,7 @@ final class UT_SpyFactory: XCTestCase {
     try assertProtocol(
       withDeclaration: "protocol Foo {}",
       expectingClassDeclaration: """
-        class FooSpy: Foo {
+        class FooSpy: Foo, @unchecked Sendable {
             init() {
             }
         }
@@ -25,7 +25,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ServiceSpy: Service {
+        class ServiceSpy: Service, @unchecked Sendable {
             init() {
             }
             var fetchCallsCount = 0
@@ -50,7 +50,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ViewModelProtocolSpy: ViewModelProtocol {
+        class ViewModelProtocolSpy: ViewModelProtocol, @unchecked Sendable {
             init() {
             }
             var fooTextCountCallsCount = 0
@@ -79,7 +79,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ViewModelProtocolSpy: ViewModelProtocol {
+        class ViewModelProtocolSpy: ViewModelProtocol, @unchecked Sendable {
             init() {
             }
             var fooModelCallsCount = 0
@@ -108,7 +108,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ViewModelProtocolSpy: ViewModelProtocol {
+        class ViewModelProtocolSpy: ViewModelProtocol, @unchecked Sendable {
             init() {
             }
             var fooModelCallsCount = 0
@@ -137,7 +137,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ViewModelProtocolSpy: ViewModelProtocol {
+        class ViewModelProtocolSpy: ViewModelProtocol, @unchecked Sendable {
             init() {
             }
             var fooModelCallsCount = 0
@@ -166,7 +166,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ViewModelProtocolSpy: ViewModelProtocol {
+        class ViewModelProtocolSpy: ViewModelProtocol, @unchecked Sendable {
             init() {
             }
             var fooModelCallsCount = 0
@@ -202,7 +202,7 @@ final class UT_SpyFactory: XCTestCase {
     assertBuildResult(
       result,
       """
-      class ViewModelProtocolSpy: ViewModelProtocol {
+      class ViewModelProtocolSpy: ViewModelProtocol, @unchecked Sendable {
           init() {
           }
           var fooTextValueCallsCount = 0
@@ -236,7 +236,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ViewModelProtocolSpy: ViewModelProtocol {
+        class ViewModelProtocolSpy: ViewModelProtocol, @unchecked Sendable {
             init() {
             }
             var fooActionCallsCount = 0
@@ -265,7 +265,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ViewModelProtocolSpy: ViewModelProtocol {
+        class ViewModelProtocolSpy: ViewModelProtocol, @unchecked Sendable {
             init() {
             }
             var fooActionCallsCount = 0
@@ -290,7 +290,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class BarSpy: Bar {
+        class BarSpy: Bar, @unchecked Sendable {
             init() {
             }
             var printCallsCount = 0
@@ -320,7 +320,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ServiceProtocolSpy: ServiceProtocol {
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
             init() {
             }
             var fooTextCountCallsCount = 0
@@ -354,7 +354,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ServiceProtocolSpy: ServiceProtocol {
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
             init() {
             }
             var fooCallsCount = 0
@@ -392,7 +392,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ServiceProtocolSpy: ServiceProtocol {
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
             init() {
             }
             var fooCallsCount = 0
@@ -422,7 +422,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ServiceProtocolSpy: ServiceProtocol {
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
             init() {
             }
             var fooCallsCount = 0
@@ -452,7 +452,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ServiceProtocolSpy: ServiceProtocol {
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
             init() {
             }
             var data: Data {
@@ -477,7 +477,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ServiceProtocolSpy: ServiceProtocol {
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
             init() {
             }
             var data: Data?
@@ -494,7 +494,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ServiceProtocolSpy: ServiceProtocol {
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
             init() {
             }
             var data: String!
@@ -511,7 +511,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ServiceProtocolSpy: ServiceProtocol {
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
             init() {
             }
             var data: any Codable {
@@ -536,7 +536,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class ServiceProtocolSpy: ServiceProtocol {
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
             init() {
             }
             var completion: () -> Void {
@@ -563,7 +563,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class FooSpy<Key: Hashable>: Foo {
+        class FooSpy<Key: Hashable>: Foo, @unchecked Sendable {
             init() {
             }
         }
@@ -580,7 +580,7 @@ final class UT_SpyFactory: XCTestCase {
         }
         """,
       expectingClassDeclaration: """
-        class FooSpy<Key: Hashable, Value>: Foo {
+        class FooSpy<Key: Hashable, Value>: Foo, @unchecked Sendable {
             init() {
             }
         }
