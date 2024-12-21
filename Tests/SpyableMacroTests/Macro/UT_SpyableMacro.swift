@@ -50,7 +50,7 @@ final class UT_SpyableMacro: XCTestCase {
 
         \(protocolDeclaration)
 
-        public class ServiceProtocolSpy: ServiceProtocol {
+        public class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
             public init() {
             }
             public var name: String {
@@ -223,7 +223,7 @@ final class UT_SpyableMacro: XCTestCase {
 
         \(protocolDeclaration)
 
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
             init() {
             }
         }
@@ -244,7 +244,7 @@ final class UT_SpyableMacro: XCTestCase {
 
         \(protocolDeclaration)
 
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
             init() {
             }
         }
@@ -266,7 +266,7 @@ final class UT_SpyableMacro: XCTestCase {
         \(protocolDeclaration)
 
         #if CUSTOM
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
             init() {
             }
         }
@@ -293,7 +293,7 @@ final class UT_SpyableMacro: XCTestCase {
         \(protocolDeclaration)
 
         #if CUSTOM
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
             init() {
             }
         }
@@ -315,7 +315,7 @@ final class UT_SpyableMacro: XCTestCase {
 
         \(protocolDeclaration)
 
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
             init() {
             }
         }
@@ -353,7 +353,7 @@ final class UT_SpyableMacro: XCTestCase {
         let myCustomFlag = "DEBUG"
         \(protocolDeclaration)
 
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
             init() {
             }
         }
@@ -404,7 +404,7 @@ final class UT_SpyableMacro: XCTestCase {
 
           \(protocolDefinition)
 
-          \(mapping.spyClassAccessLevel) class ServiceProtocolSpy: ServiceProtocol {
+          \(mapping.spyClassAccessLevel) class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
               \(mapping.spyClassAccessLevel) init() {
               }
               \(mapping.spyClassAccessLevel)
@@ -458,7 +458,7 @@ final class UT_SpyableMacro: XCTestCase {
 
           \(protocolDefinition)
 
-          \(mapping.spyClassAccessLevel) class ServiceProtocolSpy: ServiceProtocol {
+          \(mapping.spyClassAccessLevel) class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
               \(mapping.spyClassAccessLevel) init() {
               }
               \(mapping.spyClassAccessLevel)
@@ -503,7 +503,7 @@ final class UT_SpyableMacro: XCTestCase {
 
         \(protocolDeclaration)
 
-        fileprivate class ServiceProtocolSpy: ServiceProtocol {
+        fileprivate class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
             fileprivate init() {
             }
             fileprivate
@@ -546,7 +546,7 @@ final class UT_SpyableMacro: XCTestCase {
         \(protocolDeclaration)
 
         #if CUSTOM_FLAG
-        package class MyProtocolSpy: MyProtocol {
+        package class MyProtocolSpy: MyProtocol, @unchecked Sendable {
             package init() {
             }
         }
