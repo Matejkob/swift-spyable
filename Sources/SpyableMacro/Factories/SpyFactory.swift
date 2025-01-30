@@ -112,10 +112,20 @@ struct SpyFactory {
       genericParameterClause: genericParameterClause,
       inheritanceClause: InheritanceClauseSyntax {
         InheritedTypeSyntax(
-          type: IdentifierTypeSyntax(name: protocolDeclaration.name)
+          type: TypeSyntax(stringLiteral: protocolDeclaration.name.text)
+        )
+        InheritedTypeSyntax(
+          type: TypeSyntax(stringLiteral: "@unchecked Sendable")
         )
       },
       memberBlockBuilder: {
+        InitializerDeclSyntax(
+          signature: FunctionSignatureSyntax(
+            parameterClause: FunctionParameterClauseSyntax(parameters: [])
+          ),
+          bodyBuilder: {}
+        )
+
         for variableDeclaration in variableDeclarations {
           try variablesImplementationFactory.variablesDeclarations(
             protocolVariableDeclaration: variableDeclaration
@@ -124,7 +134,9 @@ struct SpyFactory {
 
         for functionDeclaration in functionDeclarations {
           let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
-          let parameterList = functionDeclaration.signature.parameterClause.parameters
+          let genericTypes = functionDeclaration.genericTypes
+          let parameterList = parameterList(
+            protocolFunctionDeclaration: functionDeclaration, genericTypes: genericTypes)
 
           try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
           try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
@@ -145,15 +157,16 @@ struct SpyFactory {
           }
 
           if let returnType = functionDeclaration.signature.returnClause?.type {
+            let genericTypeErasedReturnType = returnType.erasingGenericTypes(genericTypes)
             try returnValueFactory.variableDeclaration(
               variablePrefix: variablePrefix,
-              functionReturnType: returnType
+              functionReturnType: genericTypeErasedReturnType
             )
           }
 
           try closureFactory.variableDeclaration(
             variablePrefix: variablePrefix,
-            functionSignature: functionDeclaration.signature
+            protocolFunctionDeclaration: functionDeclaration
           )
 
           functionImplementationFactory.declaration(
@@ -163,6 +176,22 @@ struct SpyFactory {
         }
       }
     )
+  }
+}
+
+private func parameterList(
+  protocolFunctionDeclaration: FunctionDeclSyntax,
+  genericTypes: Set<String>
+) -> FunctionParameterListSyntax {
+  let functionSignatureParameters = protocolFunctionDeclaration.signature.parameterClause.parameters
+  return if genericTypes.isEmpty {
+    functionSignatureParameters
+  } else {
+    FunctionParameterListSyntax {
+      for parameter in functionSignatureParameters {
+        parameter.with(\.type, parameter.type.erasingGenericTypes(genericTypes))
+      }
+    }
   }
 }
 

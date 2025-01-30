@@ -94,7 +94,7 @@ struct FunctionImplementationFactory {
       if protocolFunctionDeclaration.signature.returnClause == nil {
         closureFactory.callExpression(
           variablePrefix: variablePrefix,
-          functionSignature: protocolFunctionDeclaration.signature
+          protocolFunctionDeclaration: protocolFunctionDeclaration
         )
       } else {
         returnExpression(
@@ -130,14 +130,17 @@ struct FunctionImplementationFactory {
       elseKeyword: .keyword(.else),
       elseBody: .codeBlock(
         CodeBlockSyntax {
-          returnValueFactory.returnStatement(variablePrefix: variablePrefix)
+          returnValueFactory.returnStatement(
+            variablePrefix: variablePrefix,
+            forceCastType: protocolFunctionDeclaration.forceCastType
+          )
         }
       ),
       bodyBuilder: {
         ReturnStmtSyntax(
           expression: closureFactory.callExpression(
             variablePrefix: variablePrefix,
-            functionSignature: protocolFunctionDeclaration.signature
+            protocolFunctionDeclaration: protocolFunctionDeclaration
           )
         )
       }

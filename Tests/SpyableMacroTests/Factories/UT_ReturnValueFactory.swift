@@ -54,6 +54,22 @@ final class UT_ReturnValueFactory: XCTestCase {
     )
   }
 
+  func testReturnStatementWithForceCastType() {
+    let variablePrefix = "function_name"
+
+    let result = ReturnValueFactory().returnStatement(
+      variablePrefix: variablePrefix,
+      forceCastType: "MyType"
+    )
+
+    assertBuildResult(
+      result,
+      """
+      return function_nameReturnValue as! MyType
+      """
+    )
+  }
+
   // MARK: - Helper Methods for Assertions
 
   private func assert(

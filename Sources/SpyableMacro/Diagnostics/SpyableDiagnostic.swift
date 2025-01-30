@@ -12,6 +12,8 @@ enum SpyableDiagnostic: String, DiagnosticMessage, Error {
   case variableDeclInProtocolWithNotSingleBinding
   case variableDeclInProtocolWithNotIdentifierPattern
   case behindPreprocessorFlagArgumentRequiresStaticStringLiteral
+  case accessLevelArgumentRequiresMemberAccessExpression
+  case accessLevelArgumentUnsupportedAccessLevel
 
   /// Provides a human-readable diagnostic message for each diagnostic case.
   var message: String {
@@ -24,6 +26,10 @@ enum SpyableDiagnostic: String, DiagnosticMessage, Error {
       "Variable declaration in a `protocol` with the `@Spyable` attribute must have identifier pattern"
     case .behindPreprocessorFlagArgumentRequiresStaticStringLiteral:
       "The `behindPreprocessorFlag` argument requires a static string literal"
+    case .accessLevelArgumentRequiresMemberAccessExpression:
+      "The `accessLevel` argument requires a member access expression"
+    case .accessLevelArgumentUnsupportedAccessLevel:
+      "The `accessLevel` argument does not support the specified access level"
     }
   }
 
@@ -33,7 +39,9 @@ enum SpyableDiagnostic: String, DiagnosticMessage, Error {
     case .onlyApplicableToProtocol,
       .variableDeclInProtocolWithNotSingleBinding,
       .variableDeclInProtocolWithNotIdentifierPattern,
-      .behindPreprocessorFlagArgumentRequiresStaticStringLiteral:
+      .behindPreprocessorFlagArgumentRequiresStaticStringLiteral,
+      .accessLevelArgumentRequiresMemberAccessExpression,
+      .accessLevelArgumentUnsupportedAccessLevel:
       .error
     }
   }

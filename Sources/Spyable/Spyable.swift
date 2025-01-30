@@ -1,42 +1,44 @@
-/// The `@Spyable` macro generates a test spy class for the protocol to which it is attached.
-/// A spy is a type of test double that observes and records interactions for later verification in your tests.
+/// The `@Spyable` macro generates a class that implements the protocol to which it is attached.
 ///
-/// The `@Spyable` macro simplifies the task of writing test spies manually. It automatically generates a new
-/// class (the spy) that implements the given protocol. It tracks and exposes information about how the protocol's
-/// methods and properties were used, providing valuable insight for test assertions.
+/// Originally designed for creating spies in testing, this macro has become a versatile tool for generating
+/// protocol implementations. It is widely used for testing (as a spy that tracks and records interactions),
+/// SwiftUI previews, and other scenarios where a quick, dummy implementation of a protocol is needed.
 ///
-/// Usage:
+/// By automating the creation of protocol-conforming classes, the `@Spyable` macro saves time and ensures
+/// consistency, making it an invaluable tool for testing, prototyping, and development workflows.
+///
+/// ### Usage:
 /// ```swift
 /// @Spyable
-/// protocol ServiceProtocol {
+/// public protocol ServiceProtocol {
 ///     var data: Data { get }
 ///     func fetchData(id: String) -> Data
 /// }
 /// ```
 ///
-/// This example would generate a spy class named `ServiceProtocolSpy` that implements `ServiceProtocol`.
+/// This example generates a spy class named `ServiceProtocolSpy` that implements `ServiceProtocol`.
 /// The generated class includes properties and methods for tracking the number of method calls, the arguments
 /// passed, whether the method was called, and so on.
 ///
-/// Example of generated code:
+/// ### Example of generated code:
 /// ```swift
-/// class ServiceProtocolSpy: ServiceProtocol {
-///     var data: Data {
+/// public class ServiceProtocolSpy: ServiceProtocol {
+///     public var data: Data {
 ///         get { underlyingData }
 ///         set { underlyingData = newValue }
 ///     }
-///     var underlyingData: Data!
+///     public var underlyingData: Data!
 ///
-///     var fetchDataIdCallsCount = 0
-///     var fetchDataIdCalled: Bool {
+///     public var fetchDataIdCallsCount = 0
+///     public var fetchDataIdCalled: Bool {
 ///         return fetchDataIdCallsCount > 0
 ///     }
-///     var fetchDataIdReceivedArguments: String?
-///     var fetchDataIdReceivedInvocations: [String] = []
-///     var fetchDataIdReturnValue: Data!
-///     var fetchDataIdClosure: ((String) -> Data)?
+///     public var fetchDataIdReceivedArguments: String?
+///     public var fetchDataIdReceivedInvocations: [String] = []
+///     public var fetchDataIdReturnValue: Data!
+///     public var fetchDataIdClosure: ((String) -> Data)?
 ///
-///     func fetchData(id: String) -> Data {
+///     public func fetchData(id: String) -> Data {
 ///         fetchDataIdCallsCount += 1
 ///         fetchDataIdReceivedArguments = id
 ///         fetchDataIdReceivedInvocations.append(id)
@@ -48,13 +50,101 @@
 ///     }
 /// }
 /// ```
-/// - Parameter behindPreprocessorFlag: This defaults to nil, and can be optionally supplied to wrap the generated code in a preprocessor flag like `#if DEBUG`.
 ///
-/// - NOTE: The `@Spyable` macro should only be applied to protocols. Applying it to other
-///         declarations will result in an error.
+/// ### Access Level Inheritance:
+/// By default, the spy class inherits the access level of the protocol. For example:
+/// ```swift
+/// @Spyable
+/// internal protocol InternalServiceProtocol {
+///     func performTask()
+/// }
+/// ```
+/// This will generate:
+/// ```swift
+/// internal class InternalServiceProtocolSpy: InternalServiceProtocol {
+///     internal func performTask() { ... }
+/// }
+/// ```
+/// If the protocol is declared `private`, the spy will be generated as `fileprivate`:
+/// ```swift
+/// @Spyable
+/// private protocol PrivateServiceProtocol {
+///     func performTask()
+/// }
+/// ```
+/// Generates:
+/// ```swift
+/// fileprivate class PrivateServiceProtocolSpy: PrivateServiceProtocol {
+///     fileprivate func performTask() { ... }
+/// }
+/// ```
+///
+/// ### Parameters:
+/// - `behindPreprocessorFlag` (optional):
+///   Wraps the generated spy class in a preprocessor flag (e.g., `#if DEBUG`).
+///   Defaults to `nil`.
+///   Example:
+///   ```swift
+///   @Spyable(behindPreprocessorFlag: "DEBUG")
+///   protocol DebugProtocol {
+///       func debugTask()
+///   }
+///   ```
+///   Generates:
+///   ```swift
+///   #if DEBUG
+///   class DebugProtocolSpy: DebugProtocol {
+///       func debugTask() { ... }
+///   }
+///   #endif
+///   ```
+///
+/// - `accessLevel` (optional):
+///   Allows explicit control over the access level of the generated spy class. If provided, this overrides
+///   the access level inherited from the protocol. Supported values: `.public`, `.package`, `.internal`, `.fileprivate`, `.private`.
+///   Example:
+///   ```swift
+///   @Spyable(accessLevel: .public)
+///   protocol PublicServiceProtocol {
+///       func performTask()
+///   }
+///   ```
+///   Generates:
+///   ```swift
+///   public class PublicServiceProtocolSpy: PublicServiceProtocol {
+///       public func performTask() { ... }
+///   }
+///   ```
+///   Example overriding inherited access level:
+///   ```swift
+///   @Spyable(accessLevel: .fileprivate)
+///   public protocol CustomAccessProtocol {
+///       func restrictedTask()
+///   }
+///   ```
+///   Generates:
+///   ```swift
+///   fileprivate class CustomAccessProtocolSpy: CustomAccessProtocol {
+///       fileprivate func restrictedTask() { ... }
+///   }
+///   ```
+///
+/// ### Notes:
+/// - The `@Spyable` macro should only be applied to protocols. Applying it to other declarations will result in an error.
+/// - The generated spy class name is suffixed with `Spy` (e.g., `ServiceProtocolSpy`).
+///
 @attached(peer, names: suffixed(Spy))
-public macro Spyable(behindPreprocessorFlag: String? = "DEBUG") =
+public macro Spyable(behindPreprocessorFlag: String? = "DEBUG", accessLevel: SpyAccessLevel? = nil) =
   #externalMacro(
     module: "SpyableMacro",
     type: "SpyableMacro"
   )
+
+/// Enum defining supported access levels for the `@Spyable` macro.
+public enum SpyAccessLevel {
+  case `public`
+  case `package`
+  case `internal`
+  case `fileprivate`
+  case `private`
+}

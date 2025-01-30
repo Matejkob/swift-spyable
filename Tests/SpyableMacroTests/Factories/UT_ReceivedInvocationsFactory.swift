@@ -33,6 +33,14 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
     )
   }
 
+  func testVariableDeclarationSingleGenericArgument() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo(bar: T)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReceivedInvocations: [T] = []"
+    )
+  }
+
   func testVariableDeclarationSingleClosureArgument() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func foo(completion: () -> Void)",
@@ -67,6 +75,17 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
         var _prefix_ReceivedInvocations: [(completion: () -> Void, count: UInt, price: Decimal?)] = []
+        """
+    )
+  }
+
+  func testVariableDeclarationMultiArgumentsWithSomeGenericArgument() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration:
+        "func foo<T>(text: String, value: T, _ count: (x: Int, UInt?)?, final price: Decimal?)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: """
+        var _prefix_ReceivedInvocations: [(text: String, value: T, count: (x: Int, UInt?)?, price: Decimal?)] = []
         """
     )
   }
@@ -108,6 +127,14 @@ final class UT_ReceivedInvocationsFactory: XCTestCase {
       withFunctionDeclaration: "func foo(_ tuple: (text: String, (Decimal?, date: Date))?)",
       prefixForVariable: "_prefix_",
       expectingExpression: "_prefix_ReceivedInvocations.append((tuple))"
+    )
+  }
+
+  func testAppendValueToVariableExpressionSingleArgumentGenericType() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func foo<T>(bar: T)",
+      prefixForVariable: "_prefix_",
+      expectingExpression: "_prefix_ReceivedInvocations.append((bar))"
     )
   }
 

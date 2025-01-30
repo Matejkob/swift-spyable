@@ -37,6 +37,7 @@ final class UT_SpyableMacro: XCTestCase {
           func onTapBack(context: String, action: () -> Void)
           func onTapNext(context: String, action: @Sendable () -> Void)
           func assert(_ message: @autoclosure () -> String)
+          func useGenerics<T, U>(values1: [T], values2: Array<U>, values3: (T, U, Int))
       }
       """
 
@@ -49,8 +50,10 @@ final class UT_SpyableMacro: XCTestCase {
 
         \(protocolDeclaration)
 
-        class ServiceProtocolSpy: ServiceProtocol {
-            var name: String {
+        public class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
+            public init() {
+            }
+            public var name: String {
                 get {
                     underlyingName
                 }
@@ -58,8 +61,8 @@ final class UT_SpyableMacro: XCTestCase {
                     underlyingName = newValue
                 }
             }
-            var underlyingName: (String)!
-            var anyProtocol: any Codable {
+            public var underlyingName: (String)!
+            public var anyProtocol: any Codable {
                 get {
                     underlyingAnyProtocol
                 }
@@ -67,9 +70,10 @@ final class UT_SpyableMacro: XCTestCase {
                     underlyingAnyProtocol = newValue
                 }
             }
-            var underlyingAnyProtocol: (any Codable)!
+            public var underlyingAnyProtocol: (any Codable)!
+            public
             var secondName: String?
-            var added: () -> Void {
+            public var added: () -> Void {
                 get {
                     underlyingAdded
                 }
@@ -77,37 +81,40 @@ final class UT_SpyableMacro: XCTestCase {
                     underlyingAdded = newValue
                 }
             }
-            var underlyingAdded: (() -> Void)!
+            public var underlyingAdded: (() -> Void)!
+            public
             var removed: (() -> Void)?
-            var logoutCallsCount = 0
-            var logoutCalled: Bool {
+            public var logoutCallsCount = 0
+            public var logoutCalled: Bool {
                 return logoutCallsCount > 0
             }
-            var logoutClosure: (() -> Void)?
-            func logout() {
+            public var logoutClosure: (() -> Void)?
+            public func logout() {
                 logoutCallsCount += 1
                 logoutClosure?()
             }
-            var initializeNameSecondNameCallsCount = 0
-            var initializeNameSecondNameCalled: Bool {
+            public var initializeNameSecondNameCallsCount = 0
+            public var initializeNameSecondNameCalled: Bool {
                 return initializeNameSecondNameCallsCount > 0
             }
-            var initializeNameSecondNameReceivedArguments: (name: String, secondName: String?)?
-            var initializeNameSecondNameReceivedInvocations: [(name: String, secondName: String?)] = []
-            var initializeNameSecondNameClosure: ((String, String?) -> Void)?
+            public var initializeNameSecondNameReceivedArguments: (name: String, secondName: String?)?
+            public var initializeNameSecondNameReceivedInvocations: [(name: String, secondName: String?)] = []
+            public var initializeNameSecondNameClosure: ((String, String?) -> Void)?
+            public
             func initialize(name: String, secondName: String?) {
                 initializeNameSecondNameCallsCount += 1
                 initializeNameSecondNameReceivedArguments = (name, secondName)
                 initializeNameSecondNameReceivedInvocations.append((name, secondName))
                 initializeNameSecondNameClosure?(name, secondName)
             }
-            var fetchConfigCallsCount = 0
-            var fetchConfigCalled: Bool {
+            public var fetchConfigCallsCount = 0
+            public var fetchConfigCalled: Bool {
                 return fetchConfigCallsCount > 0
             }
-            var fetchConfigThrowableError: (any Error)?
-            var fetchConfigReturnValue: [String: String]!
-            var fetchConfigClosure: (() async throws -> [String: String])?
+            public var fetchConfigThrowableError: (any Error)?
+            public var fetchConfigReturnValue: [String: String]!
+            public var fetchConfigClosure: (() async throws -> [String: String])?
+            public
             func fetchConfig() async throws -> [String: String] {
                 fetchConfigCallsCount += 1
                 if let fetchConfigThrowableError {
@@ -119,14 +126,15 @@ final class UT_SpyableMacro: XCTestCase {
                     return fetchConfigReturnValue
                 }
             }
-            var fetchDataCallsCount = 0
-            var fetchDataCalled: Bool {
+            public var fetchDataCallsCount = 0
+            public var fetchDataCalled: Bool {
                 return fetchDataCallsCount > 0
             }
-            var fetchDataReceivedName: (String, count: Int)?
-            var fetchDataReceivedInvocations: [(String, count: Int)] = []
-            var fetchDataReturnValue: (() -> Void)!
-            var fetchDataClosure: (((String, count: Int)) async -> (() -> Void))?
+            public var fetchDataReceivedName: (String, count: Int)?
+            public var fetchDataReceivedInvocations: [(String, count: Int)] = []
+            public var fetchDataReturnValue: (() -> Void)!
+            public var fetchDataClosure: (((String, count: Int)) async -> (() -> Void))?
+            public
             func fetchData(_ name: (String, count: Int)) async -> (() -> Void) {
                 fetchDataCallsCount += 1
                 fetchDataReceivedName = (name)
@@ -137,45 +145,63 @@ final class UT_SpyableMacro: XCTestCase {
                     return fetchDataReturnValue
                 }
             }
-            var fetchUsernameContextCompletionCallsCount = 0
-            var fetchUsernameContextCompletionCalled: Bool {
+            public var fetchUsernameContextCompletionCallsCount = 0
+            public var fetchUsernameContextCompletionCalled: Bool {
                 return fetchUsernameContextCompletionCallsCount > 0
             }
-            var fetchUsernameContextCompletionReceivedArguments: (context: String, completion: (String) -> Void)?
-            var fetchUsernameContextCompletionReceivedInvocations: [(context: String, completion: (String) -> Void)] = []
-            var fetchUsernameContextCompletionClosure: ((String, @escaping (String) -> Void) -> Void)?
+            public var fetchUsernameContextCompletionReceivedArguments: (context: String, completion: (String) -> Void)?
+            public var fetchUsernameContextCompletionReceivedInvocations: [(context: String, completion: (String) -> Void)] = []
+            public var fetchUsernameContextCompletionClosure: ((String, @escaping (String) -> Void) -> Void)?
+            public
             func fetchUsername(context: String, completion: @escaping (String) -> Void) {
                 fetchUsernameContextCompletionCallsCount += 1
                 fetchUsernameContextCompletionReceivedArguments = (context, completion)
                 fetchUsernameContextCompletionReceivedInvocations.append((context, completion))
                 fetchUsernameContextCompletionClosure?(context, completion)
             }
-            var onTapBackContextActionCallsCount = 0
-            var onTapBackContextActionCalled: Bool {
+            public var onTapBackContextActionCallsCount = 0
+            public var onTapBackContextActionCalled: Bool {
                 return onTapBackContextActionCallsCount > 0
             }
-            var onTapBackContextActionClosure: ((String, () -> Void) -> Void)?
+            public var onTapBackContextActionClosure: ((String, () -> Void) -> Void)?
+            public
             func onTapBack(context: String, action: () -> Void) {
                 onTapBackContextActionCallsCount += 1
                 onTapBackContextActionClosure?(context, action)
             }
-            var onTapNextContextActionCallsCount = 0
-            var onTapNextContextActionCalled: Bool {
+            public var onTapNextContextActionCallsCount = 0
+            public var onTapNextContextActionCalled: Bool {
                 return onTapNextContextActionCallsCount > 0
             }
-            var onTapNextContextActionClosure: ((String, @Sendable () -> Void) -> Void)?
+            public var onTapNextContextActionClosure: ((String, @Sendable () -> Void) -> Void)?
+            public
             func onTapNext(context: String, action: @Sendable () -> Void) {
                 onTapNextContextActionCallsCount += 1
                 onTapNextContextActionClosure?(context, action)
             }
-            var assertCallsCount = 0
-            var assertCalled: Bool {
+            public var assertCallsCount = 0
+            public var assertCalled: Bool {
                 return assertCallsCount > 0
             }
-            var assertClosure: ((@autoclosure () -> String) -> Void)?
+            public var assertClosure: ((@autoclosure () -> String) -> Void)?
+            public
             func assert(_ message: @autoclosure () -> String) {
                 assertCallsCount += 1
                 assertClosure?(message())
+            }
+            public var useGenericsValues1Values2Values3CallsCount = 0
+            public var useGenericsValues1Values2Values3Called: Bool {
+                return useGenericsValues1Values2Values3CallsCount > 0
+            }
+            public var useGenericsValues1Values2Values3ReceivedArguments: (values1: [Any], values2: Array<Any>, values3: (Any, Any, Int))?
+            public var useGenericsValues1Values2Values3ReceivedInvocations: [(values1: [Any], values2: Array<Any>, values3: (Any, Any, Int))] = []
+            public var useGenericsValues1Values2Values3Closure: (([Any], Array<Any>, (Any, Any, Int)) -> Void)?
+            public
+            func useGenerics<T, U>(values1: [T], values2: Array<U>, values3: (T, U, Int)) {
+                useGenericsValues1Values2Values3CallsCount += 1
+                useGenericsValues1Values2Values3ReceivedArguments = (values1, values2, values3)
+                useGenericsValues1Values2Values3ReceivedInvocations.append((values1, values2, values3))
+                useGenericsValues1Values2Values3Closure?(values1, values2, values3)
             }
         }
         """,
@@ -197,7 +223,9 @@ final class UT_SpyableMacro: XCTestCase {
 
         \(protocolDeclaration)
 
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
+            init() {
+            }
         }
         """,
       macros: sut
@@ -216,7 +244,9 @@ final class UT_SpyableMacro: XCTestCase {
 
         \(protocolDeclaration)
 
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
+            init() {
+            }
         }
         """,
       macros: sut
@@ -236,7 +266,9 @@ final class UT_SpyableMacro: XCTestCase {
         \(protocolDeclaration)
 
         #if CUSTOM
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
+            init() {
+            }
         }
         #endif
         """,
@@ -261,7 +293,9 @@ final class UT_SpyableMacro: XCTestCase {
         \(protocolDeclaration)
 
         #if CUSTOM
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
+            init() {
+            }
         }
         #endif
         """,
@@ -281,7 +315,9 @@ final class UT_SpyableMacro: XCTestCase {
 
         \(protocolDeclaration)
 
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
+            init() {
+            }
         }
         """,
       diagnostics: [
@@ -317,7 +353,9 @@ final class UT_SpyableMacro: XCTestCase {
         let myCustomFlag = "DEBUG"
         \(protocolDeclaration)
 
-        class MyProtocolSpy: MyProtocol {
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
+            init() {
+            }
         }
         """,
       diagnostics: [
@@ -335,6 +373,185 @@ final class UT_SpyableMacro: XCTestCase {
           ]
         )
       ],
+      macros: sut
+    )
+  }
+
+  func testSpyClassAccessLevelsMatchProtocolAccessLevels() {
+    let accessLevelMappings = [
+      (protocolAccessLevel: "public", spyClassAccessLevel: "public"),
+      (protocolAccessLevel: "package", spyClassAccessLevel: "package"),
+      (protocolAccessLevel: "internal", spyClassAccessLevel: "internal"),
+      (protocolAccessLevel: "fileprivate", spyClassAccessLevel: "fileprivate"),
+      (protocolAccessLevel: "private", spyClassAccessLevel: "fileprivate"),
+    ]
+
+    for mapping in accessLevelMappings {
+      let protocolDefinition = """
+        \(mapping.protocolAccessLevel) protocol ServiceProtocol {
+            var removed: (() -> Void)? { get set }
+
+            func fetchUsername(context: String, completion: @escaping (String) -> Void)
+        }
+        """
+
+      assertMacroExpansion(
+        """
+        @Spyable
+        \(protocolDefinition)
+        """,
+        expandedSource: """
+
+          \(protocolDefinition)
+
+          \(mapping.spyClassAccessLevel) class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
+              \(mapping.spyClassAccessLevel) init() {
+              }
+              \(mapping.spyClassAccessLevel)
+              var removed: (() -> Void)?
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionCallsCount = 0
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionCalled: Bool {
+                  return fetchUsernameContextCompletionCallsCount > 0
+              }
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionReceivedArguments: (context: String, completion: (String) -> Void)?
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionReceivedInvocations: [(context: String, completion: (String) -> Void)] = []
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionClosure: ((String, @escaping (String) -> Void) -> Void)?
+              \(mapping.spyClassAccessLevel)
+
+              func fetchUsername(context: String, completion: @escaping (String) -> Void) {
+                  fetchUsernameContextCompletionCallsCount += 1
+                  fetchUsernameContextCompletionReceivedArguments = (context, completion)
+                  fetchUsernameContextCompletionReceivedInvocations.append((context, completion))
+                  fetchUsernameContextCompletionClosure?(context, completion)
+              }
+          }
+          """,
+        macros: sut
+      )
+    }
+  }
+
+  func testMacroWithAccessLevelArgument() {
+    let accessLevelMappings = [
+      (protocolAccessLevel: "public", spyClassAccessLevel: "public"),
+      (protocolAccessLevel: "package", spyClassAccessLevel: "package"),
+      (protocolAccessLevel: "internal", spyClassAccessLevel: "internal"),
+      (protocolAccessLevel: "fileprivate", spyClassAccessLevel: "fileprivate"),
+      (protocolAccessLevel: "private", spyClassAccessLevel: "fileprivate"),
+    ]
+
+    for mapping in accessLevelMappings {
+      let protocolDefinition = """
+        protocol ServiceProtocol {
+            var removed: (() -> Void)? { get set }
+
+            func fetchUsername(context: String, completion: @escaping (String) -> Void)
+        }
+        """
+
+      assertMacroExpansion(
+        """
+        @Spyable(accessLevel: .\(mapping.protocolAccessLevel))
+        \(protocolDefinition)
+        """,
+        expandedSource: """
+
+          \(protocolDefinition)
+
+          \(mapping.spyClassAccessLevel) class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
+              \(mapping.spyClassAccessLevel) init() {
+              }
+              \(mapping.spyClassAccessLevel)
+              var removed: (() -> Void)?
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionCallsCount = 0
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionCalled: Bool {
+                  return fetchUsernameContextCompletionCallsCount > 0
+              }
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionReceivedArguments: (context: String, completion: (String) -> Void)?
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionReceivedInvocations: [(context: String, completion: (String) -> Void)] = []
+              \(mapping.spyClassAccessLevel) var fetchUsernameContextCompletionClosure: ((String, @escaping (String) -> Void) -> Void)?
+              \(mapping.spyClassAccessLevel)
+
+              func fetchUsername(context: String, completion: @escaping (String) -> Void) {
+                  fetchUsernameContextCompletionCallsCount += 1
+                  fetchUsernameContextCompletionReceivedArguments = (context, completion)
+                  fetchUsernameContextCompletionReceivedInvocations.append((context, completion))
+                  fetchUsernameContextCompletionClosure?(context, completion)
+              }
+          }
+          """,
+        macros: sut
+      )
+    }
+  }
+
+  func testMacroWithAccessLevelArgumentOverridingInheritedAccessLevel() {
+    let protocolDeclaration = """
+      public protocol ServiceProtocol {
+          var removed: (() -> Void)? { get set }
+
+          func fetchUsername(context: String, completion: @escaping (String) -> Void)
+      }
+      """
+
+    assertMacroExpansion(
+      """
+      @Spyable(accessLevel: .fileprivate)
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        \(protocolDeclaration)
+
+        fileprivate class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
+            fileprivate init() {
+            }
+            fileprivate
+            var removed: (() -> Void)?
+            fileprivate var fetchUsernameContextCompletionCallsCount = 0
+            fileprivate var fetchUsernameContextCompletionCalled: Bool {
+                return fetchUsernameContextCompletionCallsCount > 0
+            }
+            fileprivate var fetchUsernameContextCompletionReceivedArguments: (context: String, completion: (String) -> Void)?
+            fileprivate var fetchUsernameContextCompletionReceivedInvocations: [(context: String, completion: (String) -> Void)] = []
+            fileprivate var fetchUsernameContextCompletionClosure: ((String, @escaping (String) -> Void) -> Void)?
+            fileprivate
+
+            func fetchUsername(context: String, completion: @escaping (String) -> Void) {
+                fetchUsernameContextCompletionCallsCount += 1
+                fetchUsernameContextCompletionReceivedArguments = (context, completion)
+                fetchUsernameContextCompletionReceivedInvocations.append((context, completion))
+                fetchUsernameContextCompletionClosure?(context, completion)
+            }
+        }
+        """,
+      macros: sut
+    )
+  }
+
+  func testMacroWithAllArgumentsAndOtherAttributes() {
+    let protocolDeclaration = "public protocol MyProtocol {}"
+
+    assertMacroExpansion(
+      """
+      @MainActor
+      @Spyable(behindPreprocessorFlag: "CUSTOM_FLAG", accessLevel: .package)
+      @available(*, deprecated)
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        @MainActor
+        @available(*, deprecated)
+        \(protocolDeclaration)
+
+        #if CUSTOM_FLAG
+        package class MyProtocolSpy: MyProtocol, @unchecked Sendable {
+            package init() {
+            }
+        }
+        #endif
+        """,
       macros: sut
     )
   }
