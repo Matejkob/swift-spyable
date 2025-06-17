@@ -164,7 +164,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Run Swift Macro Compatibility Check
-        uses: Matejkob/swift-macro-compatibility-check@dd-swift-installation
+        uses: Matejkob/swift-macro-compatibility-check@add-swift-installation
         with:
           run-tests: true
           major-versions-only: false
