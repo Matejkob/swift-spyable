@@ -19,16 +19,22 @@ concurrency:
 jobs:
   macos:
     name: macOS - ${{ matrix.package }} (Xcode ${{ matrix.xcode }})
-    runs-on: macos-14
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        xcode:
-          - '16.1'
-          - '16.0'
-          - '15.4'
-        package:
-          - 'main'
-          - 'Examples'
+        include:
+          - os: macos-15
+            xcode: '16.2'
+            package: 'main'
+          - os: macos-15
+            xcode: '16.2'
+            package: 'Examples'
+          - os: macos-14
+            xcode: '15.4'
+            package: 'main'
+          - os: macos-14
+            xcode: '15.4'
+            package: 'Examples'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -121,13 +127,13 @@ jobs:
   code-coverage:
     name: Gather Code Coverage
     needs: macos
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Select latest Xcode
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
 
       - name: Build and test with coverage
         run: swift test -Xswiftc -Xfrontend -Xswiftc -dump-macro-expansions --enable-code-coverage
