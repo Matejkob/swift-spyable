@@ -110,7 +110,7 @@ extension GenericArgumentClauseSyntax: TypeSyntaxSupportingGenerics {
     arguments.compactMap {
       #if canImport(SwiftSyntax601)
         if case let .type(type) = $0.argument {
-            return type
+          return type
         } else {
           return nil
         }
@@ -119,10 +119,10 @@ extension GenericArgumentClauseSyntax: TypeSyntaxSupportingGenerics {
       #endif
     }
   }
-  
+
   fileprivate func erasingGenericTypes(_ genericTypes: Set<String>) -> Self {
     var newArgumentElements: [GenericArgumentSyntax] = []
-    
+
     for argumentElement in arguments {
       #if canImport(SwiftSyntax601)
         let newArgument: TypeSyntax
@@ -140,9 +140,9 @@ extension GenericArgumentClauseSyntax: TypeSyntaxSupportingGenerics {
       )
       newArgumentElements.append(newArgumentElement)
     }
-    
+
     let newArguments = GenericArgumentListSyntax(newArgumentElements)
-    
+
     return Self(
       leftAngle: self.leftAngle,
       arguments: newArguments,
@@ -155,7 +155,7 @@ extension TupleTypeSyntax: TypeSyntaxSupportingGenerics {
   fileprivate var nestedTypeSyntaxes: [TypeSyntax] {
     elements.map { $0.type }
   }
-  
+
   fileprivate func erasingGenericTypes(_ genericTypes: Set<String>) -> Self {
     with(
       \.elements,
