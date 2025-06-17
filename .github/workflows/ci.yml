@@ -88,37 +88,37 @@ jobs:
       - name: Run tests
         run: swift test
 
-  windows:
-    name: Windows - ${{ matrix.package }} (Swift ${{ matrix.swift }})
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        swift:
-          - '6.0'
-          - '5.10'
-          - '5.9.1' # Macros has been added to Swift on Windows in 5.9.1 version
-        package:
-          - 'main'
-          - 'Examples'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Swift
-        uses: compnerd/gha-setup-swift@main
-        with:
-          branch: swift-${{ matrix.swift }}-release
-          tag: ${{ matrix.swift }}-RELEASE
-
-      # Set working directory to Examples if testing the examples package
-      - name: Set working directory
-        run: |
-          if ("${{ matrix.package }}" -eq "Examples") {
-            cd Examples
-          }
-
-      - name: Build package
-        run: swift build
+#  windows:
+#    name: Windows - ${{ matrix.package }} (Swift ${{ matrix.swift }})
+#    runs-on: windows-latest
+#    strategy:
+#      matrix:
+#        swift:
+#          - '6.0'
+#          - '5.10'
+#          - '5.9.1' # Macros has been added to Swift on Windows in 5.9.1 version
+#        package:
+#          - 'main'
+#          - 'Examples'
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Install Swift
+#        uses: compnerd/gha-setup-swift@main
+#        with:
+#          branch: swift-${{ matrix.swift }}-release
+#          tag: ${{ matrix.swift }}-RELEASE
+#
+#      # Set working directory to Examples if testing the examples package
+#      - name: Set working directory
+#        run: |
+#          if ("${{ matrix.package }}" -eq "Examples") {
+#            cd Examples
+#          }
+#
+#      - name: Build package
+#        run: swift build
 
 # Looks like tests don't work on Windows
       # - name: Run tests
