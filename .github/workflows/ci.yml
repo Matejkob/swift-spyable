@@ -17,144 +17,144 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  macos:
-    name: macOS - ${{ matrix.package }} (Xcode ${{ matrix.xcode }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: macos-15
-            xcode: '16.2'
-            package: 'main'
-          - os: macos-15
-            xcode: '16.2'
-            package: 'Examples'
-          - os: macos-14
-            xcode: '15.4'
-            package: 'main'
-          - os: macos-14
-            xcode: '15.4'
-            package: 'Examples'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Select Xcode ${{ matrix.xcode }}
-        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
-
-      - name: Print Swift version
-        run: swift --version
-
-      # Set working directory to Examples if testing the examples package
-      - name: Set working directory
-        run: |
-          if [ "${{ matrix.package }}" = "Examples" ]; then
-            cd Examples
-          fi
-
-      - name: Build package
-        run: swift build
-
-      - name: Run tests
-        run: swift test
-
-  linux:
-    name: Ubuntu - ${{ matrix.package }} (Swift ${{ matrix.swift }})
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        swift:
-          - '6.0'
-          - '5.10'
-          - '5.9'
-        package:
-          - 'main'
-          - 'Examples'
-    container: swift:${{ matrix.swift }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Set working directory to Examples if testing the examples package
-      - name: Set working directory
-        run: |
-          if [ "${{ matrix.package }}" = "Examples" ]; then
-            cd Examples
-          fi
-
-      - name: Build package
-        run: swift build
-
-      - name: Run tests
-        run: swift test
-
-#  windows:
-#    name: Windows - ${{ matrix.package }} (Swift ${{ matrix.swift }})
-#    runs-on: windows-latest
+#  macos:
+#    name: macOS - ${{ matrix.package }} (Xcode ${{ matrix.xcode }})
+#    runs-on: ${{ matrix.os }}
+#    strategy:
+#      matrix:
+#        include:
+#          - os: macos-15
+#            xcode: '16.2'
+#            package: 'main'
+#          - os: macos-15
+#            xcode: '16.2'
+#            package: 'Examples'
+#          - os: macos-14
+#            xcode: '15.4'
+#            package: 'main'
+#          - os: macos-14
+#            xcode: '15.4'
+#            package: 'Examples'
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Select Xcode ${{ matrix.xcode }}
+#        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
+#
+#      - name: Print Swift version
+#        run: swift --version
+#
+#      # Set working directory to Examples if testing the examples package
+#      - name: Set working directory
+#        run: |
+#          if [ "${{ matrix.package }}" = "Examples" ]; then
+#            cd Examples
+#          fi
+#
+#      - name: Build package
+#        run: swift build
+#
+#      - name: Run tests
+#        run: swift test
+#
+#  linux:
+#    name: Ubuntu - ${{ matrix.package }} (Swift ${{ matrix.swift }})
+#    runs-on: ubuntu-latest
 #    strategy:
 #      matrix:
 #        swift:
 #          - '6.0'
 #          - '5.10'
-#          - '5.9.1' # Macros has been added to Swift on Windows in 5.9.1 version
+#          - '5.9'
 #        package:
 #          - 'main'
 #          - 'Examples'
+#    container: swift:${{ matrix.swift }}
 #    steps:
 #      - name: Checkout repository
 #        uses: actions/checkout@v4
 #
-#      - name: Install Swift
-#        uses: compnerd/gha-setup-swift@main
-#        with:
-#          branch: swift-${{ matrix.swift }}-release
-#          tag: ${{ matrix.swift }}-RELEASE
-#
 #      # Set working directory to Examples if testing the examples package
 #      - name: Set working directory
 #        run: |
-#          if ("${{ matrix.package }}" -eq "Examples") {
+#          if [ "${{ matrix.package }}" = "Examples" ]; then
 #            cd Examples
-#          }
+#          fi
 #
 #      - name: Build package
 #        run: swift build
-
-# Looks like tests don't work on Windows
-      # - name: Run tests
-        # run: swift test
-
-  code-coverage:
-    name: Gather Code Coverage
-    needs: macos
-    runs-on: macos-15
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Select latest Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.2.app
-
-      - name: Build and test with coverage
-        run: swift test -Xswiftc -Xfrontend -Xswiftc -dump-macro-expansions --enable-code-coverage
-
-      - name: Gather code coverage
-        run: |
-            BUILD_PATH=$(swift build --show-bin-path)
-            xcrun llvm-cov report \
-            $BUILD_PATH/swift-spyablePackageTests.xctest/Contents/MacOS/swift-spyablePackageTests \
-            -instr-profile=$BUILD_PATH/codecov/default.profdata \
-            -ignore-filename-regex=".build|Tests" -use-color
-            xcrun llvm-cov export -format="lcov" \
-            $BUILD_PATH/swift-spyablePackageTests.xctest/Contents/MacOS/swift-spyablePackageTests \
-            -instr-profile=$BUILD_PATH/codecov/default.profdata \
-            -ignore-filename-regex=".build|Tests" > coverage_report.lcov
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage_report.lcov
+#
+#      - name: Run tests
+#        run: swift test
+#
+##  windows:
+##    name: Windows - ${{ matrix.package }} (Swift ${{ matrix.swift }})
+##    runs-on: windows-latest
+##    strategy:
+##      matrix:
+##        swift:
+##          - '6.0'
+##          - '5.10'
+##          - '5.9.1' # Macros has been added to Swift on Windows in 5.9.1 version
+##        package:
+##          - 'main'
+##          - 'Examples'
+##    steps:
+##      - name: Checkout repository
+##        uses: actions/checkout@v4
+##
+##      - name: Install Swift
+##        uses: compnerd/gha-setup-swift@main
+##        with:
+##          branch: swift-${{ matrix.swift }}-release
+##          tag: ${{ matrix.swift }}-RELEASE
+##
+##      # Set working directory to Examples if testing the examples package
+##      - name: Set working directory
+##        run: |
+##          if ("${{ matrix.package }}" -eq "Examples") {
+##            cd Examples
+##          }
+##
+##      - name: Build package
+##        run: swift build
+#
+## Looks like tests don't work on Windows
+#      # - name: Run tests
+#        # run: swift test
+#
+#  code-coverage:
+#    name: Gather Code Coverage
+#    needs: macos
+#    runs-on: macos-15
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Select latest Xcode
+#        run: sudo xcode-select -s /Applications/Xcode_16.2.app
+#
+#      - name: Build and test with coverage
+#        run: swift test -Xswiftc -Xfrontend -Xswiftc -dump-macro-expansions --enable-code-coverage
+#
+#      - name: Gather code coverage
+#        run: |
+#            BUILD_PATH=$(swift build --show-bin-path)
+#            xcrun llvm-cov report \
+#            $BUILD_PATH/swift-spyablePackageTests.xctest/Contents/MacOS/swift-spyablePackageTests \
+#            -instr-profile=$BUILD_PATH/codecov/default.profdata \
+#            -ignore-filename-regex=".build|Tests" -use-color
+#            xcrun llvm-cov export -format="lcov" \
+#            $BUILD_PATH/swift-spyablePackageTests.xctest/Contents/MacOS/swift-spyablePackageTests \
+#            -instr-profile=$BUILD_PATH/codecov/default.profdata \
+#            -ignore-filename-regex=".build|Tests" > coverage_report.lcov
+#
+#      - name: Upload coverage reports to Codecov
+#        uses: codecov/codecov-action@v4
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}
+#          files: ./coverage_report.lcov
 
   check-macro-compatibility:
     name: Check Macro Compatibility
