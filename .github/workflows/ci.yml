@@ -167,7 +167,7 @@ jobs:
         run: swift --version
         
       - name: Run Swift Macro Compatibility Check
-        uses: Matejkob/swift-macro-compatibility-check@v1
+        uses: Matejkob/swift-macro-compatibility-check@test
         with:
           run-tests: true
           major-versions-only: true
