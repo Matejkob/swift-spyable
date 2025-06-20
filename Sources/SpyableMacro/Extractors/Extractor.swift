@@ -145,6 +145,46 @@ struct Extractor {
   func extractAccessLevel(from protocolDeclSyntax: ProtocolDeclSyntax) -> DeclModifierSyntax? {
     protocolDeclSyntax.modifiers.first(where: \.name.isAccessLevelSupportedInProtocol)
   }
+
+  func extractInheritedTypes(
+    from attribute: AttributeSyntax,
+    in context: some MacroExpansionContext
+  ) -> String? {
+    guard case let .argumentList(argumentList) = attribute.arguments else {
+      // No arguments are present in the attribute.
+      return nil
+    }
+
+    let inheritedTypesArgument = argumentList.first { argument in
+      argument.label?.text == "inheritedTypes"
+    }
+
+    guard let inheritedTypesArgument else {
+      // The `inheritedTypes` argument is missing.
+      return nil
+    }
+
+    let segments = inheritedTypesArgument.expression
+       .as(StringLiteralExprSyntax.self)?
+       .segments
+
+     guard let segments,
+       segments.count == 1,
+       case let .stringSegment(literalSegment)? = segments.first
+     else {
+       // The `inheritedTypes` argument's value is not a static string literal.
+       context.diagnose(
+         Diagnostic(
+           node: attribute,
+           message: SpyableDiagnostic.behindPreprocessorFlagArgumentRequiresStaticStringLiteral,
+           highlights: [Syntax(inheritedTypesArgument.expression)]
+         )
+       )
+       return nil
+     }
+
+     return literalSegment.content.text
+  }
 }
 
 extension TokenSyntax {

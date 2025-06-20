@@ -555,4 +555,38 @@ final class UT_SpyableMacro: XCTestCase {
       macros: sut
     )
   }
+
+  func testMacroWithParameterToMakeGeneratedSpyConformToAnotherProtocol() {
+    let baseProtocolDeclaration = """
+    protocol BaseProtocol {
+        func baseMethod()
+    }
+
+    class BaseClass: BaseProtocol {
+        func baseMethod() {}
+    }
+    
+    """
+
+    let protocolDeclaration = "protocol MyProtocol: BaseProtocol {}"
+
+    assertMacroExpansion(
+      """
+      \(baseProtocolDeclaration)
+      @Spyable(inheritedTypes: "BaseClass")
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+        \(baseProtocolDeclaration)
+
+        \(protocolDeclaration)
+        
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable, BaseClass {
+            init() {
+            }
+        }
+        """,
+      macros: sut
+    )
+  }
 }
