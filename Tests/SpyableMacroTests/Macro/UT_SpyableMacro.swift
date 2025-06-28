@@ -555,4 +555,360 @@ final class UT_SpyableMacro: XCTestCase {
       macros: sut
     )
   }
+  
+  func testPolymorphism() {
+    let protocolDeclaration = """
+      protocol VariablePrefixTestProtocol {
+        func doSomething()
+        func doSomething() -> Int
+        func doSomething() -> String?
+        func doSomething() -> [String]
+        func doSomething() -> Set<Int>
+        func doSomething() -> Set<Int?>
+        func doSomething() -> Set<Int>?
+        func doSomething() -> Set<Int?>?
+        func doSomething() -> [String: Int]
+        func doSomething() -> (Int, Int)
+
+        func compute(value: Int)
+        func compute(value: Int) -> Bool
+        func compute(value: Int) -> Double?
+        func compute(value: Int) -> [Int]
+        func compute(value: Int) -> Set<String>
+        func compute(value: Int) -> Set<String?>
+        func compute(value: Int) -> Set<String>?
+        func compute(value: Int) -> Set<String?>?
+        func compute(value: Int) -> [Int: String]
+        func compute(value: Int) -> (String, Bool)
+      }
+      """
+
+    assertMacroExpansion(
+      """
+      @Spyable
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        \(protocolDeclaration)
+
+        class VariablePrefixTestProtocolSpy: VariablePrefixTestProtocol, @unchecked Sendable {
+            init() {
+            }
+            var doSomethingCallsCount = 0
+            var doSomethingCalled: Bool {
+                return doSomethingCallsCount > 0
+            }
+            var doSomethingClosure: (() -> Void)?
+            func doSomething() {
+                doSomethingCallsCount += 1
+                doSomethingClosure?()
+            }
+            var doSomethingIntCallsCount = 0
+            var doSomethingIntCalled: Bool {
+                return doSomethingIntCallsCount > 0
+            }
+            var doSomethingIntReturnValue: Int!
+            var doSomethingIntClosure: (() -> Int)?
+            func doSomething() -> Int {
+                doSomethingIntCallsCount += 1
+                if doSomethingIntClosure != nil {
+                    return doSomethingIntClosure!()
+                } else {
+                    return doSomethingIntReturnValue
+                }
+            }
+            var doSomethingOptionalStringCallsCount = 0
+            var doSomethingOptionalStringCalled: Bool {
+                return doSomethingOptionalStringCallsCount > 0
+            }
+            var doSomethingOptionalStringReturnValue: String?
+            var doSomethingOptionalStringClosure: (() -> String?)?
+            func doSomething() -> String? {
+                doSomethingOptionalStringCallsCount += 1
+                if doSomethingOptionalStringClosure != nil {
+                    return doSomethingOptionalStringClosure!()
+                } else {
+                    return doSomethingOptionalStringReturnValue
+                }
+            }
+            var doSomethingStringCallsCount = 0
+            var doSomethingStringCalled: Bool {
+                return doSomethingStringCallsCount > 0
+            }
+            var doSomethingStringReturnValue: [String]!
+            var doSomethingStringClosure: (() -> [String])?
+            func doSomething() -> [String] {
+                doSomethingStringCallsCount += 1
+                if doSomethingStringClosure != nil {
+                    return doSomethingStringClosure!()
+                } else {
+                    return doSomethingStringReturnValue
+                }
+            }
+            var doSomethingSetIntCallsCount = 0
+            var doSomethingSetIntCalled: Bool {
+                return doSomethingSetIntCallsCount > 0
+            }
+            var doSomethingSetIntReturnValue: Set<Int>!
+            var doSomethingSetIntClosure: (() -> Set<Int>)?
+            func doSomething() -> Set<Int> {
+                doSomethingSetIntCallsCount += 1
+                if doSomethingSetIntClosure != nil {
+                    return doSomethingSetIntClosure!()
+                } else {
+                    return doSomethingSetIntReturnValue
+                }
+            }
+            var doSomethingSetIntOptionalCallsCount = 0
+            var doSomethingSetIntOptionalCalled: Bool {
+                return doSomethingSetIntOptionalCallsCount > 0
+            }
+            var doSomethingSetIntOptionalReturnValue: Set<Int?>!
+            var doSomethingSetIntOptionalClosure: (() -> Set<Int?>)?
+            func doSomething() -> Set<Int?> {
+                doSomethingSetIntOptionalCallsCount += 1
+                if doSomethingSetIntOptionalClosure != nil {
+                    return doSomethingSetIntOptionalClosure!()
+                } else {
+                    return doSomethingSetIntOptionalReturnValue
+                }
+            }
+            var doSomethingOptionalSetIntCallsCount = 0
+            var doSomethingOptionalSetIntCalled: Bool {
+                return doSomethingOptionalSetIntCallsCount > 0
+            }
+            var doSomethingOptionalSetIntReturnValue: Set<Int>?
+            var doSomethingOptionalSetIntClosure: (() -> Set<Int>?)?
+            func doSomething() -> Set<Int>? {
+                doSomethingOptionalSetIntCallsCount += 1
+                if doSomethingOptionalSetIntClosure != nil {
+                    return doSomethingOptionalSetIntClosure!()
+                } else {
+                    return doSomethingOptionalSetIntReturnValue
+                }
+            }
+            var doSomethingOptionalSetIntOptionalCallsCount = 0
+            var doSomethingOptionalSetIntOptionalCalled: Bool {
+                return doSomethingOptionalSetIntOptionalCallsCount > 0
+            }
+            var doSomethingOptionalSetIntOptionalReturnValue: Set<Int?>?
+            var doSomethingOptionalSetIntOptionalClosure: (() -> Set<Int?>?)?
+            func doSomething() -> Set<Int?>? {
+                doSomethingOptionalSetIntOptionalCallsCount += 1
+                if doSomethingOptionalSetIntOptionalClosure != nil {
+                    return doSomethingOptionalSetIntOptionalClosure!()
+                } else {
+                    return doSomethingOptionalSetIntOptionalReturnValue
+                }
+            }
+            var doSomethingStringIntCallsCount = 0
+            var doSomethingStringIntCalled: Bool {
+                return doSomethingStringIntCallsCount > 0
+            }
+            var doSomethingStringIntReturnValue: [String: Int]!
+            var doSomethingStringIntClosure: (() -> [String: Int])?
+            func doSomething() -> [String: Int] {
+                doSomethingStringIntCallsCount += 1
+                if doSomethingStringIntClosure != nil {
+                    return doSomethingStringIntClosure!()
+                } else {
+                    return doSomethingStringIntReturnValue
+                }
+            }
+            var doSomethingIntIntCallsCount = 0
+            var doSomethingIntIntCalled: Bool {
+                return doSomethingIntIntCallsCount > 0
+            }
+            var doSomethingIntIntReturnValue: (Int, Int)!
+            var doSomethingIntIntClosure: (() -> (Int, Int))?
+            func doSomething() -> (Int, Int) {
+                doSomethingIntIntCallsCount += 1
+                if doSomethingIntIntClosure != nil {
+                    return doSomethingIntIntClosure!()
+                } else {
+                    return doSomethingIntIntReturnValue
+                }
+            }
+            var computeValueCallsCount = 0
+            var computeValueCalled: Bool {
+                return computeValueCallsCount > 0
+            }
+            var computeValueReceivedValue: Int?
+            var computeValueReceivedInvocations: [Int] = []
+            var computeValueClosure: ((Int) -> Void)?
+
+            func compute(value: Int) {
+                computeValueCallsCount += 1
+                computeValueReceivedValue = (value)
+                computeValueReceivedInvocations.append((value))
+                computeValueClosure?(value)
+            }
+            var computeValueBoolCallsCount = 0
+            var computeValueBoolCalled: Bool {
+                return computeValueBoolCallsCount > 0
+            }
+            var computeValueBoolReceivedValue: Int?
+            var computeValueBoolReceivedInvocations: [Int] = []
+            var computeValueBoolReturnValue: Bool!
+            var computeValueBoolClosure: ((Int) -> Bool)?
+            func compute(value: Int) -> Bool {
+                computeValueBoolCallsCount += 1
+                computeValueBoolReceivedValue = (value)
+                computeValueBoolReceivedInvocations.append((value))
+                if computeValueBoolClosure != nil {
+                    return computeValueBoolClosure!(value)
+                } else {
+                    return computeValueBoolReturnValue
+                }
+            }
+            var computeValueOptionalDoubleCallsCount = 0
+            var computeValueOptionalDoubleCalled: Bool {
+                return computeValueOptionalDoubleCallsCount > 0
+            }
+            var computeValueOptionalDoubleReceivedValue: Int?
+            var computeValueOptionalDoubleReceivedInvocations: [Int] = []
+            var computeValueOptionalDoubleReturnValue: Double?
+            var computeValueOptionalDoubleClosure: ((Int) -> Double?)?
+            func compute(value: Int) -> Double? {
+                computeValueOptionalDoubleCallsCount += 1
+                computeValueOptionalDoubleReceivedValue = (value)
+                computeValueOptionalDoubleReceivedInvocations.append((value))
+                if computeValueOptionalDoubleClosure != nil {
+                    return computeValueOptionalDoubleClosure!(value)
+                } else {
+                    return computeValueOptionalDoubleReturnValue
+                }
+            }
+            var computeValueIntCallsCount = 0
+            var computeValueIntCalled: Bool {
+                return computeValueIntCallsCount > 0
+            }
+            var computeValueIntReceivedValue: Int?
+            var computeValueIntReceivedInvocations: [Int] = []
+            var computeValueIntReturnValue: [Int]!
+            var computeValueIntClosure: ((Int) -> [Int])?
+            func compute(value: Int) -> [Int] {
+                computeValueIntCallsCount += 1
+                computeValueIntReceivedValue = (value)
+                computeValueIntReceivedInvocations.append((value))
+                if computeValueIntClosure != nil {
+                    return computeValueIntClosure!(value)
+                } else {
+                    return computeValueIntReturnValue
+                }
+            }
+            var computeValueSetStringCallsCount = 0
+            var computeValueSetStringCalled: Bool {
+                return computeValueSetStringCallsCount > 0
+            }
+            var computeValueSetStringReceivedValue: Int?
+            var computeValueSetStringReceivedInvocations: [Int] = []
+            var computeValueSetStringReturnValue: Set<String>!
+            var computeValueSetStringClosure: ((Int) -> Set<String>)?
+            func compute(value: Int) -> Set<String> {
+                computeValueSetStringCallsCount += 1
+                computeValueSetStringReceivedValue = (value)
+                computeValueSetStringReceivedInvocations.append((value))
+                if computeValueSetStringClosure != nil {
+                    return computeValueSetStringClosure!(value)
+                } else {
+                    return computeValueSetStringReturnValue
+                }
+            }
+            var computeValueSetStringOptionalCallsCount = 0
+            var computeValueSetStringOptionalCalled: Bool {
+                return computeValueSetStringOptionalCallsCount > 0
+            }
+            var computeValueSetStringOptionalReceivedValue: Int?
+            var computeValueSetStringOptionalReceivedInvocations: [Int] = []
+            var computeValueSetStringOptionalReturnValue: Set<String?>!
+            var computeValueSetStringOptionalClosure: ((Int) -> Set<String?>)?
+            func compute(value: Int) -> Set<String?> {
+                computeValueSetStringOptionalCallsCount += 1
+                computeValueSetStringOptionalReceivedValue = (value)
+                computeValueSetStringOptionalReceivedInvocations.append((value))
+                if computeValueSetStringOptionalClosure != nil {
+                    return computeValueSetStringOptionalClosure!(value)
+                } else {
+                    return computeValueSetStringOptionalReturnValue
+                }
+            }
+            var computeValueOptionalSetStringCallsCount = 0
+            var computeValueOptionalSetStringCalled: Bool {
+                return computeValueOptionalSetStringCallsCount > 0
+            }
+            var computeValueOptionalSetStringReceivedValue: Int?
+            var computeValueOptionalSetStringReceivedInvocations: [Int] = []
+            var computeValueOptionalSetStringReturnValue: Set<String>?
+            var computeValueOptionalSetStringClosure: ((Int) -> Set<String>?)?
+            func compute(value: Int) -> Set<String>? {
+                computeValueOptionalSetStringCallsCount += 1
+                computeValueOptionalSetStringReceivedValue = (value)
+                computeValueOptionalSetStringReceivedInvocations.append((value))
+                if computeValueOptionalSetStringClosure != nil {
+                    return computeValueOptionalSetStringClosure!(value)
+                } else {
+                    return computeValueOptionalSetStringReturnValue
+                }
+            }
+            var computeValueOptionalSetStringOptionalCallsCount = 0
+            var computeValueOptionalSetStringOptionalCalled: Bool {
+                return computeValueOptionalSetStringOptionalCallsCount > 0
+            }
+            var computeValueOptionalSetStringOptionalReceivedValue: Int?
+            var computeValueOptionalSetStringOptionalReceivedInvocations: [Int] = []
+            var computeValueOptionalSetStringOptionalReturnValue: Set<String?>?
+            var computeValueOptionalSetStringOptionalClosure: ((Int) -> Set<String?>?)?
+            func compute(value: Int) -> Set<String?>? {
+                computeValueOptionalSetStringOptionalCallsCount += 1
+                computeValueOptionalSetStringOptionalReceivedValue = (value)
+                computeValueOptionalSetStringOptionalReceivedInvocations.append((value))
+                if computeValueOptionalSetStringOptionalClosure != nil {
+                    return computeValueOptionalSetStringOptionalClosure!(value)
+                } else {
+                    return computeValueOptionalSetStringOptionalReturnValue
+                }
+            }
+            var computeValueIntStringCallsCount = 0
+            var computeValueIntStringCalled: Bool {
+                return computeValueIntStringCallsCount > 0
+            }
+            var computeValueIntStringReceivedValue: Int?
+            var computeValueIntStringReceivedInvocations: [Int] = []
+            var computeValueIntStringReturnValue: [Int: String]!
+            var computeValueIntStringClosure: ((Int) -> [Int: String])?
+            func compute(value: Int) -> [Int: String] {
+                computeValueIntStringCallsCount += 1
+                computeValueIntStringReceivedValue = (value)
+                computeValueIntStringReceivedInvocations.append((value))
+                if computeValueIntStringClosure != nil {
+                    return computeValueIntStringClosure!(value)
+                } else {
+                    return computeValueIntStringReturnValue
+                }
+            }
+            var computeValueStringBoolCallsCount = 0
+            var computeValueStringBoolCalled: Bool {
+                return computeValueStringBoolCallsCount > 0
+            }
+            var computeValueStringBoolReceivedValue: Int?
+            var computeValueStringBoolReceivedInvocations: [Int] = []
+            var computeValueStringBoolReturnValue: (String, Bool)!
+            var computeValueStringBoolClosure: ((Int) -> (String, Bool))?
+            func compute(value: Int) -> (String, Bool) {
+                computeValueStringBoolCallsCount += 1
+                computeValueStringBoolReceivedValue = (value)
+                computeValueStringBoolReceivedInvocations.append((value))
+                if computeValueStringBoolClosure != nil {
+                    return computeValueStringBoolClosure!(value)
+                } else {
+                    return computeValueStringBoolReturnValue
+                }
+            }
+        }
+        """,
+      macros: sut
+    )
+  }
 }
