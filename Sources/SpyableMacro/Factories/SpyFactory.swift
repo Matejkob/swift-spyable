@@ -107,9 +107,10 @@ struct SpyFactory {
     let functionDeclarations = protocolDeclaration.memberBlock.members
       .compactMap { $0.decl.as(FunctionDeclSyntax.self)?.removingLeadingSpaces }
 
-    let variablePrefixes: [String] = functionDeclarations.map {
-      variablePrefixFactory.text(for: $0)
-    }
+    let variablePrefixes = Dictionary(
+      grouping: functionDeclarations,
+      by: { variablePrefixFactory.text(for: $0) }
+    ).mapValues { $0.count }
     
     return try ClassDeclSyntax(
       name: identifier,
@@ -137,10 +138,7 @@ struct SpyFactory {
         }
 
         for functionDeclaration in functionDeclarations {
-          let shouldBeDescriptive = variablePrefixes
-            .filter { $0 == (variablePrefixFactory.text(for: functionDeclaration)) }
-            .count > 1
-
+          let shouldBeDescriptive = variablePrefixes[variablePrefixFactory.text(for: functionDeclaration)] ?? 0 > 1
           let variablePrefix = variablePrefixFactory.text(for: functionDeclaration, descriptive: shouldBeDescriptive)
           let genericTypes = functionDeclaration.genericTypes
           let parameterList = parameterList(

@@ -34,13 +34,14 @@ struct VariablePrefixFactory {
     var parts: [String] = [functionDeclaration.name.text]
 
     let parameterList = functionDeclaration.signature.parameterClause.parameters
-    let forbiddenCharacters: CharacterSet = [":", "[", "]", "<", ">", "(", ")", ",", " "]
+    let forbiddenCharacters: CharacterSet = [":", "[", "]", "<", ">", "(", ")", ",", " ", "-"]
     
     let parameters = if descriptive {
       parameterList
         .map {
           let type = "\($0.type)"
             .removeCharacters(in: forbiddenCharacters)
+            .replacingOccurrences(of: "?", with: "Optional")
           return "\($0.firstName.text.capitalizingFirstLetter())\(type)"
         }
     } else {
@@ -54,7 +55,7 @@ struct VariablePrefixFactory {
 
     if descriptive {
       var returnTypeText = functionDeclaration.signature.returnClause?.type.trimmedDescription ?? ""
-      
+
       if returnTypeText.isOptional {
         returnTypeText.removeLast()
         returnTypeText = "Optional\(returnTypeText)"

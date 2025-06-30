@@ -152,6 +152,32 @@ internal class DebugProtocolSpy: DebugProtocol {
 #endif
 ```
 
+### Handling Overloaded Methods
+
+When a protocol contains multiple functions with the same name (i.e. function overloading), `@Spyable` ensures each generated spy property remains uniquely identifiable. It does so by extending the prefix with return types and parameter types when necessary.
+
+For example:
+
+```swift
+func loadData() -> String
+func loadData() -> Int
+func loadData(id: Int) -> String
+func loadData(id: Int) -> String?
+func loadData(id: Int?) -> [String]?
+```
+
+Will generate distinct spy identifiers like:
+
+```
+loadDataString
+loadDataInt
+loadDataIdIntString
+loadDataIdIntOptionalString
+loadDataIdIntOptionalOptionalArrayString
+```
+
+This disambiguation avoids naming collisions while preserving accurate call tracking.
+
 ## Installation
 
 ### Xcode Projects
