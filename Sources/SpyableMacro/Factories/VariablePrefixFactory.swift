@@ -10,37 +10,49 @@ import Foundation
 ///
 /// For example:
 /// ```swift
-/// func display(text: String, color: Color)
-/// func display(text: String, color: Color) -> String
+/// func display(text: Int, name: String)
+/// func display(text: String, name: String)
+/// func display(text: String, name: String) -> String
 /// ```
-/// will produce the following when using `shouldAddReturnType: false`:
+/// will produce the following when using `descriptive: false`:
 /// ```
-/// displayTextColor
-/// displayTextColor
+/// displayTextName
+/// displayTextName
+/// displayTextName
 /// ```
-/// and the following when using `shouldAddReturnType: true`:
+/// and the following when using `descriptive: true`:
 /// ```
-/// displayTextColor
-/// displayTextColorString
+/// displayTextIntNameString
+/// displayTextStringNameString
+/// displayTextStringNameStringString
 /// ```
 /// Parameter names are capitalized and appended to the function name.
 /// Anonymous parameters (`_`) are ignored.
-/// The return type, if exist, is only appended if `shouldAddReturnType` is set to `true`.
+/// The return type and the parameters type are only appended if `descriptive` is set to `true`.
 struct VariablePrefixFactory {
-  func text(for functionDeclaration: FunctionDeclSyntax, shouldAddReturnType: Bool = false) -> String {
+  func text(for functionDeclaration: FunctionDeclSyntax, descriptive: Bool = false) -> String {
     var parts: [String] = [functionDeclaration.name.text]
 
     let parameterList = functionDeclaration.signature.parameterClause.parameters
-
-    let parameters =
+    let forbiddenCharacters: CharacterSet = [":", "[", "]", "<", ">", "(", ")", ",", " "]
+    
+    let parameters = if descriptive {
       parameterList
-      .map { $0.firstName.text }
-      .filter { $0 != "_" }
-      .map { $0.capitalizingFirstLetter() }
+        .map {
+          let type = "\($0.type)"
+            .removeCharacters(in: forbiddenCharacters)
+          return "\($0.firstName.text.capitalizingFirstLetter())\(type)"
+        }
+    } else {
+      parameterList
+        .map { $0.firstName.text }
+        .filter { $0 != "_" }
+        .map { $0.capitalizingFirstLetter() }
+    }
 
     parts.append(contentsOf: parameters)
 
-    if shouldAddReturnType {
+    if descriptive {
       var returnTypeText = functionDeclaration.signature.returnClause?.type.trimmedDescription ?? ""
       
       if returnTypeText.isOptional {
@@ -50,7 +62,7 @@ struct VariablePrefixFactory {
 
       returnTypeText = returnTypeText
         .replacingOccurrences(of: "?", with: "Optional")
-        .removeCharacters(in: [":", "[", "]", "<", ">", "(", ")", ",", " "])
+        .removeCharacters(in: forbiddenCharacters)
 
       return parts.joined() + returnTypeText
     }
