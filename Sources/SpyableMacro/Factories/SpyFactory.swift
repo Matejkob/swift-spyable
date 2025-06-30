@@ -137,7 +137,10 @@ struct SpyFactory {
         }
 
         for functionDeclaration in functionDeclarations {
-          let shouldBeDescriptive = variablePrefixes.count(where: { $0 == (variablePrefixFactory.text(for: functionDeclaration))}) > 1
+          let shouldBeDescriptive = variablePrefixes
+            .filter { $0 == (variablePrefixFactory.text(for: functionDeclaration)) }
+            .count > 1
+
           let variablePrefix = variablePrefixFactory.text(for: functionDeclaration, descriptive: shouldBeDescriptive)
           let genericTypes = functionDeclaration.genericTypes
           let parameterList = parameterList(
