@@ -571,6 +571,8 @@ final class UT_SpyableMacro: XCTestCase {
         func doSomething() -> (Int, Int)
 
         func compute(value: Int)
+        func compute(for id: String)
+        func compute(for ids: Set<String>) -> [String]
         func compute(value: Int) -> Bool
         func compute(value: Int) -> Double?
         func compute(value: Int) -> [Int]
@@ -743,6 +745,37 @@ final class UT_SpyableMacro: XCTestCase {
                 computeValueReceivedValue = (value)
                 computeValueReceivedInvocations.append((value))
                 computeValueClosure?(value)
+            }
+            var computeForCallsCount = 0
+            var computeForCalled: Bool {
+                return computeForCallsCount > 0
+            }
+            var computeForReceivedId: String?
+            var computeForReceivedInvocations: [String] = []
+            var computeForClosure: ((String) -> Void)?
+            func compute(for id: String) {
+                computeForCallsCount += 1
+                computeForReceivedId = (id)
+                computeForReceivedInvocations.append((id))
+                computeForClosure?(id)
+            }
+            var computeForStringCallsCount = 0
+            var computeForStringCalled: Bool {
+                return computeForStringCallsCount > 0
+            }
+            var computeForStringReceivedIds: Set<String>?
+            var computeForStringReceivedInvocations: [Set<String>] = []
+            var computeForStringReturnValue: [String]!
+            var computeForStringClosure: ((Set<String>) -> [String])?
+            func compute(for ids: Set<String>) -> [String] {
+                computeForStringCallsCount += 1
+                computeForStringReceivedIds = (ids)
+                computeForStringReceivedInvocations.append((ids))
+                if computeForStringClosure != nil {
+                    return computeForStringClosure!(ids)
+                } else {
+                    return computeForStringReturnValue
+                }
             }
             var computeValueBoolCallsCount = 0
             var computeValueBoolCalled: Bool {
