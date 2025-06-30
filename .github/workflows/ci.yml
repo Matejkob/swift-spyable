@@ -21,6 +21,7 @@ jobs:
     name: macOS - ${{ matrix.package }} (Xcode ${{ matrix.xcode }})
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: macos-15
@@ -62,6 +63,7 @@ jobs:
     name: Ubuntu - ${{ matrix.package }} (Swift ${{ matrix.swift }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         swift:
           - '6.0'
@@ -126,7 +128,6 @@ jobs:
 
   code-coverage:
     name: Gather Code Coverage
-    needs: macos
     runs-on: macos-15
     steps:
       - name: Checkout repository
