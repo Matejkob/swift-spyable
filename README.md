@@ -152,31 +152,48 @@ internal class DebugProtocolSpy: DebugProtocol {
 #endif
 ```
 
-### Handling Overloaded Methods
+### Handling Overloaded Methods (Polymorphism)
 
-When a protocol contains multiple functions with the same name (i.e. function overloading), `@Spyable` ensures each generated spy property remains uniquely identifiable. It does so by extending the prefix with return types and parameter types when necessary.
+When a protocol contains multiple functions with the same name (method overloading/polymorphism), `@Spyable` ensures 
+each generated spy property remains uniquely identifiable. The macro uses a sophisticated naming algorithm that combines 
+function names, parameter names, parameter types, and return types to create distinct identifiers.
 
-For example:
+#### Basic Polymorphism Examples
+
+Consider this protocol with overloaded methods:
 
 ```swift
-func loadData() -> String
-func loadData() -> Int
-func loadData(id: Int) -> String
-func loadData(id: Int) -> String?
-func loadData(id: Int?) -> [String]?
+@Spyable
+protocol DataService {
+    func loadData() -> String
+    func loadData() -> Int
+}
 ```
 
-Will generate distinct spy identifiers like:
+The generated spy will have these distinct identifiers:
 
-```
-loadDataString
-loadDataInt
-loadDataIdIntString
-loadDataIdIntOptionalString
-loadDataIdIntOptionalOptionalArrayString
+```swift
+public class DataServiceSpy: DataService {
+    // For: func loadData() -> String
+    public var loadDataStringCallsCount = 0
+    public var loadDataStringReturnValue: String!
+    
+    // For: func loadData() -> Int
+    public var loadDataIntCallsCount = 0
+    public var loadDataIntReturnValue: Int!
+}
 ```
 
-This disambiguation avoids naming collisions while preserving accurate call tracking.
+#### Naming Convention Algorithm
+
+The naming algorithm follows these rules:
+
+1. **Function Name**: Always starts with the base function name
+2. **Parameter Names**: Adds capitalized first parameter names (ignoring `_` parameters)
+3. **Parameter Types**: In descriptive mode, appends sanitized parameter types
+4. **Return Type**: In descriptive mode, appends sanitized return type
+5. **Special Keywords**: Includes `async`, `throws`, `escaping`, `Sendable`, etc.
+6. **Type Sanitization**: Converts `[Type]` to `ArrayType`, `[Key: Value]` to `DictionaryKeyValue`, removes forbidden characters `:<>[](), -&` and converts `?` to `Optional`
 
 ## Installation
 
