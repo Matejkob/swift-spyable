@@ -34,15 +34,16 @@ struct VariablePrefixFactory {
     var parts: [String] = [functionDeclaration.name.text]
 
     let parameterList = functionDeclaration.signature.parameterClause.parameters
-    let forbiddenCharacters: CharacterSet = [":", "[", "]", "<", ">", "(", ")", ",", " ", "-"]
     
     let parameters = if descriptive {
       parameterList
-        .map {
-          let type = "\($0.type)"
-            .removeCharacters(in: forbiddenCharacters)
-            .replacingOccurrences(of: "?", with: "Optional")
-          return "\($0.firstName.text.capitalizingFirstLetter())\(type)"
+        .compactMap { parameter -> String? in
+          let firstName = parameter.firstName.text
+          if firstName == "_" {
+            return nil
+          }
+          let type = TypeSyntaxSanitizer.sanitize(parameter.type)
+          return "\(firstName.capitalizingFirstLetter())\(type)"
         }
     } else {
       parameterList
@@ -54,18 +55,10 @@ struct VariablePrefixFactory {
     parts.append(contentsOf: parameters)
 
     if descriptive {
-      var returnTypeText = functionDeclaration.signature.returnClause?.type.trimmedDescription ?? ""
-
-      if returnTypeText.isOptional {
-        returnTypeText.removeLast()
-        returnTypeText = "Optional\(returnTypeText)"
+      if let returnType = functionDeclaration.signature.returnClause?.type {
+        let sanitizedReturnType = TypeSyntaxSanitizer.sanitize(returnType)
+        return parts.joined() + sanitizedReturnType
       }
-
-      returnTypeText = returnTypeText
-        .replacingOccurrences(of: "?", with: "Optional")
-        .removeCharacters(in: forbiddenCharacters)
-
-      return parts.joined() + returnTypeText
     }
 
     return parts.joined()
@@ -75,18 +68,5 @@ struct VariablePrefixFactory {
 extension String {
   fileprivate func capitalizingFirstLetter() -> String {
     return prefix(1).uppercased() + dropFirst()
-  }
-}
-
-fileprivate extension String {
-  var isOptional: Bool {
-      self.last == "?"
-  }
-
-  func removeCharacters(in set: CharacterSet) -> String {
-    return self.unicodeScalars
-      .filter { !set.contains($0) }
-      .map(String.init)
-      .joined()
   }
 }
