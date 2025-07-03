@@ -259,7 +259,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
   func testFunctionWithComplexNestedOptionals() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func find(in collection: [[String?]?]) -> [String?]??",
-      expectingVariableName: "findInArrayOptionalArrayOptionalStringOptionalOptionalArrayOptionalString",
+      expectingVariableName: "findInArrayArrayStringOptionalOptionalOptionalOptionalArrayStringOptional",
       descriptive: true
     )
   }
@@ -310,7 +310,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
     withFunctionDeclaration functionDeclaration: String,
     expectingVariableName expectedName: String,
     descriptive: Bool = false,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
