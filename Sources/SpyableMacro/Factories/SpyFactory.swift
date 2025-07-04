@@ -107,6 +107,12 @@ struct SpyFactory {
     let functionDeclarations = protocolDeclaration.memberBlock.members
       .compactMap { $0.decl.as(FunctionDeclSyntax.self)?.removingLeadingSpaces }
 
+    // Create a polymorphism detector that computes prefixes lazily
+    let polymorphismDetector = PolymorphismDetector(
+      functions: functionDeclarations,
+      prefixFactory: variablePrefixFactory
+    )
+    
     return try ClassDeclSyntax(
       name: identifier,
       genericParameterClause: genericParameterClause,
@@ -133,7 +139,7 @@ struct SpyFactory {
         }
 
         for functionDeclaration in functionDeclarations {
-          let variablePrefix = variablePrefixFactory.text(for: functionDeclaration)
+          let variablePrefix = polymorphismDetector.getVariablePrefix(for: functionDeclaration)
           let genericTypes = functionDeclaration.genericTypes
           let parameterList = parameterList(
             protocolFunctionDeclaration: functionDeclaration, genericTypes: genericTypes)
@@ -158,13 +164,13 @@ struct SpyFactory {
 
           if let returnType = functionDeclaration.signature.returnClause?.type {
             let genericTypeErasedReturnType = returnType.erasingGenericTypes(genericTypes)
-            try returnValueFactory.variableDeclaration(
+            returnValueFactory.variableDeclaration(
               variablePrefix: variablePrefix,
               functionReturnType: genericTypeErasedReturnType
             )
           }
 
-          try closureFactory.variableDeclaration(
+          closureFactory.variableDeclaration(
             variablePrefix: variablePrefix,
             protocolFunctionDeclaration: functionDeclaration
           )
@@ -191,6 +197,44 @@ private func parameterList(
       for parameter in functionSignatureParameters {
         parameter.with(\.type, parameter.type.erasingGenericTypes(genericTypes))
       }
+    }
+  }
+}
+
+/// Optimized polymorphism detector that lazily computes variable prefixes
+/// only when polymorphism is detected, avoiding expensive dictionary creation
+/// for protocols with unique method signatures
+private final class PolymorphismDetector {
+  private let functions: [FunctionDeclSyntax]
+  private let prefixFactory: VariablePrefixFactory
+  
+  // Lazy properties for performance optimization - only computed when needed
+  private lazy var prefixCounts: [String: Int] = {
+    Dictionary(grouping: functions, by: { prefixFactory.text(for: $0) })
+      .mapValues { $0.count }
+  }()
+  
+  init(functions: [FunctionDeclSyntax], prefixFactory: VariablePrefixFactory) {
+    self.functions = functions
+    self.prefixFactory = prefixFactory
+  }
+  
+  func getVariablePrefix(for function: FunctionDeclSyntax) -> String {
+    // Early exit optimization: if only one function, no polymorphism possible
+    guard functions.count > 1 else {
+      return prefixFactory.text(for: function)
+    }
+    
+    // Compute base prefix
+    let basePrefix = prefixFactory.text(for: function)
+    
+    // Check if descriptive prefix needed - this triggers lazy evaluation
+    let shouldBeDescriptive = (prefixCounts[basePrefix] ?? 0) > 1
+    
+    if shouldBeDescriptive {
+      return prefixFactory.text(for: function, descriptive: true)
+    } else {
+      return basePrefix
     }
   }
 }

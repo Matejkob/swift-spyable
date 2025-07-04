@@ -80,7 +80,7 @@ extension IdentifierTypeSyntax: TypeSyntaxSupportingGenerics {
   fileprivate func erasingGenericTypes(_ genericTypes: Set<String>) -> Self {
     var copy = self
     if genericTypes.contains(name.text) {
-      copy = copy.with(\.name.tokenKind, .identifier("Any"))
+      copy = copy.with(\.name, .identifier("Any"))
     }
     if let genericArgumentClause {
       copy = copy.with(

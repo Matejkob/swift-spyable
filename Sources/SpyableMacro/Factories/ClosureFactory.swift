@@ -31,7 +31,7 @@ struct ClosureFactory {
   func variableDeclaration(
     variablePrefix: String,
     protocolFunctionDeclaration: FunctionDeclSyntax
-  ) throws -> VariableDeclSyntax {
+  ) -> VariableDeclSyntax {
     let functionSignature = protocolFunctionDeclaration.signature
     let genericTypes = protocolFunctionDeclaration.genericTypes
     let returnClause = returnClause(protocolFunctionDeclaration: protocolFunctionDeclaration)
@@ -55,10 +55,19 @@ struct ClosureFactory {
       )
     }
 
-    return try VariableDeclSyntax(
-      """
-      var \(variableIdentifier(variablePrefix: variablePrefix)): (\(elements))?
-      """
+    return VariableDeclSyntax(
+      leadingTrivia: [],
+      bindingSpecifier: .keyword(.var),
+      bindings: PatternBindingListSyntax([
+        PatternBindingSyntax(
+          pattern: IdentifierPatternSyntax(identifier: variableIdentifier(variablePrefix: variablePrefix)),
+          typeAnnotation: TypeAnnotationSyntax(
+            type: OptionalTypeSyntax(
+              wrappedType: TupleTypeSyntax(elements: elements)
+            )
+          )
+        )
+      ])
     )
   }
 
@@ -75,21 +84,21 @@ struct ClosureFactory {
       if let implicitlyUnwrappedType = functionReturnClause.type.as(
         ImplicitlyUnwrappedOptionalTypeSyntax.self)
       {
-        var functionReturnClause = functionReturnClause
         /*
          `() -> String!` is not a valid code
          so we have to convert it to `() -> String?
          */
-        functionReturnClause.type = TypeSyntax(
-          OptionalTypeSyntax(wrappedType: implicitlyUnwrappedType.wrappedType))
-        return functionReturnClause
+        return ReturnClauseSyntax(
+          type: OptionalTypeSyntax(wrappedType: implicitlyUnwrappedType.wrappedType).with(\.trailingTrivia, [])
+        )
         /*
          func f() -> Any
          func f() -> Any?
          */
       } else {
-        return functionReturnClause.with(
-          \.type, functionReturnClause.type.erasingGenericTypes(genericTypes))
+        return ReturnClauseSyntax(
+          type: functionReturnClause.type.erasingGenericTypes(genericTypes).with(\.trailingTrivia, [])
+        )
       }
       /*
        func f()

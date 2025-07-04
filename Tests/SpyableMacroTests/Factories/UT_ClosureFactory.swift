@@ -43,7 +43,7 @@ final class UT_ClosureFactory: XCTestCase {
     try assertProtocolFunction(
       withFunctionDeclaration: "func _ignore_() -> Data",
       prefixForVariable: "_prefix_",
-      expectingVariableDeclaration: "var _prefix_Closure: (() -> Data )?"
+      expectingVariableDeclaration: "var _prefix_Closure: (() -> Data)?"
     )
   }
 
@@ -67,7 +67,7 @@ final class UT_ClosureFactory: XCTestCase {
     try assertProtocolFunction(
       withFunctionDeclaration: "func _ignore_() -> Data?",
       prefixForVariable: "_prefix_",
-      expectingVariableDeclaration: "var _prefix_Closure: (() -> Data? )?"
+      expectingVariableDeclaration: "var _prefix_Closure: (() -> Data?)?"
     )
   }
 
@@ -86,7 +86,7 @@ final class UT_ClosureFactory: XCTestCase {
         """,
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-        var _prefix_Closure: ((inout String, Any, (UInt?, name: String), (() -> Void)?, @autoclosure @escaping () -> Bool) async throws -> String? )?
+        var _prefix_Closure: ((inout String, Any, (UInt?, name: String), (() -> Void)?, @autoclosure @escaping () -> Bool) async throws -> String?)?
         """
     )
   }
@@ -162,7 +162,7 @@ final class UT_ClosureFactory: XCTestCase {
   ) throws {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
-    let result = try ClosureFactory().variableDeclaration(
+    let result = ClosureFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       protocolFunctionDeclaration: protocolFunctionDeclaration
     )

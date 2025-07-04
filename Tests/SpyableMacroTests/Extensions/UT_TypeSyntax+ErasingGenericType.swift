@@ -11,7 +11,7 @@ final class UT_TypeSyntax_ErasingGenericTypes: XCTestCase {
         .description
     }
 
-    XCTAssertEqual(typeSyntaxDescription(with: " T "), " Any ")
+    XCTAssertEqual(typeSyntaxDescription(with: " T "), "Any")
     XCTAssertEqual(typeSyntaxDescription(with: " String "), " String ")
   }
 
@@ -28,7 +28,7 @@ final class UT_TypeSyntax_ErasingGenericTypes: XCTestCase {
       .description
     }
 
-    XCTAssertEqual(typeSyntaxDescription(with: "T"), " Any ")
+    XCTAssertEqual(typeSyntaxDescription(with: "T"), "Any")
     XCTAssertEqual(typeSyntaxDescription(with: "String"), " String ")
   }
 

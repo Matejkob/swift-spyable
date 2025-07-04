@@ -41,7 +41,7 @@ struct ReturnValueFactory {
   func variableDeclaration(
     variablePrefix: String,
     functionReturnType: TypeSyntax
-  ) throws -> VariableDeclSyntax {
+  ) -> VariableDeclSyntax {
     /*
      func f() -> String?
      */
@@ -61,7 +61,7 @@ struct ReturnValueFactory {
           type: ImplicitlyUnwrappedOptionalTypeSyntax(
             wrappedType: TupleTypeSyntax(
               elements: TupleTypeElementListSyntax {
-                TupleTypeElementSyntax(type: functionReturnType)
+                TupleTypeElementSyntax(type: functionReturnType.with(\.trailingTrivia, []))
               }
             )
           )
@@ -71,14 +71,21 @@ struct ReturnValueFactory {
      */
       } else {
         TypeAnnotationSyntax(
-          type: ImplicitlyUnwrappedOptionalTypeSyntax(wrappedType: functionReturnType)
+          type: ImplicitlyUnwrappedOptionalTypeSyntax(
+            wrappedType: functionReturnType.with(\.trailingTrivia, [])
+          )
         )
       }
 
-    return try VariableDeclSyntax(
-      """
-      var \(variableIdentifier(variablePrefix: variablePrefix))\(typeAnnotation)
-      """
+    return VariableDeclSyntax(
+      leadingTrivia: [],
+      bindingSpecifier: .keyword(.var),
+      bindings: PatternBindingListSyntax([
+        PatternBindingSyntax(
+          pattern: IdentifierPatternSyntax(identifier: variableIdentifier(variablePrefix: variablePrefix)),
+          typeAnnotation: typeAnnotation
+        )
+      ])
     )
   }
 
