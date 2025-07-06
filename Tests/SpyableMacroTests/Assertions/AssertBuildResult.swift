@@ -6,7 +6,7 @@ func assertBuildResult<T: SyntaxProtocol>(
   _ buildable: T,
   _ expectedResult: String,
   trimTrailingWhitespace: Bool = true,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) {
   var buildableDescription = buildable.formatted().description
@@ -43,7 +43,7 @@ private func assertStringsEqualWithDiff(
   _ expected: String,
   _ message: String = "",
   additionalInfo: @autoclosure () -> String? = nil,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) {
   if actual == expected {
@@ -65,7 +65,7 @@ private func failStringsEqualWithDiff(
   _ expected: String,
   _ message: String = "",
   additionalInfo: @autoclosure () -> String? = nil,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) {
   // Use `CollectionDifference` on supported platforms to get `diff`-like line-based output. On

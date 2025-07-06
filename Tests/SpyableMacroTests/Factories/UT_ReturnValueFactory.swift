@@ -92,7 +92,7 @@ final class UT_ReturnValueFactory: XCTestCase {
     functionReturnType: TypeSyntax,
     prefixForVariable variablePrefix: String,
     expectingVariableDeclaration expectedDeclaration: String,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) {
     let result = ReturnValueFactory().variableDeclaration(

@@ -157,7 +157,7 @@ final class UT_ClosureFactory: XCTestCase {
     withFunctionDeclaration functionDeclaration: String,
     prefixForVariable variablePrefix: String,
     expectingVariableDeclaration expectedDeclaration: String,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
@@ -174,7 +174,7 @@ final class UT_ClosureFactory: XCTestCase {
     withFunctionDeclaration functionDeclaration: String,
     prefixForVariable variablePrefix: String,
     expectingCallExpression expectedExpression: String,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}

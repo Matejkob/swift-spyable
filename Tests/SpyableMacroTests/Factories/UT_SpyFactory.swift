@@ -643,7 +643,7 @@ final class UT_SpyFactory: XCTestCase {
   private func assertProtocol(
     withDeclaration protocolDeclaration: String,
     expectingClassDeclaration expectedDeclaration: String,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     let protocolDeclaration = try ProtocolDeclSyntax("\(raw: protocolDeclaration)")
