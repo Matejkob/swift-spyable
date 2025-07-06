@@ -1,6 +1,6 @@
+import Foundation
 import SwiftSyntax
 import SwiftSyntaxBuilder
-import Foundation
 
 /// The `VariablePrefixFactory` struct is responsible for creating a unique textual representation
 /// for a given function declaration. This representation can be used as a prefix when naming variables
@@ -34,23 +34,24 @@ struct VariablePrefixFactory {
     var parts: [String] = [functionDeclaration.name.text]
 
     let parameterList = functionDeclaration.signature.parameterClause.parameters
-    
-    let parameters = if descriptive {
-      parameterList
-        .compactMap { parameter -> String? in
-          let firstName = parameter.firstName.text
-          if firstName == "_" {
-            return nil
+
+    let parameters =
+      if descriptive {
+        parameterList
+          .compactMap { parameter -> String? in
+            let firstName = parameter.firstName.text
+            if firstName == "_" {
+              return nil
+            }
+            let type = TypeSyntaxSanitizer.sanitize(parameter.type)
+            return "\(firstName.capitalizingFirstLetter())\(type)"
           }
-          let type = TypeSyntaxSanitizer.sanitize(parameter.type)
-          return "\(firstName.capitalizingFirstLetter())\(type)"
-        }
-    } else {
-      parameterList
-        .map { $0.firstName.text }
-        .filter { $0 != "_" }
-        .map { $0.capitalizingFirstLetter() }
-    }
+      } else {
+        parameterList
+          .map { $0.firstName.text }
+          .filter { $0 != "_" }
+          .map { $0.capitalizingFirstLetter() }
+      }
 
     parts.append(contentsOf: parameters)
 

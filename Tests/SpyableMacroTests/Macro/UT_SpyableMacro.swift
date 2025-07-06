@@ -555,7 +555,7 @@ final class UT_SpyableMacro: XCTestCase {
       macros: sut
     )
   }
-  
+
   func testPolymorphismOverloadedMethodsWithDifferentReturnTypesOnly() {
     let protocolDeclaration = """
       protocol OverloadedReturnTypesProtocol {
@@ -1944,7 +1944,7 @@ final class UT_SpyableMacro: XCTestCase {
       macros: sut
     )
   }
-  
+
   func testPolymorphismWithFunctionAttributes() {
     let protocolDeclaration = """
       protocol FunctionAttributesProtocol {

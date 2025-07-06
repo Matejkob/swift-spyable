@@ -4,9 +4,9 @@ import XCTest
 @testable import SpyableMacro
 
 final class UT_VariablePrefixFactory: XCTestCase {
-  
+
   // MARK: - Non-Descriptive Mode Tests
-  
+
   func testTextFunctionWithoutArguments() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func foo() -> String",
@@ -47,23 +47,23 @@ final class UT_VariablePrefixFactory: XCTestCase {
       expectingVariableName: "fooText1Product1"
     )
   }
-  
+
   func testTextFunctionWithMultipleUnderscoreParameters() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func calculate(_ a: Int, _ b: Int, sum c: Int) -> Int",
       expectingVariableName: "calculateSum"
     )
   }
-  
+
   func testTextFunctionCapitalizesParameterNames() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func process(firstName: String, lastName: String) -> String",
       expectingVariableName: "processFirstNameLastName"
     )
   }
-  
+
   // MARK: - Descriptive Mode Tests with Basic Return Types
-  
+
   func testDescriptiveModeWithIntReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func calculate(value: Int) -> Int",
@@ -71,7 +71,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithStringReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func format(text: String) -> String",
@@ -79,7 +79,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithOptionalStringReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func findName(id: Int) -> String?",
@@ -87,7 +87,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithArrayReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func getItems(category: String) -> [String]",
@@ -95,7 +95,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithSetReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func uniqueNumbers(from: [Int]) -> Set<Int>",
@@ -103,7 +103,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithDictionaryReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func mapping(keys: [String]) -> [String: Int]",
@@ -111,9 +111,9 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   // MARK: - Descriptive Mode Tests with Complex Types
-  
+
   func testDescriptiveModeWithResultType() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func fetch(url: String) -> Result<String, Error>",
@@ -121,7 +121,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithTupleReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func parse(data: Data) -> (name: String, age: Int)",
@@ -129,15 +129,16 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithNestedGenerics() throws {
     try assertProtocolFunction(
-      withFunctionDeclaration: "func transform(data: [String: [Int]]) -> Dictionary<String, Array<Int>>",
+      withFunctionDeclaration:
+        "func transform(data: [String: [Int]]) -> Dictionary<String, Array<Int>>",
       expectingVariableName: "transformDataDictionaryStringArrayIntDictionaryStringArrayInt",
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithOptionalArrayReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func maybeGetItems() -> [String]?",
@@ -145,7 +146,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithDoubleOptionalReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func deepFind(key: String) -> String??",
@@ -153,9 +154,9 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   // MARK: - Descriptive Mode Tests with Parameter Types
-  
+
   func testDescriptiveModeWithOptionalParameter() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func process(value: Int?) -> String",
@@ -163,7 +164,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithGenericParameter() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func store(items: Array<String>) -> Bool",
@@ -171,17 +172,19 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithMultipleComplexParameters() throws {
     try assertProtocolFunction(
-      withFunctionDeclaration: "func merge(dict1: [String: Int], dict2: [String: Int]?) -> [String: Int]",
-      expectingVariableName: "mergeDict1DictionaryStringIntDict2OptionalDictionaryStringIntDictionaryStringInt",
+      withFunctionDeclaration:
+        "func merge(dict1: [String: Int], dict2: [String: Int]?) -> [String: Int]",
+      expectingVariableName:
+        "mergeDict1DictionaryStringIntDict2OptionalDictionaryStringIntDictionaryStringInt",
       descriptive: true
     )
   }
-  
+
   // MARK: - Void Return Type Tests
-  
+
   func testDescriptiveModeWithVoidReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func log(message: String)",
@@ -189,7 +192,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithExplicitVoidReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func notify(event: String) -> Void",
@@ -197,7 +200,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testDescriptiveModeWithEmptyTupleReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func execute() -> ()",
@@ -205,9 +208,9 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   // MARK: - Character Sanitization Tests
-  
+
   func testRemovesSpecialCharactersInDescriptiveMode() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func convert(from: (x: Int, y: Int)) -> [String: Any]",
@@ -215,24 +218,25 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testHandlesSpacesInTypeNames() throws {
     try assertProtocolFunction(
-      withFunctionDeclaration: "func transform(value: Array < String >) -> Dictionary < String , Int >",
+      withFunctionDeclaration:
+        "func transform(value: Array < String >) -> Dictionary < String , Int >",
       expectingVariableName: "transformValueArrayStringDictionaryStringInt",
       descriptive: true
     )
   }
-  
+
   // MARK: - Edge Cases
-  
+
   func testFunctionWithNoParametersNoReturn() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func doSomething()",
       expectingVariableName: "doSomething"
     )
   }
-  
+
   func testFunctionWithNoParametersNoReturnDescriptive() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func doSomething()",
@@ -240,14 +244,14 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testFunctionWithAllUnderscoreParameters() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func compute(_ x: Int, _ y: Int, _ z: Int) -> Int",
       expectingVariableName: "compute"
     )
   }
-  
+
   func testFunctionWithAllUnderscoreParametersDescriptive() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func compute(_ x: Int, _ y: Int, _ z: Int) -> Int",
@@ -255,15 +259,16 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testFunctionWithComplexNestedOptionals() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func find(in collection: [[String?]?]) -> [String?]??",
-      expectingVariableName: "findInArrayArrayStringOptionalOptionalOptionalOptionalArrayStringOptional",
+      expectingVariableName:
+        "findInArrayArrayStringOptionalOptionalOptionalOptionalArrayStringOptional",
       descriptive: true
     )
   }
-  
+
   func testFunctionWithCustomTypes() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func create(config: MyConfig, delegate: MyDelegate?) -> MyObject",
@@ -271,7 +276,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testFunctionWithProtocolComposition() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func combine(objects: [Codable & Hashable]) -> any Codable",
@@ -279,7 +284,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testFunctionWithSomeKeyword() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func opaque() -> some View",
@@ -287,7 +292,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testFunctionWithEscapingClosure() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func async(completion: @escaping (Result<String, Error>) -> Void)",
@@ -295,7 +300,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   func testFunctionWithInoutParameter() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func modify(value: inout String)",
@@ -303,7 +308,7 @@ final class UT_VariablePrefixFactory: XCTestCase {
       descriptive: true
     )
   }
-  
+
   // MARK: - Helper Methods for Assertions
 
   private func assertProtocolFunction(
@@ -315,7 +320,8 @@ final class UT_VariablePrefixFactory: XCTestCase {
   ) throws {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
-    let result = VariablePrefixFactory().text(for: protocolFunctionDeclaration, descriptive: descriptive)
+    let result = VariablePrefixFactory().text(
+      for: protocolFunctionDeclaration, descriptive: descriptive)
 
     XCTAssertEqual(result, expectedName, file: file, line: line)
   }
