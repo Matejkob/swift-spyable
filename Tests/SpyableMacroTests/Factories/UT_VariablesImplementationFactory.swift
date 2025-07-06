@@ -90,7 +90,7 @@ final class UT_VariablesImplementationFactory: XCTestCase {
   private func assertProtocolVariable(
     withVariableDeclaration variableDeclaration: String,
     expectingVariableDeclaration expectedDeclaration: String,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     let protocolVariableDeclaration = try VariableDeclSyntax("\(raw: variableDeclaration)")

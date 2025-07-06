@@ -152,6 +152,49 @@ internal class DebugProtocolSpy: DebugProtocol {
 #endif
 ```
 
+### Handling Overloaded Methods (Polymorphism)
+
+When a protocol contains multiple functions with the same name (method overloading/polymorphism), `@Spyable` ensures 
+each generated spy property remains uniquely identifiable. The macro uses a sophisticated naming algorithm that combines 
+function names, parameter names, parameter types, and return types to create distinct identifiers.
+
+#### Basic Polymorphism Examples
+
+Consider this protocol with overloaded methods:
+
+```swift
+@Spyable
+protocol DataService {
+    func loadData() -> String
+    func loadData() -> Int
+}
+```
+
+The generated spy will have these distinct identifiers:
+
+```swift
+public class DataServiceSpy: DataService {
+    // For: func loadData() -> String
+    public var loadDataStringCallsCount = 0
+    public var loadDataStringReturnValue: String!
+    
+    // For: func loadData() -> Int
+    public var loadDataIntCallsCount = 0
+    public var loadDataIntReturnValue: Int!
+}
+```
+
+#### Naming Convention Algorithm
+
+The naming algorithm follows these rules:
+
+1. **Function Name**: Always starts with the base function name
+2. **Parameter Names**: Adds capitalized first parameter names (ignoring `_` parameters)
+3. **Parameter Types**: In descriptive mode, appends sanitized parameter types
+4. **Return Type**: In descriptive mode, appends sanitized return type
+5. **Special Keywords**: Includes `async`, `throws`, `escaping`, `Sendable`, etc.
+6. **Type Sanitization**: Converts `[Type]` to `ArrayType`, `[Key: Value]` to `DictionaryKeyValue`, removes forbidden characters `:<>[](), -&` and converts `?` to `Optional`
+
 ## Installation
 
 ### Xcode Projects

@@ -7,35 +7,51 @@ final class UT_ReturnValueFactory: XCTestCase {
 
   // MARK: - Variable Declaration
 
-  func testVariableDeclaration() throws {
-    try assert(
+  func testVariableDeclaration() {
+    assert(
       functionReturnType: "(text: String, count: UInt)",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: "var _prefix_ReturnValue: (text: String, count: UInt)!"
     )
   }
 
-  func testVariableDeclarationOptionalType() throws {
-    try assert(
+  func testVariableDeclarationOptionalType() {
+    assert(
       functionReturnType: "String?",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: "var _prefix_ReturnValue: String?"
     )
   }
 
-  func testVariableDeclarationForcedUnwrappedType() throws {
-    try assert(
+  func testVariableDeclarationForcedUnwrappedType() {
+    assert(
       functionReturnType: "String!",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: "var _prefix_ReturnValue: String!"
     )
   }
 
-  func testVariableDeclarationExistentialType() throws {
-    try assert(
+  func testVariableDeclarationExistentialType() {
+    assert(
       functionReturnType: "any Codable",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: "var _prefix_ReturnValue: (any Codable)!"
+    )
+  }
+
+  func testVariableDeclarationAnyType() {
+    assert(
+      functionReturnType: "Any",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReturnValue: Any!"
+    )
+  }
+
+  func testVariableDeclarationBoolType() {
+    assert(
+      functionReturnType: "Bool",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_ReturnValue: Bool!"
     )
   }
 
@@ -76,10 +92,10 @@ final class UT_ReturnValueFactory: XCTestCase {
     functionReturnType: TypeSyntax,
     prefixForVariable variablePrefix: String,
     expectingVariableDeclaration expectedDeclaration: String,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
-  ) throws {
-    let result = try ReturnValueFactory().variableDeclaration(
+  ) {
+    let result = ReturnValueFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       functionReturnType: functionReturnType
     )
