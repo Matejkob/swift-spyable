@@ -82,7 +82,8 @@ struct ReturnValueFactory {
       bindingSpecifier: .keyword(.var),
       bindings: PatternBindingListSyntax([
         PatternBindingSyntax(
-          pattern: IdentifierPatternSyntax(identifier: variableIdentifier(variablePrefix: variablePrefix)),
+          pattern: IdentifierPatternSyntax(
+            identifier: variableIdentifier(variablePrefix: variablePrefix)),
           typeAnnotation: typeAnnotation
         )
       ])

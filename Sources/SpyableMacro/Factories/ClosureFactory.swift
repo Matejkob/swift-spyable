@@ -60,7 +60,8 @@ struct ClosureFactory {
       bindingSpecifier: .keyword(.var),
       bindings: PatternBindingListSyntax([
         PatternBindingSyntax(
-          pattern: IdentifierPatternSyntax(identifier: variableIdentifier(variablePrefix: variablePrefix)),
+          pattern: IdentifierPatternSyntax(
+            identifier: variableIdentifier(variablePrefix: variablePrefix)),
           typeAnnotation: TypeAnnotationSyntax(
             type: OptionalTypeSyntax(
               wrappedType: TupleTypeSyntax(elements: elements)
@@ -89,7 +90,8 @@ struct ClosureFactory {
          so we have to convert it to `() -> String?
          */
         return ReturnClauseSyntax(
-          type: OptionalTypeSyntax(wrappedType: implicitlyUnwrappedType.wrappedType).with(\.trailingTrivia, [])
+          type: OptionalTypeSyntax(wrappedType: implicitlyUnwrappedType.wrappedType).with(
+            \.trailingTrivia, [])
         )
         /*
          func f() -> Any
@@ -97,7 +99,8 @@ struct ClosureFactory {
          */
       } else {
         return ReturnClauseSyntax(
-          type: functionReturnClause.type.erasingGenericTypes(genericTypes).with(\.trailingTrivia, [])
+          type: functionReturnClause.type.erasingGenericTypes(genericTypes).with(
+            \.trailingTrivia, [])
         )
       }
       /*
