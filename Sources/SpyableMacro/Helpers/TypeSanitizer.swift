@@ -98,9 +98,15 @@ struct TypeSyntaxSanitizer {
             var specifiers: [String] = []
             
             // Handle specifiers like 'inout', 'isolated', etc.
+            #if canImport(SwiftSyntax600)
             for specifier in attributedType.specifiers {
-                specifiers.append(specifier.trimmedDescription)
+              specifiers.append(specifier.trimmedDescription)
             }
+            #else
+            if let specifier = attributedType.specifier {
+              specifiers.append(specifier.trimmedDescription)
+            }
+            #endif
             
             // Handle attributes like '@escaping', '@Sendable'
             let attributes = attributedType.attributes.compactMap { attribute in
