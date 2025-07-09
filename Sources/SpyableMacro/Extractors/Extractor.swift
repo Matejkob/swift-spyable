@@ -106,6 +106,9 @@ struct Extractor {
     let accessLevelText = memberAccess.declName.baseName.text
 
     switch accessLevelText {
+    case "open":
+      return DeclModifierSyntax(name: .keyword(.open))
+
     case "public":
       return DeclModifierSyntax(name: .keyword(.public))
 
@@ -146,7 +149,7 @@ struct Extractor {
     protocolDeclSyntax.modifiers.first(where: \.name.isAccessLevelSupportedInProtocol)
   }
 
-  func extractInheritedTypes(
+  func extractInheritedType(
     from attribute: AttributeSyntax,
     in context: some MacroExpansionContext
   ) -> String? {
@@ -155,16 +158,17 @@ struct Extractor {
       return nil
     }
 
-    let inheritedTypesArgument = argumentList.first { argument in
-      argument.label?.text == "inheritedTypes"
+    let inheritedTypeArgument = argumentList.first { argument in
+      argument.label?.text == "inheritedType"
     }
 
-    guard let inheritedTypesArgument else {
-      // The `inheritedTypes` argument is missing.
+    guard let inheritedTypeArgument else {
+      // The `inheritedType` argument is missing.
       return nil
     }
 
-    let segments = inheritedTypesArgument.expression
+    // Check if it's a string literal expression
+    let segments = inheritedTypeArgument.expression
        .as(StringLiteralExprSyntax.self)?
        .segments
 
@@ -172,12 +176,12 @@ struct Extractor {
        segments.count == 1,
        case let .stringSegment(literalSegment)? = segments.first
      else {
-       // The `inheritedTypes` argument's value is not a static string literal.
+       // The `inheritedType` argument's value is not a valid string literal.
        context.diagnose(
          Diagnostic(
            node: attribute,
            message: SpyableDiagnostic.behindPreprocessorFlagArgumentRequiresStaticStringLiteral,
-           highlights: [Syntax(inheritedTypesArgument.expression)]
+           highlights: [Syntax(inheritedTypeArgument.expression)]
          )
        )
        return nil

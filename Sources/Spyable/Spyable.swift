@@ -137,7 +137,7 @@
 public macro Spyable(
   behindPreprocessorFlag: String? = nil,
   accessLevel: SpyAccessLevel? = nil,
-  inheritedTypes: String? = nil
+  inheritedType: String? = nil
 ) =
   #externalMacro(
     module: "SpyableMacro",
