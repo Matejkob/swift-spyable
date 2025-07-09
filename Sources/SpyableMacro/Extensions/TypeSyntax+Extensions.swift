@@ -131,13 +131,17 @@ extension GenericArgumentClauseSyntax: TypeSyntaxSupportingGenerics {
           newArgument = type.erasingGenericTypes(genericTypes)
         default: continue
         }
+        let newArgumentElement = GenericArgumentSyntax(
+          argument: .type(newArgument),
+          trailingComma: argumentElement.trailingComma
+        )
       #else
         let newArgument: TypeSyntax = argumentElement.argument.erasingGenericTypes(genericTypes)
+        let newArgumentElement = GenericArgumentSyntax(
+          argument: newArgument,
+          trailingComma: argumentElement.trailingComma
+        )
       #endif
-      let newArgumentElement = GenericArgumentSyntax(
-        argument: newArgument,
-        trailingComma: argumentElement.trailingComma
-      )
       newArgumentElements.append(newArgumentElement)
     }
 

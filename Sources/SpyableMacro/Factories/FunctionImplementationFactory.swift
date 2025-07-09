@@ -87,7 +87,13 @@ struct FunctionImplementationFactory {
         )
       }
 
-      if protocolFunctionDeclaration.signature.effectSpecifiers?.throwsSpecifier != nil {
+      #if canImport(SwiftSyntax600)
+        let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?.throwsClause?.throwsSpecifier
+      #else
+        let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?.throwsSpecifier
+      #endif
+
+      if throwsSpecifier != nil {
         throwableErrorFactory.throwErrorExpression(variablePrefix: variablePrefix)
       }
 
