@@ -149,6 +149,18 @@ struct Extractor {
     protocolDeclSyntax.modifiers.first(where: \.name.isAccessLevelSupportedInProtocol)
   }
 
+  /// Extracts an inherited type value from an attribute if present and valid.
+  ///
+  /// This method searches for an argument labeled `inheritedType` within the
+  /// given attribute. If the argument is found, its value is validated to ensure it is
+  /// a static string literal.
+  ///
+  /// - Parameters:
+  ///   - attribute: The attribute syntax to analyze.
+  ///   - context: The macro expansion context in which the operation is performed.
+  /// - Returns: The static string literal value of the `inheritedType` argument,
+  ///   or `nil` if the argument is missing or invalid.
+  /// - Note: Diagnoses an error if the argument value is not a static string literal.
   func extractInheritedType(
     from attribute: AttributeSyntax,
     in context: some MacroExpansionContext
@@ -180,7 +192,7 @@ struct Extractor {
        context.diagnose(
          Diagnostic(
            node: attribute,
-           message: SpyableDiagnostic.behindPreprocessorFlagArgumentRequiresStaticStringLiteral,
+           message: SpyableDiagnostic.inheritedTypeArgumentRequiresStaticStringLiteral,
            highlights: [Syntax(inheritedTypeArgument.expression)]
          )
        )
