@@ -88,9 +88,11 @@ struct FunctionImplementationFactory {
       }
 
       #if canImport(SwiftSyntax600)
-        let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?.throwsClause?.throwsSpecifier
+        let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?.throwsClause?
+          .throwsSpecifier
       #else
-        let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?.throwsSpecifier
+        let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?
+          .throwsSpecifier
       #endif
 
       if throwsSpecifier != nil {
