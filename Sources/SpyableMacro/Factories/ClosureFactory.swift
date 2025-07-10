@@ -36,6 +36,18 @@ struct ClosureFactory {
     let genericTypes = protocolFunctionDeclaration.genericTypes
     let returnClause = returnClause(protocolFunctionDeclaration: protocolFunctionDeclaration)
 
+    #if canImport(SwiftSyntax600)
+      let effectSpecifiers = TypeEffectSpecifiersSyntax(
+        asyncSpecifier: functionSignature.effectSpecifiers?.asyncSpecifier,
+        throwsClause: functionSignature.effectSpecifiers?.throwsClause
+      )
+    #else
+      let effectSpecifiers = TypeEffectSpecifiersSyntax(
+        asyncSpecifier: functionSignature.effectSpecifiers?.asyncSpecifier,
+        throwsSpecifier: functionSignature.effectSpecifiers?.throwsSpecifier
+      )
+    #endif
+
     let elements = TupleTypeElementListSyntax {
       TupleTypeElementSyntax(
         type: FunctionTypeSyntax(
@@ -46,10 +58,7 @@ struct ClosureFactory {
               )
             }
           },
-          effectSpecifiers: TypeEffectSpecifiersSyntax(
-            asyncSpecifier: functionSignature.effectSpecifiers?.asyncSpecifier,
-            throwsSpecifier: functionSignature.effectSpecifiers?.throwsSpecifier
-          ),
+          effectSpecifiers: effectSpecifiers,
           returnClause: returnClause
         )
       )
@@ -166,7 +175,13 @@ struct ClosureFactory {
       expression = AwaitExprSyntax(expression: expression)
     }
 
-    if functionSignature.effectSpecifiers?.throwsSpecifier != nil {
+    #if canImport(SwiftSyntax600)
+      let throwsSpecifier = functionSignature.effectSpecifiers?.throwsClause?.throwsSpecifier
+    #else
+      let throwsSpecifier = functionSignature.effectSpecifiers?.throwsSpecifier
+    #endif
+
+    if throwsSpecifier != nil {
       expression = TryExprSyntax(expression: expression)
     }
 
@@ -188,12 +203,9 @@ struct ClosureFactory {
 
 extension FunctionParameterListSyntax.Element {
   fileprivate var isInoutParameter: Bool {
-    if let attributedType = self.type.as(AttributedTypeSyntax.self),
-      attributedType.specifier?.text == TokenSyntax.keyword(.inout).text
-    {
-      return true
-    } else {
-      return false
-    }
+    // Check if the type contains 'inout' anywhere in its description
+    // This works regardless of SwiftSyntax version and handles cases like "isolated inout"
+    let typeDescription = self.type.description.trimmingCharacters(in: .whitespacesAndNewlines)
+    return typeDescription.contains(TokenSyntax.keyword(.inout).text)
   }
 }

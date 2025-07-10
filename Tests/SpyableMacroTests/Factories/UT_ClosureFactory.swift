@@ -55,6 +55,14 @@ final class UT_ClosureFactory: XCTestCase {
     )
   }
 
+  func testVariableDeclarationWithIsolatedInoutAttribute() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_(value: isolated inout TestActor)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: ((isolated inout TestActor) -> Void)?"
+    )
+  }
+
   func testVariableDeclarationWithGenericParameter() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func _ignore_<T>(value: T)",
@@ -128,6 +136,14 @@ final class UT_ClosureFactory: XCTestCase {
   func testCallExpressionWithInoutAttribute() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func _ignore_(value: inout String)",
+      prefixForVariable: "_prefix_",
+      expectingCallExpression: "_prefix_Closure?(&value)"
+    )
+  }
+
+  func testCallExpressionWithIsolatedInoutAttribute() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_(value: isolated inout TestActor)",
       prefixForVariable: "_prefix_",
       expectingCallExpression: "_prefix_Closure?(&value)"
     )
