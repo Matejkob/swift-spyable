@@ -206,6 +206,6 @@ extension FunctionParameterListSyntax.Element {
     // Check if the type contains 'inout' anywhere in its description
     // This works regardless of SwiftSyntax version and handles cases like "isolated inout"
     let typeDescription = self.type.description.trimmingCharacters(in: .whitespacesAndNewlines)
-    return typeDescription.contains("inout")
+    return typeDescription.contains(TokenSyntax.keyword(.inout).text)
   }
 }
