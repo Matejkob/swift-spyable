@@ -203,16 +203,9 @@ struct ClosureFactory {
 
 extension FunctionParameterListSyntax.Element {
   fileprivate var isInoutParameter: Bool {
-    guard let attributedType = self.type.as(AttributedTypeSyntax.self) else {
-      return false
-    }
-
-    #if canImport(SwiftSyntax600)
-        let specifier = attributedType.specifiers.first?.firstToken(viewMode: .all)?.text
-    #else
-        let specifier = attributedType.specifier?.text
-    #endif
-
-    return specifier == TokenSyntax.keyword(.inout).text
+    // Check if the type contains 'inout' anywhere in its description
+    // This works regardless of SwiftSyntax version and handles cases like "isolated inout"
+    let typeDescription = self.type.description.trimmingCharacters(in: .whitespacesAndNewlines)
+    return typeDescription.contains("inout")
   }
 }
