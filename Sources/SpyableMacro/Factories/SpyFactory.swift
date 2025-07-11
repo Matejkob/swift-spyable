@@ -92,7 +92,10 @@ struct SpyFactory {
   private let closureFactory = ClosureFactory()
   private let functionImplementationFactory = FunctionImplementationFactory()
 
-  func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) throws -> ClassDeclSyntax {
+  func classDeclaration(
+    for protocolDeclaration: ProtocolDeclSyntax,
+    inheritedType: String? = nil
+  ) throws -> ClassDeclSyntax {
     let identifier = TokenSyntax.identifier(protocolDeclaration.name.text + "Spy")
 
     let assosciatedtypeDeclarations = protocolDeclaration.memberBlock.members.compactMap {
@@ -117,6 +120,14 @@ struct SpyFactory {
       name: identifier,
       genericParameterClause: genericParameterClause,
       inheritanceClause: InheritanceClauseSyntax {
+        // Add inherited type first if present
+        if let inheritedType {
+          InheritedTypeSyntax(
+            type: TypeSyntax(stringLiteral: inheritedType)
+          )
+        }
+
+        // Add the main protocol
         InheritedTypeSyntax(
           type: TypeSyntax(stringLiteral: protocolDeclaration.name.text)
         )
@@ -125,7 +136,10 @@ struct SpyFactory {
         )
       },
       memberBlockBuilder: {
+        let initOverrideKeyword: DeclModifierListSyntax = inheritedType != nil ? [DeclModifierSyntax(name: .keyword(.override))] : []
+
         InitializerDeclSyntax(
+          modifiers: initOverrideKeyword,
           signature: FunctionSignatureSyntax(
             parameterClause: FunctionParameterClauseSyntax(parameters: [])
           ),

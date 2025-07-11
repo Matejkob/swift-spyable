@@ -17,8 +17,19 @@ final class AccessLevelModifierRewriter: SyntaxRewriter {
       return node
     }
 
-    return DeclModifierListSyntax {
-      newAccessLevel
+    // Always preserve existing modifiers (like override, convenience, etc.)
+    var modifiers = Array(node)
+    
+    // Special case: if accessLevel is open and this is an initializer, use public instead
+    if newAccessLevel.name.text == TokenSyntax.keyword(.open).text,
+       let parent = node.parent,
+       parent.is(InitializerDeclSyntax.self) {
+      modifiers.append(DeclModifierSyntax(name: .keyword(.public)))
+    } else {
+      // Add the access level modifier for all other cases
+      modifiers.append(newAccessLevel)
     }
+    
+    return DeclModifierListSyntax(modifiers)
   }
 }
