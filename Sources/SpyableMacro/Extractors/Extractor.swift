@@ -106,6 +106,9 @@ struct Extractor {
     let accessLevelText = memberAccess.declName.baseName.text
 
     switch accessLevelText {
+    case "open":
+      return DeclModifierSyntax(name: .keyword(.open))
+
     case "public":
       return DeclModifierSyntax(name: .keyword(.public))
 
@@ -144,6 +147,59 @@ struct Extractor {
   ///   valid access level modifier is found.
   func extractAccessLevel(from protocolDeclSyntax: ProtocolDeclSyntax) -> DeclModifierSyntax? {
     protocolDeclSyntax.modifiers.first(where: \.name.isAccessLevelSupportedInProtocol)
+  }
+
+  /// Extracts an inherited type value from an attribute if present and valid.
+  ///
+  /// This method searches for an argument labeled `inheritedType` within the
+  /// given attribute. If the argument is found, its value is validated to ensure it is
+  /// a static string literal.
+  ///
+  /// - Parameters:
+  ///   - attribute: The attribute syntax to analyze.
+  ///   - context: The macro expansion context in which the operation is performed.
+  /// - Returns: The static string literal value of the `inheritedType` argument,
+  ///   or `nil` if the argument is missing or invalid.
+  /// - Note: Diagnoses an error if the argument value is not a static string literal.
+  func extractInheritedType(
+    from attribute: AttributeSyntax,
+    in context: some MacroExpansionContext
+  ) -> String? {
+    guard case let .argumentList(argumentList) = attribute.arguments else {
+      // No arguments are present in the attribute.
+      return nil
+    }
+
+    let inheritedTypeArgument = argumentList.first { argument in
+      argument.label?.text == "inheritedType"
+    }
+
+    guard let inheritedTypeArgument else {
+      // The `inheritedType` argument is missing.
+      return nil
+    }
+
+    // Check if it's a string literal expression
+    let segments = inheritedTypeArgument.expression
+       .as(StringLiteralExprSyntax.self)?
+       .segments
+
+     guard let segments,
+       segments.count == 1,
+       case let .stringSegment(literalSegment)? = segments.first
+     else {
+       // The `inheritedType` argument's value is not a valid string literal.
+       context.diagnose(
+         Diagnostic(
+           node: attribute,
+           message: SpyableDiagnostic.inheritedTypeArgumentRequiresStaticStringLiteral,
+           highlights: [Syntax(inheritedTypeArgument.expression)]
+         )
+       )
+       return nil
+     }
+
+     return literalSegment.content.text
   }
 }
 

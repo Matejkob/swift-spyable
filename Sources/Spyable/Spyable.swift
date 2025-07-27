@@ -134,7 +134,11 @@
 /// - The generated spy class name is suffixed with `Spy` (e.g., `ServiceProtocolSpy`).
 ///
 @attached(peer, names: suffixed(Spy))
-public macro Spyable(behindPreprocessorFlag: String? = nil, accessLevel: SpyAccessLevel? = nil) =
+public macro Spyable(
+  behindPreprocessorFlag: String? = nil,
+  accessLevel: SpyAccessLevel? = nil,
+  inheritedType: String? = nil
+) =
   #externalMacro(
     module: "SpyableMacro",
     type: "SpyableMacro"
