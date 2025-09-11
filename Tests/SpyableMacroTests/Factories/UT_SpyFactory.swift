@@ -434,6 +434,7 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+#if canImport(SwiftSyntax600)
   func testDeclarationThrowsTyped() throws {
     try assertProtocol(
       withDeclaration: """
@@ -471,6 +472,7 @@ final class UT_SpyFactory: XCTestCase {
         """
     )
   }
+#endif
 
   func testDeclarationReturnsExistential() throws {
     try assertProtocol(

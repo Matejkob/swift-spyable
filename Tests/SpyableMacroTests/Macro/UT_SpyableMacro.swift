@@ -32,7 +32,6 @@ final class UT_SpyableMacro: XCTestCase {
           mutating func logout()
           func initialize(name: String, secondName: String?)
           func fetchConfig() async throws -> [String: String]
-          func fetchConfigTypedThrow() async throws(ConfigError) -> [String: String]
           func fetchData(_ name: (String, count: Int)) async -> (() -> Void)
           func fetchUsername(context: String, completion: @escaping (String) -> Void)
           func onTapBack(context: String, action: () -> Void)
@@ -127,25 +126,6 @@ final class UT_SpyableMacro: XCTestCase {
                     return fetchConfigReturnValue
                 }
             }
-            public var fetchConfigTypedThrowCallsCount = 0
-            public var fetchConfigTypedThrowCalled: Bool {
-                return fetchConfigTypedThrowCallsCount > 0
-            }
-            public var fetchConfigTypedThrowThrowableError: ConfigError?
-            public var fetchConfigTypedThrowReturnValue: [String: String]!
-            public var fetchConfigTypedThrowClosure: (() async throws(ConfigError) -> [String: String])?
-            public
-            func fetchConfigTypedThrow() async throws(ConfigError) -> [String: String] {
-                fetchConfigTypedThrowCallsCount += 1
-                if let fetchConfigTypedThrowThrowableError {
-                    throw fetchConfigTypedThrowThrowableError
-                }
-                if fetchConfigTypedThrowClosure != nil {
-                    return try await fetchConfigTypedThrowClosure!()
-                } else {
-                    return fetchConfigTypedThrowReturnValue
-                }
-            }
             public var fetchDataCallsCount = 0
             public var fetchDataCalled: Bool {
                 return fetchDataCallsCount > 0
@@ -228,6 +208,52 @@ final class UT_SpyableMacro: XCTestCase {
       macros: sut
     )
   }
+
+#if canImport(SwiftSyntax600)
+  func testMacroWithTypedThrow() {
+    let protocolDeclaration = """
+      public protocol ServiceProtocol {
+          func fetchConfigTypedThrow() async throws(ConfigError) -> [String: String]
+      }
+      """
+
+    assertMacroExpansion(
+      """
+      @Spyable
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        \(protocolDeclaration)
+
+        public class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
+            public init() {
+            }
+            public var fetchConfigTypedThrowCallsCount = 0
+            public var fetchConfigTypedThrowCalled: Bool {
+                return fetchConfigTypedThrowCallsCount > 0
+            }
+            public var fetchConfigTypedThrowThrowableError: ConfigError?
+            public var fetchConfigTypedThrowReturnValue: [String: String]!
+            public var fetchConfigTypedThrowClosure: (() async throws(ConfigError) -> [String: String])?
+            public
+            func fetchConfigTypedThrow() async throws(ConfigError) -> [String: String] {
+                fetchConfigTypedThrowCallsCount += 1
+                if let fetchConfigTypedThrowThrowableError {
+                    throw fetchConfigTypedThrowThrowableError
+                }
+                if fetchConfigTypedThrowClosure != nil {
+                    return try await fetchConfigTypedThrowClosure!()
+                } else {
+                    return fetchConfigTypedThrowReturnValue
+                }
+            }
+        }
+        """,
+      macros: sut
+    )
+  }
+#endif
 
   // MARK: - `behindPreprocessorFlag` argument
 
