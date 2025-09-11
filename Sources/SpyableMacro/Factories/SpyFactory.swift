@@ -164,6 +164,7 @@ struct SpyFactory {
             let throwsType = functionDeclaration.signature.effectSpecifiers?.throwsClause?.type
           #else
             let throwsSpecifier = functionDeclaration.signature.effectSpecifiers?.throwsSpecifier
+            let throwsType: TypeSyntax? = nil
           #endif
 
           if throwsSpecifier != nil {
