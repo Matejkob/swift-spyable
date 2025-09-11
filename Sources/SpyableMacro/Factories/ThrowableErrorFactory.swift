@@ -29,20 +29,12 @@ import SwiftSyntaxBuilder
 ///         your tests. You can use it to simulate different scenarios and verify that your code handles
 ///         errors correctly.
 struct ThrowableErrorFactory {
-  func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
-    try VariableDeclSyntax(
-      """
-      var \(variableIdentifier(variablePrefix: variablePrefix))\(TokenSyntax.colonToken()) \(TokenSyntax.leftParenToken())any Error\(TokenSyntax.rightParenToken())\(TokenSyntax.postfixQuestionMarkToken())
-      """
-    )
-  }
-
-  func typedVariableDeclaration(variablePrefix: String, typeSpecifier: String) throws -> VariableDeclSyntax {
-    try VariableDeclSyntax(
-      """
-      var \(variableIdentifier(variablePrefix: variablePrefix))\(TokenSyntax.colonToken()) \(TokenSyntax.identifier(typeSpecifier))\(TokenSyntax.postfixQuestionMarkToken())
-      """
-    )
+  func variableDeclaration(variablePrefix: String, typeSpecifier: String? = nil) throws -> VariableDeclSyntax {
+    if let typeSpecifier {
+      return try typedVariableDeclaration(variablePrefix: variablePrefix, typeSpecifier: typeSpecifier)
+    } else {
+      return try untypedVariableDeclaration(variablePrefix: variablePrefix)
+    }
   }
 
   func throwErrorExpression(variablePrefix: String) -> ExprSyntax {
@@ -51,6 +43,22 @@ struct ThrowableErrorFactory {
       if let \(variableIdentifier(variablePrefix: variablePrefix)) {
           throw \(variableIdentifier(variablePrefix: variablePrefix))
       }
+      """
+    )
+  }
+
+  private func untypedVariableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
+    return try VariableDeclSyntax(
+    """
+    var \(variableIdentifier(variablePrefix: variablePrefix))\(TokenSyntax.colonToken()) \(TokenSyntax.leftParenToken())any Error\(TokenSyntax.rightParenToken())\(TokenSyntax.postfixQuestionMarkToken())
+    """
+    )
+  }
+
+  private func typedVariableDeclaration(variablePrefix: String, typeSpecifier: String) throws -> VariableDeclSyntax {
+    try VariableDeclSyntax(
+      """
+      var \(variableIdentifier(variablePrefix: variablePrefix))\(TokenSyntax.colonToken()) \(TokenSyntax.identifier(typeSpecifier))\(TokenSyntax.postfixQuestionMarkToken())
       """
     )
   }

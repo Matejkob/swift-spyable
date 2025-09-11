@@ -167,11 +167,7 @@ struct SpyFactory {
           #endif
 
           if throwsSpecifier != nil {
-            if let typeSpecifier = throwsType?.description {
-              try throwableErrorFactory.typedVariableDeclaration(variablePrefix: variablePrefix, typeSpecifier: typeSpecifier)
-            } else {
-              try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
-            }
+            try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix, typeSpecifier: throwsType?.description)
           }
 
           if let returnType = functionDeclaration.signature.returnClause?.type {

@@ -24,7 +24,7 @@ final class UT_ThrowableErrorFactory: XCTestCase {
     let variablePrefix = "functionName"
     let typeSpecifier = "ExampleError"
 
-    let result = try ThrowableErrorFactory().typedVariableDeclaration(variablePrefix: variablePrefix, typeSpecifier: typeSpecifier)
+    let result = try ThrowableErrorFactory().variableDeclaration(variablePrefix: variablePrefix, typeSpecifier: typeSpecifier)
 
     assertBuildResult(
       result,
