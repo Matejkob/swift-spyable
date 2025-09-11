@@ -209,6 +209,52 @@ final class UT_SpyableMacro: XCTestCase {
     )
   }
 
+#if canImport(SwiftSyntax600)
+  func testMacroWithTypedThrow() {
+    let protocolDeclaration = """
+      public protocol ServiceProtocol {
+          func fetchConfigTypedThrow() async throws(ConfigError) -> [String: String]
+      }
+      """
+
+    assertMacroExpansion(
+      """
+      @Spyable
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        \(protocolDeclaration)
+
+        public class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
+            public init() {
+            }
+            public var fetchConfigTypedThrowCallsCount = 0
+            public var fetchConfigTypedThrowCalled: Bool {
+                return fetchConfigTypedThrowCallsCount > 0
+            }
+            public var fetchConfigTypedThrowThrowableError: ConfigError?
+            public var fetchConfigTypedThrowReturnValue: [String: String]!
+            public var fetchConfigTypedThrowClosure: (() async throws(ConfigError) -> [String: String])?
+            public
+            func fetchConfigTypedThrow() async throws(ConfigError) -> [String: String] {
+                fetchConfigTypedThrowCallsCount += 1
+                if let fetchConfigTypedThrowThrowableError {
+                    throw fetchConfigTypedThrowThrowableError
+                }
+                if #available(iOS 18.0.0, macOS 15.0.0, tvOS 18.0.0, watchOS 11.0.0, macCatalyst 18.0.0, *), fetchConfigTypedThrowClosure != nil {
+                    return try await fetchConfigTypedThrowClosure!()
+                } else {
+                    return fetchConfigTypedThrowReturnValue
+                }
+            }
+        }
+        """,
+      macros: sut
+    )
+  }
+#endif
+
   // MARK: - `behindPreprocessorFlag` argument
 
   func testMacroWithNoArgument() {

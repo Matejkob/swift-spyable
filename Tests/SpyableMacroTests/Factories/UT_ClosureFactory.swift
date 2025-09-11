@@ -39,6 +39,16 @@ final class UT_ClosureFactory: XCTestCase {
     )
   }
 
+#if canImport(SwiftSyntax600)
+  func testVariableDeclarationThrowsTyped() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_() throws(ExampleError)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: (() throws(ExampleError) -> Void)?"
+    )
+  }
+#endif
+  
   func testVariableDeclarationReturnValue() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func _ignore_() -> Data",

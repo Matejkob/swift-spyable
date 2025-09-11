@@ -434,6 +434,46 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+#if canImport(SwiftSyntax600)
+  func testDeclarationThrowsTyped() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ServiceProtocol {
+            func foo(_ added: ((text: String) -> Void)?) throws(ExampleError) -> (() -> Int)?
+        }
+        """,
+      expectingClassDeclaration: """
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
+            init() {
+            }
+            var fooCallsCount = 0
+            var fooCalled: Bool {
+                return fooCallsCount > 0
+            }
+            var fooReceivedAdded: ((text: String) -> Void)?
+            var fooReceivedInvocations: [((text: String) -> Void)?] = []
+            var fooThrowableError: ExampleError?
+            var fooReturnValue: (() -> Int)?
+            var fooClosure: ((((text: String) -> Void)?) throws(ExampleError) -> (() -> Int)?)?
+            func foo(_ added: ((text: String) -> Void)?) throws(ExampleError) -> (() -> Int)? {
+                fooCallsCount += 1
+                fooReceivedAdded = (added)
+                fooReceivedInvocations.append((added))
+                if let fooThrowableError {
+                    throw fooThrowableError
+                }
+                if #available(iOS 18.0.0, macOS 15.0.0, tvOS 18.0.0, watchOS 11.0.0, macCatalyst 18.0.0, *), fooClosure != nil {
+                    return try fooClosure!(added)
+                } else {
+                    return fooReturnValue
+                }
+            }
+        }
+        """
+    )
+  }
+#endif
+
   func testDeclarationReturnsExistential() throws {
     try assertProtocol(
       withDeclaration: """

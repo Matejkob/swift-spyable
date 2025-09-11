@@ -87,13 +87,13 @@ struct FunctionImplementationFactory {
         )
       }
 
-      #if canImport(SwiftSyntax600)
-        let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?.throwsClause?
-          .throwsSpecifier
-      #else
-        let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?
-          .throwsSpecifier
-      #endif
+#if canImport(SwiftSyntax600)
+      let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?.throwsClause?
+        .throwsSpecifier
+#else
+      let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?
+        .throwsSpecifier
+#endif
 
       if throwsSpecifier != nil {
         throwableErrorFactory.throwErrorExpression(variablePrefix: variablePrefix)
@@ -123,6 +123,9 @@ struct FunctionImplementationFactory {
     // due to the bug: https://github.com/apple/swift-syntax/issues/2352
     IfExprSyntax(
       conditions: ConditionElementListSyntax {
+#if canImport(SwiftSyntax600)
+        typedThrowsCondition(protocolFunctionDeclaration: protocolFunctionDeclaration) // if working with typed throws, they are only supported from certain platforms on
+#endif
         ConditionElementSyntax(
           condition: .expression(
             ExprSyntax(
@@ -154,6 +157,68 @@ struct FunctionImplementationFactory {
       }
     )
   }
+
+#if canImport(SwiftSyntax600)
+  private func typedThrowsCondition(protocolFunctionDeclaration: FunctionDeclSyntax) -> [ConditionElementSyntax] {
+    guard protocolFunctionDeclaration.signature.effectSpecifiers?.throwsClause?.type != nil else {
+      return []
+    }
+    return [
+      ConditionElementSyntax(
+        condition: .availability(
+          AvailabilityConditionSyntax(
+            availabilityKeyword: .poundAvailableToken(),
+            availabilityArguments: AvailabilityArgumentListSyntax {
+              AvailabilityArgumentSyntax(
+                argument: .availabilityVersionRestriction(
+                  PlatformVersionSyntax(
+                    platform: .identifier("iOS 18.0.0")  // iOS 18+
+                  )
+                )
+              )
+              AvailabilityArgumentSyntax(
+                argument: .availabilityVersionRestriction(
+                  PlatformVersionSyntax(
+                    platform: .identifier("macOS 15.0.0") // macOS 15+
+                  )
+                )
+              )
+              AvailabilityArgumentSyntax(
+                argument: .availabilityVersionRestriction(
+                  PlatformVersionSyntax(
+                    platform: .identifier("tvOS 18.0.0") // tvOS 18+
+                  )
+                )
+              )
+              AvailabilityArgumentSyntax(
+                argument: .availabilityVersionRestriction(
+                  PlatformVersionSyntax(
+                    platform: .identifier("watchOS 11.0.0") // watchOS 11+
+                  )
+                )
+              )
+              AvailabilityArgumentSyntax(
+                argument: .availabilityVersionRestriction(
+                  PlatformVersionSyntax(
+                    platform: .identifier("macCatalyst 18.0.0") // macCatalyst 18+
+                  )
+                )
+              )
+              AvailabilityArgumentSyntax(
+                argument: .availabilityVersionRestriction(
+                  PlatformVersionSyntax(
+                    platform: .identifier("*")
+                  )
+                )
+              )
+            }
+          )
+        )
+      )
+    ]
+  }
+#endif
+
 }
 
 extension DeclModifierListSyntax {

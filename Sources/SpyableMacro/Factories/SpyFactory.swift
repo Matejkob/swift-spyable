@@ -158,15 +158,20 @@ struct SpyFactory {
             )
           }
 
-          #if canImport(SwiftSyntax600)
-            let throwsSpecifier = functionDeclaration.signature.effectSpecifiers?.throwsClause?
-              .throwsSpecifier
-          #else
-            let throwsSpecifier = functionDeclaration.signature.effectSpecifiers?.throwsSpecifier
-          #endif
+#if canImport(SwiftSyntax600)
+          let throwsSpecifier = functionDeclaration.signature.effectSpecifiers?.throwsClause?
+            .throwsSpecifier
+          let throwsType = functionDeclaration.signature.effectSpecifiers?.throwsClause?.type
+#else
+          let throwsSpecifier = functionDeclaration.signature.effectSpecifiers?.throwsSpecifier
+          // this should lead to the legacy behaviour (e.g.)
+          // var fooThrowableError: (any Error)? // Any Error because throwsType == nil
+          // func foo(_ added: ((text: String) -> Void)?) throws(ExampleError) -> (() -> Int)? // function signature with typed error
+          let throwsType: TypeSyntax? = nil
+#endif
 
           if throwsSpecifier != nil {
-            try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
+            try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix, typeSpecifier: throwsType?.description)
           }
 
           if let returnType = functionDeclaration.signature.returnClause?.type {
@@ -251,7 +256,7 @@ extension SyntaxProtocol {
   fileprivate var removingLeadingSpaces: Self {
     with(
       \.leadingTrivia,
-      Trivia(
+       Trivia(
         pieces:
           leadingTrivia
           .filter {
@@ -261,7 +266,7 @@ extension SyntaxProtocol {
               true
             }
           }
-      )
+       )
     )
   }
 }
