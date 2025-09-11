@@ -20,6 +20,20 @@ final class UT_ThrowableErrorFactory: XCTestCase {
     )
   }
 
+  func testTypedVariableDeclaration() throws {
+    let variablePrefix = "functionName"
+    let typeSpecifier = "ExampleError"
+
+    let result = try ThrowableErrorFactory().typedVariableDeclaration(variablePrefix: variablePrefix, typeSpecifier: typeSpecifier)
+
+    assertBuildResult(
+      result,
+      """
+      var functionNameThrowableError: ExampleError?
+      """
+    )
+  }
+
   // MARK: - Throw Error Expression
 
   func testThrowErrorExpression() {
