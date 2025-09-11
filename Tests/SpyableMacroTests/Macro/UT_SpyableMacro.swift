@@ -242,7 +242,7 @@ final class UT_SpyableMacro: XCTestCase {
                 if let fetchConfigTypedThrowThrowableError {
                     throw fetchConfigTypedThrowThrowableError
                 }
-                if fetchConfigTypedThrowClosure != nil {
+                if #available(iOS 18.0.0, macOS 15.0.0, tvOS 18.0.0, watchOS 11.0.0, macCatalyst 18.0.0, *), fetchConfigTypedThrowClosure != nil {
                     return try await fetchConfigTypedThrowClosure!()
                 } else {
                     return fetchConfigTypedThrowReturnValue

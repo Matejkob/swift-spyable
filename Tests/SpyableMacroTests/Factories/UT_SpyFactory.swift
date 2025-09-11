@@ -462,7 +462,7 @@ final class UT_SpyFactory: XCTestCase {
                 if let fooThrowableError {
                     throw fooThrowableError
                 }
-                if fooClosure != nil {
+                if #available(iOS 18.0.0, macOS 15.0.0, tvOS 18.0.0, watchOS 11.0.0, macCatalyst 18.0.0, *), fooClosure != nil {
                     return try fooClosure!(added)
                 } else {
                     return fooReturnValue

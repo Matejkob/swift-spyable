@@ -95,6 +95,32 @@ final class UT_FunctionImplementationFactory: XCTestCase {
     )
   }
 
+#if canImport(SwiftSyntax600)
+  func testDeclarationReturnValueAsyncThrowsTyped() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: """
+        func foo(_ bar: String) async throws(ExampleError) -> (text: String, tuple: (count: Int?, Date))
+        """,
+      prefixForVariable: "_prefix_",
+      expectingFunctionDeclaration: """
+        func foo(_ bar: String) async throws(ExampleError) -> (text: String, tuple: (count: Int?, Date)) {
+            _prefix_CallsCount += 1
+            _prefix_ReceivedBar = (bar)
+            _prefix_ReceivedInvocations.append((bar))
+            if let _prefix_ThrowableError {
+                throw _prefix_ThrowableError
+            }
+            if #available(iOS 18.0.0, macOS 15.0.0, tvOS 18.0.0, watchOS 11.0.0, macCatalyst 18.0.0, *), _prefix_Closure != nil {
+                return try await _prefix_Closure!(bar)
+            } else {
+                return _prefix_ReturnValue
+            }
+        }
+        """
+    )
+  }
+#endif
+
   func testDeclarationWithMutatingKeyword() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "mutating func foo()",
