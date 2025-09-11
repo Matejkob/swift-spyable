@@ -32,7 +32,15 @@ struct ThrowableErrorFactory {
   func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
     try VariableDeclSyntax(
       """
-      var \(variableIdentifier(variablePrefix: variablePrefix)): (any Error)?
+      var \(variableIdentifier(variablePrefix: variablePrefix))\(TokenSyntax.colonToken()) \(TokenSyntax.leftParenToken())any Error\(TokenSyntax.rightParenToken())\(TokenSyntax.postfixQuestionMarkToken())
+      """
+    )
+  }
+
+  func typedVariableDeclaration(variablePrefix: String, typeSpecifier: String) throws -> VariableDeclSyntax {
+    try VariableDeclSyntax(
+      """
+      var \(variableIdentifier(variablePrefix: variablePrefix))\(TokenSyntax.colonToken()) \(TokenSyntax.identifier(typeSpecifier))\(TokenSyntax.postfixQuestionMarkToken())
       """
     )
   }

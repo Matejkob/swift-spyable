@@ -32,6 +32,7 @@ final class UT_SpyableMacro: XCTestCase {
           mutating func logout()
           func initialize(name: String, secondName: String?)
           func fetchConfig() async throws -> [String: String]
+          func fetchConfigTypedThrow() async throws(ConfigError) -> [String: String]
           func fetchData(_ name: (String, count: Int)) async -> (() -> Void)
           func fetchUsername(context: String, completion: @escaping (String) -> Void)
           func onTapBack(context: String, action: () -> Void)
@@ -124,6 +125,25 @@ final class UT_SpyableMacro: XCTestCase {
                     return try await fetchConfigClosure!()
                 } else {
                     return fetchConfigReturnValue
+                }
+            }
+            public var fetchConfigTypedThrowCallsCount = 0
+            public var fetchConfigTypedThrowCalled: Bool {
+                return fetchConfigTypedThrowCallsCount > 0
+            }
+            public var fetchConfigTypedThrowThrowableError: ConfigError?
+            public var fetchConfigTypedThrowReturnValue: [String: String]!
+            public var fetchConfigTypedThrowClosure: (() async throws(ConfigError) -> [String: String])?
+            public
+            func fetchConfigTypedThrow() async throws(ConfigError) -> [String: String] {
+                fetchConfigTypedThrowCallsCount += 1
+                if let fetchConfigTypedThrowThrowableError {
+                    throw fetchConfigTypedThrowThrowableError
+                }
+                if fetchConfigTypedThrowClosure != nil {
+                    return try await fetchConfigTypedThrowClosure!()
+                } else {
+                    return fetchConfigTypedThrowReturnValue
                 }
             }
             public var fetchDataCallsCount = 0
