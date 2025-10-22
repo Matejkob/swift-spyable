@@ -43,7 +43,7 @@ final class UT_ClosureFactory: XCTestCase {
     try assertProtocolFunction(
       withFunctionDeclaration: "func _ignore_() -> Data",
       prefixForVariable: "_prefix_",
-      expectingVariableDeclaration: "var _prefix_Closure: (() -> Data )?"
+      expectingVariableDeclaration: "var _prefix_Closure: (() -> Data)?"
     )
   }
 
@@ -52,6 +52,14 @@ final class UT_ClosureFactory: XCTestCase {
       withFunctionDeclaration: "func _ignore_(value: inout String)",
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: "var _prefix_Closure: ((inout String) -> Void)?"
+    )
+  }
+
+  func testVariableDeclarationWithIsolatedInoutAttribute() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_(value: isolated inout TestActor)",
+      prefixForVariable: "_prefix_",
+      expectingVariableDeclaration: "var _prefix_Closure: ((isolated inout TestActor) -> Void)?"
     )
   }
 
@@ -67,7 +75,7 @@ final class UT_ClosureFactory: XCTestCase {
     try assertProtocolFunction(
       withFunctionDeclaration: "func _ignore_() -> Data?",
       prefixForVariable: "_prefix_",
-      expectingVariableDeclaration: "var _prefix_Closure: (() -> Data? )?"
+      expectingVariableDeclaration: "var _prefix_Closure: (() -> Data?)?"
     )
   }
 
@@ -86,7 +94,7 @@ final class UT_ClosureFactory: XCTestCase {
         """,
       prefixForVariable: "_prefix_",
       expectingVariableDeclaration: """
-        var _prefix_Closure: ((inout String, Any, (UInt?, name: String), (() -> Void)?, @autoclosure @escaping () -> Bool) async throws -> String? )?
+        var _prefix_Closure: ((inout String, Any, (UInt?, name: String), (() -> Void)?, @autoclosure @escaping () -> Bool) async throws -> String?)?
         """
     )
   }
@@ -133,6 +141,14 @@ final class UT_ClosureFactory: XCTestCase {
     )
   }
 
+  func testCallExpressionWithIsolatedInoutAttribute() throws {
+    try assertProtocolFunction(
+      withFunctionDeclaration: "func _ignore_(value: isolated inout TestActor)",
+      prefixForVariable: "_prefix_",
+      expectingCallExpression: "_prefix_Closure?(&value)"
+    )
+  }
+
   func testCallExpressionWithGenericParameter() throws {
     try assertProtocolFunction(
       withFunctionDeclaration: "func _ignore_<T>(value: T)",
@@ -157,12 +173,12 @@ final class UT_ClosureFactory: XCTestCase {
     withFunctionDeclaration functionDeclaration: String,
     prefixForVariable variablePrefix: String,
     expectingVariableDeclaration expectedDeclaration: String,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}
 
-    let result = try ClosureFactory().variableDeclaration(
+    let result = ClosureFactory().variableDeclaration(
       variablePrefix: variablePrefix,
       protocolFunctionDeclaration: protocolFunctionDeclaration
     )
@@ -174,7 +190,7 @@ final class UT_ClosureFactory: XCTestCase {
     withFunctionDeclaration functionDeclaration: String,
     prefixForVariable variablePrefix: String,
     expectingCallExpression expectedExpression: String,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}

@@ -142,7 +142,7 @@ final class UT_FunctionImplementationFactory: XCTestCase {
     withFunctionDeclaration functionDeclaration: String,
     prefixForVariable variablePrefix: String,
     expectingFunctionDeclaration expectedDeclaration: String,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     let protocolFunctionDeclaration = try FunctionDeclSyntax("\(raw: functionDeclaration)") {}

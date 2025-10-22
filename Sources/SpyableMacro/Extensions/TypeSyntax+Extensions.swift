@@ -80,7 +80,7 @@ extension IdentifierTypeSyntax: TypeSyntaxSupportingGenerics {
   fileprivate func erasingGenericTypes(_ genericTypes: Set<String>) -> Self {
     var copy = self
     if genericTypes.contains(name.text) {
-      copy = copy.with(\.name.tokenKind, .identifier("Any"))
+      copy = copy.with(\.name, .identifier("Any"))
     }
     if let genericArgumentClause {
       copy = copy.with(
@@ -107,19 +107,50 @@ extension ArrayTypeSyntax: TypeSyntaxSupportingGenerics {
 
 extension GenericArgumentClauseSyntax: TypeSyntaxSupportingGenerics {
   fileprivate var nestedTypeSyntaxes: [TypeSyntax] {
-    arguments.map { $0.argument }
-  }
-  fileprivate func erasingGenericTypes(_ genericTypes: Set<String>) -> Self {
-    with(
-      \.arguments,
-      GenericArgumentListSyntax {
-        for argumentElement in arguments {
-          argumentElement.with(
-            \.argument,
-            argumentElement.argument.erasingGenericTypes(genericTypes)
-          )
+    arguments.compactMap {
+      #if canImport(SwiftSyntax601)
+        if case let .type(type) = $0.argument {
+          return type
+        } else {
+          return nil
         }
-      }
+      #else
+        return $0.argument
+      #endif
+    }
+  }
+
+  fileprivate func erasingGenericTypes(_ genericTypes: Set<String>) -> Self {
+    var newArgumentElements: [GenericArgumentSyntax] = []
+
+    for argumentElement in arguments {
+      #if canImport(SwiftSyntax601)
+        let newArgument: TypeSyntax
+        switch argumentElement.argument {
+        case let .type(type):
+          newArgument = type.erasingGenericTypes(genericTypes)
+        default: continue
+        }
+        let newArgumentElement = GenericArgumentSyntax(
+          argument: .type(newArgument),
+          trailingComma: argumentElement.trailingComma
+        )
+      #else
+        let newArgument: TypeSyntax = argumentElement.argument.erasingGenericTypes(genericTypes)
+        let newArgumentElement = GenericArgumentSyntax(
+          argument: newArgument,
+          trailingComma: argumentElement.trailingComma
+        )
+      #endif
+      newArgumentElements.append(newArgumentElement)
+    }
+
+    let newArguments = GenericArgumentListSyntax(newArgumentElements)
+
+    return Self(
+      leftAngle: self.leftAngle,
+      arguments: newArguments,
+      rightAngle: self.rightAngle
     )
   }
 }
@@ -128,6 +159,7 @@ extension TupleTypeSyntax: TypeSyntaxSupportingGenerics {
   fileprivate var nestedTypeSyntaxes: [TypeSyntax] {
     elements.map { $0.type }
   }
+
   fileprivate func erasingGenericTypes(_ genericTypes: Set<String>) -> Self {
     with(
       \.elements,
