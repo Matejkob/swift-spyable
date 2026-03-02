@@ -34,7 +34,7 @@ struct Extractor {
   ) -> String? {
     guard case let .argumentList(argumentList) = attribute.arguments else {
       // No arguments are present in the attribute.
-      return nil
+      return "DEBUG"
     }
 
     let behindPreprocessorFlagArgument = argumentList.first { argument in
@@ -43,7 +43,7 @@ struct Extractor {
 
     guard let behindPreprocessorFlagArgument else {
       // The `behindPreprocessorFlag` argument is missing.
-      return nil
+      return "DEBUG"
     }
 
     let segments = behindPreprocessorFlagArgument.expression
