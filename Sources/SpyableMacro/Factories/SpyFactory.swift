@@ -148,25 +148,40 @@ struct SpyFactory {
           try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
 
           if parameterList.supportsParameterTracking {
+            #if canImport(SwiftSyntax600)
+              let trackingParameterList = FunctionParameterListSyntax(
+                parameterList.map { param in
+                  param.with(\.type, param.type.erasingTypedThrows)
+                }
+              )
+            #else
+              let trackingParameterList = parameterList
+            #endif
             try receivedArgumentsFactory.variableDeclaration(
               variablePrefix: variablePrefix,
-              parameterList: parameterList
+              parameterList: trackingParameterList
             )
             try receivedInvocationsFactory.variableDeclaration(
               variablePrefix: variablePrefix,
-              parameterList: parameterList
+              parameterList: trackingParameterList
             )
           }
 
           #if canImport(SwiftSyntax600)
-            let throwsSpecifier = functionDeclaration.signature.effectSpecifiers?.throwsClause?
-              .throwsSpecifier
+            let throwsClause = functionDeclaration.signature.effectSpecifiers?.throwsClause
+            let throwsSpecifier = throwsClause?.throwsSpecifier
+            let throwsErrorType = throwsClause?.type
           #else
             let throwsSpecifier = functionDeclaration.signature.effectSpecifiers?.throwsSpecifier
           #endif
 
           if throwsSpecifier != nil {
-            try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
+            #if canImport(SwiftSyntax600)
+              try throwableErrorFactory.variableDeclaration(
+                variablePrefix: variablePrefix, errorType: throwsErrorType)
+            #else
+              try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
+            #endif
           }
 
           if let returnType = functionDeclaration.signature.returnClause?.type {

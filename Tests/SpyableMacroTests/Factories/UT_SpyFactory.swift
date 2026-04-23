@@ -434,6 +434,44 @@ final class UT_SpyFactory: XCTestCase {
     )
   }
 
+  func testDeclarationTypedThrows() throws {
+    try assertProtocol(
+      withDeclaration: """
+        protocol ServiceProtocol {
+            func foo(text: String) throws(MyError) -> Int
+        }
+        """,
+      expectingClassDeclaration: """
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
+            init() {
+            }
+            var fooTextCallsCount = 0
+            var fooTextCalled: Bool {
+                return fooTextCallsCount > 0
+            }
+            var fooTextReceivedText: String?
+            var fooTextReceivedInvocations: [String] = []
+            var fooTextThrowableError: MyError?
+            var fooTextReturnValue: Int!
+            var fooTextClosure: ((String) throws(MyError) -> Int)?
+            func foo(text: String) throws(MyError) -> Int {
+                fooTextCallsCount += 1
+                fooTextReceivedText = (text)
+                fooTextReceivedInvocations.append((text))
+                if let fooTextThrowableError {
+                    throw fooTextThrowableError
+                }
+                if fooTextClosure != nil {
+                    return try fooTextClosure!(text)
+                } else {
+                    return fooTextReturnValue
+                }
+            }
+        }
+        """
+    )
+  }
+
   func testDeclarationReturnsExistential() throws {
     try assertProtocol(
       withDeclaration: """

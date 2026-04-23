@@ -1,5 +1,61 @@
 import SwiftSyntax
 
+#if canImport(SwiftSyntax600)
+  extension TypeSyntax {
+    /// Returns `self` with typed throws replaced by plain `throws` in any nested function types.
+    ///
+    /// For example, `() throws(MyError) -> Void` becomes `() throws -> Void`.
+    /// Used to avoid iOS 18+/macOS 15+ requirements on spy tracking variable declarations.
+    var erasingTypedThrows: TypeSyntax {
+      if let functionType = self.as(FunctionTypeSyntax.self) {
+        let erasedParameters = TupleTypeElementListSyntax(
+          functionType.parameters.map { element in
+            element.with(\.type, element.type.erasingTypedThrows)
+          }
+        )
+        var result = functionType.with(\.parameters, erasedParameters)
+        if let effectSpecifiers = result.effectSpecifiers,
+          let throwsClause = effectSpecifiers.throwsClause,
+          throwsClause.type != nil
+        {
+          let plainThrowsClause = throwsClause
+            .with(\.leftParen, nil)
+            .with(\.type, nil)
+            .with(\.rightParen, nil)
+          result = result.with(
+            \.effectSpecifiers,
+            effectSpecifiers.with(\.throwsClause, plainThrowsClause)
+          )
+        }
+        return TypeSyntax(result)
+      }
+      if let attributedType = self.as(AttributedTypeSyntax.self) {
+        return TypeSyntax(
+          attributedType.with(\.baseType, attributedType.baseType.erasingTypedThrows)
+        )
+      }
+      if let optionalType = self.as(OptionalTypeSyntax.self) {
+        return TypeSyntax(
+          optionalType.with(\.wrappedType, optionalType.wrappedType.erasingTypedThrows)
+        )
+      }
+      if let tupleType = self.as(TupleTypeSyntax.self) {
+        return TypeSyntax(
+          tupleType.with(
+            \.elements,
+            TupleTypeElementListSyntax(
+              tupleType.elements.map { element in
+                element.with(\.type, element.type.erasingTypedThrows)
+              }
+            )
+          )
+        )
+      }
+      return self
+    }
+  }
+#endif
+
 extension TypeSyntax {
 
   /// Returns `self`, cast to the first supported `TypeSyntaxSupportingGenerics` type that `self` can be cast to, or `nil` if `self` matches none.
