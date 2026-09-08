@@ -45,7 +45,8 @@ import SwiftSyntaxBuilder
 struct VariablesImplementationFactory {
   @MemberBlockItemListBuilder
   func variablesDeclarations(
-    protocolVariableDeclaration: VariableDeclSyntax
+    protocolVariableDeclaration: VariableDeclSyntax,
+    threadSafe: Bool = false
   ) throws -> MemberBlockItemListSyntax {
     if protocolVariableDeclaration.bindings.count == 1 {
       // Since the count of `bindings` is exactly 1, it is safe to force unwrap it.
@@ -58,15 +59,29 @@ struct VariablesImplementationFactory {
       if binding.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true
         || binding.typeAnnotation?.type.is(ImplicitlyUnwrappedOptionalTypeSyntax.self) == true
       {
-        let accessorRemovalVisitor = AccessorRemovalVisitor()
-        accessorRemovalVisitor.visit(protocolVariableDeclaration)
+        if threadSafe {
+          try lockedVariableDeclaration(
+            publicName: publicVariableName(binding: binding),
+            type: "\(binding.typeAnnotation!.type.trimmed)"
+          )
+        } else {
+          let accessorRemovalVisitor = AccessorRemovalVisitor()
+          accessorRemovalVisitor.visit(protocolVariableDeclaration)
+        }
       } else {
         /*
          var name: String
         */
         try protocolVariableDeclarationWithGetterAndSetter(binding: binding)
 
-        try underlyingVariableDeclaration(binding: binding)
+        if threadSafe {
+          try lockedVariableDeclaration(
+            publicName: underlyingVariableName(binding: binding),
+            type: "(\(binding.typeAnnotation!.type.trimmed))!"
+          )
+        } else {
+          try underlyingVariableDeclaration(binding: binding)
+        }
       }
     } else {
       // As far as I know variable declaration in a protocol should have exactly one binding.
@@ -95,6 +110,35 @@ struct VariablesImplementationFactory {
       var \(raw: underlyingVariableName(binding: binding)): (\(binding.typeAnnotation!.type.trimmed))!
       """
     )
+  }
+
+  /// Produces a private, lock-guarded backing field plus a public computed wrapper of the same
+  /// `publicName`, so the property can be safely read and written from concurrent, unstructured `Task`s.
+  @MemberBlockItemListBuilder
+  private func lockedVariableDeclaration(
+    publicName: String,
+    type: String
+  ) throws -> MemberBlockItemListSyntax {
+    try VariableDeclSyntax(
+      """
+      private var _\(raw: publicName): \(raw: type)
+      """
+    )
+    try VariableDeclSyntax(
+      """
+      var \(raw: publicName): \(raw: type) {
+          get { lock.lock(); defer { lock.unlock() }; return _\(raw: publicName) }
+          set { lock.lock(); defer { lock.unlock() }; _\(raw: publicName) = newValue }
+      }
+      """
+    )
+  }
+
+  private func publicVariableName(binding: PatternBindingListSyntax.Element) throws -> String {
+    guard let identifierPattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
+      throw SpyableDiagnostic.variableDeclInProtocolWithNotIdentifierPattern
+    }
+    return identifierPattern.identifier.text
   }
 
   private func underlyingVariableName(binding: PatternBindingListSyntax.Element) throws -> String {

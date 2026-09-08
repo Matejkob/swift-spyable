@@ -556,6 +556,160 @@ final class UT_SpyableMacro: XCTestCase {
     )
   }
 
+  // MARK: - `threadSafe` argument
+
+  func testMacroWithThreadSafeArgument() {
+    let protocolDeclaration = """
+      protocol ServiceProtocol {
+          var data: Data { get }
+          func fetch(text: String) async -> Decimal
+          func isReady() -> Bool
+          func load() async throws
+      }
+      """
+
+    assertMacroExpansion(
+      """
+      @Spyable(threadSafe: true)
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+
+        protocol ServiceProtocol {
+            var data: Data { get }
+            func fetch(text: String) async -> Decimal
+            func isReady() -> Bool
+            func load() async throws
+        }
+
+        import Foundation
+
+        #if DEBUG
+        class ServiceProtocolSpy: ServiceProtocol, @unchecked Sendable {
+            init() {
+            }
+            private let lock = NSLock()
+            var data: Data {
+                get {
+                    underlyingData
+                }
+                set {
+                    underlyingData = newValue
+                }
+            }
+            private var _underlyingData: (Data)!
+            var underlyingData: (Data)! {
+                get {
+                    lock.lock();
+                    defer {
+                        lock.unlock()
+                    };
+                    return _underlyingData
+                }
+                set {
+                    lock.lock();
+                    defer {
+                        lock.unlock()
+                    };
+                    _underlyingData = newValue
+                }
+            }
+            private var _fetchTextCallsCount = 0
+            var fetchTextCalled: Bool {
+                return fetchTextCallsCount > 0
+            }
+            private var _fetchTextReceivedText: String?
+            private var _fetchTextReceivedInvocations: [String] = []
+            private var _fetchTextReturnValue: Decimal!
+            private var _fetchTextClosure: ((String) async -> Decimal)?
+            func fetch(text: String) async -> Decimal {
+                lock.lock()
+                _fetchTextCallsCount += 1
+                _fetchTextReceivedText = (text)
+                _fetchTextReceivedInvocations.append((text))
+                let fetchTextClosure = _fetchTextClosure
+                let fetchTextReturnValue = _fetchTextReturnValue
+                lock.unlock()
+                if fetchTextClosure != nil {
+                    return await fetchTextClosure!(text)
+                } else {
+                    return fetchTextReturnValue
+                }
+            }
+            private var _isReadyCallsCount = 0
+            var isReadyCalled: Bool {
+                return isReadyCallsCount > 0
+            }
+            private var _isReadyReturnValue: Bool!
+            private var _isReadyClosure: (() -> Bool)?
+            func isReady() -> Bool {
+                lock.lock()
+                _isReadyCallsCount += 1
+                let isReadyClosure = _isReadyClosure
+                let isReadyReturnValue = _isReadyReturnValue
+                lock.unlock()
+                if isReadyClosure != nil {
+                    return isReadyClosure!()
+                } else {
+                    return isReadyReturnValue
+                }
+            }
+            private var _loadCallsCount = 0
+            var loadCalled: Bool {
+                return loadCallsCount > 0
+            }
+            private var _loadThrowableError: (any Error)?
+            private var _loadClosure: (() async throws -> Void)?
+            func load() async throws {
+                lock.lock()
+                _loadCallsCount += 1
+                let loadThrowableError = _loadThrowableError
+                let loadClosure = _loadClosure
+                lock.unlock()
+                if let loadThrowableError {
+                    throw loadThrowableError
+                }
+                try await loadClosure?()
+            }
+        }
+        #endif
+        """,
+      macros: sut
+    )
+  }
+
+  func testMacroWithThreadSafeArgumentFromVariable() {
+    let protocolDeclaration = "protocol MyProtocol {}"
+
+    assertMacroExpansion(
+      """
+      let myCustomFlag = true
+
+      @Spyable(threadSafe: myCustomFlag)
+      \(protocolDeclaration)
+      """,
+      expandedSource: """
+        let myCustomFlag = true
+        \(protocolDeclaration)
+
+        #if DEBUG
+        class MyProtocolSpy: MyProtocol, @unchecked Sendable {
+            init() {
+            }
+        }
+        #endif
+        """,
+      diagnostics: [
+        DiagnosticSpec(
+          message: "The `threadSafe` argument requires a static boolean literal",
+          line: 3,
+          column: 1
+        )
+      ],
+      macros: sut
+    )
+  }
+
   func testPolymorphismOverloadedMethodsWithDifferentReturnTypesOnly() {
     let protocolDeclaration = """
       protocol OverloadedReturnTypesProtocol {

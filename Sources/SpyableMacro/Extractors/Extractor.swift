@@ -133,6 +133,51 @@ struct Extractor {
     }
   }
 
+  /// Extracts the `threadSafe` argument value from an attribute if present and valid.
+  ///
+  /// This method searches for a boolean argument labeled `threadSafe` within the given
+  /// attribute. When present and `true`, the generated spy guards every tracked property
+  /// with a lock so it can be safely observed from concurrent, unstructured `Task`s.
+  ///
+  /// - Parameters:
+  ///   - attribute: The attribute syntax to analyze.
+  ///   - context: The macro expansion context in which the operation is performed.
+  /// - Returns: `true` if `threadSafe: true` is present, otherwise `false`.
+  /// - Throws: Diagnostic errors if the argument's value is not a static boolean literal.
+  func extractThreadSafety(
+    from attribute: AttributeSyntax,
+    in context: some MacroExpansionContext
+  ) -> Bool {
+    guard case let .argumentList(argumentList) = attribute.arguments else {
+      // No arguments are present in the attribute.
+      return false
+    }
+
+    let threadSafeArgument = argumentList.first { argument in
+      argument.label?.text == "threadSafe"
+    }
+
+    guard let threadSafeArgument else {
+      // The `threadSafe` argument is missing.
+      return false
+    }
+
+    guard
+      let booleanLiteral = threadSafeArgument.expression.as(BooleanLiteralExprSyntax.self)
+    else {
+      context.diagnose(
+        Diagnostic(
+          node: attribute,
+          message: SpyableDiagnostic.threadSafeArgumentRequiresStaticBooleanLiteral,
+          highlights: [Syntax(threadSafeArgument.expression)]
+        )
+      )
+      return false
+    }
+
+    return booleanLiteral.literal.tokenKind == .keyword(.true)
+  }
+
   /// Extracts the access level modifier from a protocol declaration.
   ///
   /// This method identifies the first access level modifier present in the protocol

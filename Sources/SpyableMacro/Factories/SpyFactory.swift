@@ -92,7 +92,7 @@ struct SpyFactory {
   private let closureFactory = ClosureFactory()
   private let functionImplementationFactory = FunctionImplementationFactory()
 
-  func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax) throws -> ClassDeclSyntax {
+  func classDeclaration(for protocolDeclaration: ProtocolDeclSyntax, threadSafe: Bool = false) throws -> ClassDeclSyntax {
     let identifier = TokenSyntax.identifier(protocolDeclaration.name.text + "Spy")
 
     let assosciatedtypeDeclarations = protocolDeclaration.memberBlock.members.compactMap {
@@ -132,9 +132,18 @@ struct SpyFactory {
           bodyBuilder: {}
         )
 
+        if threadSafe {
+          try! VariableDeclSyntax(
+            """
+            private let lock = NSLock()
+            """
+          )
+        }
+
         for variableDeclaration in variableDeclarations {
           try variablesImplementationFactory.variablesDeclarations(
-            protocolVariableDeclaration: variableDeclaration
+            protocolVariableDeclaration: variableDeclaration,
+            threadSafe: threadSafe
           )
         }
 
@@ -144,17 +153,19 @@ struct SpyFactory {
           let parameterList = parameterList(
             protocolFunctionDeclaration: functionDeclaration, genericTypes: genericTypes)
 
-          try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix)
+          try callsCountFactory.variableDeclaration(variablePrefix: variablePrefix, threadSafe: threadSafe)
           try calledFactory.variableDeclaration(variablePrefix: variablePrefix)
 
           if parameterList.supportsParameterTracking {
             try receivedArgumentsFactory.variableDeclaration(
               variablePrefix: variablePrefix,
-              parameterList: parameterList
+              parameterList: parameterList,
+              threadSafe: threadSafe
             )
             try receivedInvocationsFactory.variableDeclaration(
               variablePrefix: variablePrefix,
-              parameterList: parameterList
+              parameterList: parameterList,
+              threadSafe: threadSafe
             )
           }
 
@@ -166,25 +177,28 @@ struct SpyFactory {
           #endif
 
           if throwsSpecifier != nil {
-            try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix)
+            try throwableErrorFactory.variableDeclaration(variablePrefix: variablePrefix, threadSafe: threadSafe)
           }
 
           if let returnType = functionDeclaration.signature.returnClause?.type {
             let genericTypeErasedReturnType = returnType.erasingGenericTypes(genericTypes)
             returnValueFactory.variableDeclaration(
               variablePrefix: variablePrefix,
-              functionReturnType: genericTypeErasedReturnType
+              functionReturnType: genericTypeErasedReturnType,
+              threadSafe: threadSafe
             )
           }
 
           closureFactory.variableDeclaration(
             variablePrefix: variablePrefix,
-            protocolFunctionDeclaration: functionDeclaration
+            protocolFunctionDeclaration: functionDeclaration,
+            threadSafe: threadSafe
           )
 
           functionImplementationFactory.declaration(
             variablePrefix: variablePrefix,
-            protocolFunctionDeclaration: functionDeclaration
+            protocolFunctionDeclaration: functionDeclaration,
+            threadSafe: threadSafe
           )
         }
       }

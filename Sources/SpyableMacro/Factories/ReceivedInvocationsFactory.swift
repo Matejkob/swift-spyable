@@ -43,11 +43,20 @@ import SwiftSyntaxBuilder
 struct ReceivedInvocationsFactory {
   func variableDeclaration(
     variablePrefix: String,
-    parameterList: FunctionParameterListSyntax
+    parameterList: FunctionParameterListSyntax,
+    threadSafe: Bool = false
   ) throws -> VariableDeclSyntax {
-    let identifier = variableIdentifier(variablePrefix: variablePrefix)
     let elementType = arrayElementType(parameterList: parameterList)
 
+    if threadSafe {
+      return try VariableDeclSyntax(
+        """
+        private var \(backingVariableIdentifier(variablePrefix: variablePrefix)): [\(elementType)] = []
+        """
+      )
+    }
+
+    let identifier = variableIdentifier(variablePrefix: variablePrefix)
     return try VariableDeclSyntax(
       """
       var \(identifier): [\(elementType)] = []
@@ -87,9 +96,13 @@ struct ReceivedInvocationsFactory {
 
   func appendValueToVariableExpression(
     variablePrefix: String,
-    parameterList: FunctionParameterListSyntax
+    parameterList: FunctionParameterListSyntax,
+    threadSafe: Bool = false
   ) -> ExprSyntax {
-    let identifier = variableIdentifier(variablePrefix: variablePrefix)
+    let identifier =
+      threadSafe
+      ? backingVariableIdentifier(variablePrefix: variablePrefix)
+      : variableIdentifier(variablePrefix: variablePrefix)
     let argument = appendArgumentExpression(parameterList: parameterList)
 
     return ExprSyntax(
@@ -121,7 +134,11 @@ struct ReceivedInvocationsFactory {
     }
   }
 
-  private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
+  func variableIdentifier(variablePrefix: String) -> TokenSyntax {
     TokenSyntax.identifier(variablePrefix + "ReceivedInvocations")
+  }
+
+  func backingVariableIdentifier(variablePrefix: String) -> TokenSyntax {
+    .identifier("_" + variableIdentifier(variablePrefix: variablePrefix).text)
   }
 }

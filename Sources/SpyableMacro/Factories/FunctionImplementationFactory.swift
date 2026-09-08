@@ -65,37 +65,87 @@ struct FunctionImplementationFactory {
 
   func declaration(
     variablePrefix: String,
-    protocolFunctionDeclaration: FunctionDeclSyntax
+    protocolFunctionDeclaration: FunctionDeclSyntax,
+    threadSafe: Bool = false
   ) -> FunctionDeclSyntax {
     var spyFunctionDeclaration = protocolFunctionDeclaration
 
     spyFunctionDeclaration.modifiers = protocolFunctionDeclaration.modifiers.removingMutatingKeyword
 
-    spyFunctionDeclaration.body = CodeBlockSyntax {
-      let parameterList = protocolFunctionDeclaration.signature.parameterClause.parameters
+    let parameterList = protocolFunctionDeclaration.signature.parameterClause.parameters
 
-      callsCountFactory.incrementVariableExpression(variablePrefix: variablePrefix)
+    #if canImport(SwiftSyntax600)
+      let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?.throwsClause?
+        .throwsSpecifier
+    #else
+      let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?
+        .throwsSpecifier
+    #endif
+    let functionThrows = throwsSpecifier != nil
+    let functionReturns = protocolFunctionDeclaration.signature.returnClause != nil
+
+    spyFunctionDeclaration.body = CodeBlockSyntax {
+      if threadSafe {
+        ExprSyntax(
+          """
+          lock.lock()
+          """
+        )
+      }
+
+      callsCountFactory.incrementVariableExpression(variablePrefix: variablePrefix, threadSafe: threadSafe)
 
       if parameterList.supportsParameterTracking {
         receivedArgumentsFactory.assignValueToVariableExpression(
           variablePrefix: variablePrefix,
-          parameterList: parameterList
+          parameterList: parameterList,
+          threadSafe: threadSafe
         )
         receivedInvocationsFactory.appendValueToVariableExpression(
           variablePrefix: variablePrefix,
-          parameterList: parameterList
+          parameterList: parameterList,
+          threadSafe: threadSafe
         )
       }
 
-      #if canImport(SwiftSyntax600)
-        let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?.throwsClause?
-          .throwsSpecifier
-      #else
-        let throwsSpecifier = protocolFunctionDeclaration.signature.effectSpecifiers?
-          .throwsSpecifier
-      #endif
+      if threadSafe {
+        // Snapshot the closure/error/return-value under the lock, then release it before the
+        // (possibly async/throwing) dispatch below — the snapshot lets shadow the locked
+        // computed properties of the same name, so the unchanged throw-check/dispatch logic
+        // below reads a value consistent with the bookkeeping above instead of re-locking.
+        if functionThrows {
+          let name = throwableErrorFactory.variableIdentifier(variablePrefix: variablePrefix)
+          let backingName = throwableErrorFactory.backingVariableIdentifier(variablePrefix: variablePrefix)
+          try! VariableDeclSyntax(
+            """
+            let \(name) = \(backingName)
+            """
+          )
+        }
+        let closureName = closureFactory.variableIdentifier(variablePrefix: variablePrefix)
+        let closureBackingName = closureFactory.backingVariableIdentifier(variablePrefix: variablePrefix)
+        try! VariableDeclSyntax(
+          """
+          let \(closureName) = \(closureBackingName)
+          """
+        )
+        if functionReturns {
+          let name = returnValueFactory.variableIdentifier(variablePrefix: variablePrefix)
+          let backingName = returnValueFactory.backingVariableIdentifier(variablePrefix: variablePrefix)
+          try! VariableDeclSyntax(
+            """
+            let \(name) = \(backingName)
+            """
+          )
+        }
+        ExprSyntax(
+          """
+          lock.unlock()
+          """
+        )
+      }
 
-      if throwsSpecifier != nil {
+      if functionThrows {
         throwableErrorFactory.throwErrorExpression(variablePrefix: variablePrefix)
       }
 

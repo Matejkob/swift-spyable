@@ -21,23 +21,38 @@ import SwiftSyntaxBuilder
 /// ```
 /// and an argument `variablePrefix` equal to `foo`.
 struct CallsCountFactory {
-  func variableDeclaration(variablePrefix: String) throws -> VariableDeclSyntax {
-    try VariableDeclSyntax(
+  func variableDeclaration(variablePrefix: String, threadSafe: Bool = false) throws -> VariableDeclSyntax {
+    if threadSafe {
+      return try VariableDeclSyntax(
+        """
+        private var \(backingIdentifier(variablePrefix: variablePrefix)) = 0
+        """
+      )
+    }
+    return try VariableDeclSyntax(
       """
       var \(variableIdentifier(variablePrefix: variablePrefix)) = 0
       """
     )
   }
 
-  func incrementVariableExpression(variablePrefix: String) -> ExprSyntax {
-    ExprSyntax(
+  func incrementVariableExpression(variablePrefix: String, threadSafe: Bool = false) -> ExprSyntax {
+    let identifier =
+      threadSafe
+      ? backingIdentifier(variablePrefix: variablePrefix)
+      : variableIdentifier(variablePrefix: variablePrefix)
+    return ExprSyntax(
       """
-      \(variableIdentifier(variablePrefix: variablePrefix)) += 1
+      \(identifier) += 1
       """
     )
   }
 
-  private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
+  func variableIdentifier(variablePrefix: String) -> TokenSyntax {
     TokenSyntax.identifier(variablePrefix + "CallsCount")
+  }
+
+  func backingIdentifier(variablePrefix: String) -> TokenSyntax {
+    TokenSyntax.identifier("_" + variablePrefix + "CallsCount")
   }
 }

@@ -30,7 +30,8 @@ import SwiftSyntaxBuilder
 struct ClosureFactory {
   func variableDeclaration(
     variablePrefix: String,
-    protocolFunctionDeclaration: FunctionDeclSyntax
+    protocolFunctionDeclaration: FunctionDeclSyntax,
+    threadSafe: Bool = false
   ) -> VariableDeclSyntax {
     let functionSignature = protocolFunctionDeclaration.signature
     let genericTypes = protocolFunctionDeclaration.genericTypes
@@ -64,6 +65,20 @@ struct ClosureFactory {
       )
     }
 
+    let typeAnnotation = TypeAnnotationSyntax(
+      type: OptionalTypeSyntax(
+        wrappedType: TupleTypeSyntax(elements: elements)
+      )
+    )
+
+    if threadSafe {
+      return try! VariableDeclSyntax(
+        """
+        private var \(backingVariableIdentifier(variablePrefix: variablePrefix))\(typeAnnotation)
+        """
+      )
+    }
+
     return VariableDeclSyntax(
       leadingTrivia: [],
       bindingSpecifier: .keyword(.var),
@@ -71,11 +86,7 @@ struct ClosureFactory {
         PatternBindingSyntax(
           pattern: IdentifierPatternSyntax(
             identifier: variableIdentifier(variablePrefix: variablePrefix)),
-          typeAnnotation: TypeAnnotationSyntax(
-            type: OptionalTypeSyntax(
-              wrappedType: TupleTypeSyntax(elements: elements)
-            )
-          )
+          typeAnnotation: typeAnnotation
         )
       ])
     )
@@ -196,8 +207,12 @@ struct ClosureFactory {
     return expression
   }
 
-  private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
+  func variableIdentifier(variablePrefix: String) -> TokenSyntax {
     TokenSyntax.identifier(variablePrefix + "Closure")
+  }
+
+  func backingVariableIdentifier(variablePrefix: String) -> TokenSyntax {
+    .identifier("_" + variableIdentifier(variablePrefix: variablePrefix).text)
   }
 }
 

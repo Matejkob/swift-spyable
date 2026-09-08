@@ -13,8 +13,12 @@ public enum SpyableMacro: PeerMacro {
     // Extract the protocol declaration
     let protocolDeclaration = try extractor.extractProtocolDeclaration(from: declaration)
 
+    // Extract the `threadSafe` option
+    let threadSafe = extractor.extractThreadSafety(from: node, in: context)
+
     // Generate the initial spy class declaration
-    var spyClassDeclaration = try spyFactory.classDeclaration(for: protocolDeclaration)
+    var spyClassDeclaration = try spyFactory.classDeclaration(
+      for: protocolDeclaration, threadSafe: threadSafe)
 
     // Apply access level modifiers if needed
     if let accessLevel = determineAccessLevel(
@@ -23,12 +27,26 @@ public enum SpyableMacro: PeerMacro {
       spyClassDeclaration = rewriteSpyClass(spyClassDeclaration, withAccessLevel: accessLevel)
     }
 
+    // A thread-safe spy relies on `NSLock`, which needs `Foundation` — emit the import
+    // regardless of whether the annotated protocol's file already has it. Swift tolerates a
+    // duplicate `import Foundation` in the same file with no error or warning.
+    let leadingDeclarations: [DeclSyntax] =
+      threadSafe
+      ? [
+        DeclSyntax(
+          """
+          import Foundation
+          """
+        )
+      ]
+      : []
+
     // Handle preprocessor flag
     if let preprocessorFlag = extractor.extractPreprocessorFlag(from: node, in: context) {
-      return [wrapInIfConfig(spyClassDeclaration, withFlag: preprocessorFlag)]
+      return leadingDeclarations + [wrapInIfConfig(spyClassDeclaration, withFlag: preprocessorFlag)]
     }
 
-    return [DeclSyntax(spyClassDeclaration)]
+    return leadingDeclarations + [DeclSyntax(spyClassDeclaration)]
   }
 
   /// Determines the access level to use for the spy class.

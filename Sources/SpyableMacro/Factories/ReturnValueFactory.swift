@@ -40,7 +40,8 @@ import SwiftSyntaxBuilder
 struct ReturnValueFactory {
   func variableDeclaration(
     variablePrefix: String,
-    functionReturnType: TypeSyntax
+    functionReturnType: TypeSyntax,
+    threadSafe: Bool = false
   ) -> VariableDeclSyntax {
     /*
      func f() -> String?
@@ -77,6 +78,14 @@ struct ReturnValueFactory {
         )
       }
 
+    if threadSafe {
+      return try! VariableDeclSyntax(
+        """
+        private var \(backingVariableIdentifier(variablePrefix: variablePrefix))\(typeAnnotation)
+        """
+      )
+    }
+
     return VariableDeclSyntax(
       leadingTrivia: [],
       bindingSpecifier: .keyword(.var),
@@ -107,7 +116,11 @@ struct ReturnValueFactory {
     return ReturnStmtSyntax(expression: expression)
   }
 
-  private func variableIdentifier(variablePrefix: String) -> TokenSyntax {
+  func variableIdentifier(variablePrefix: String) -> TokenSyntax {
     TokenSyntax.identifier(variablePrefix + "ReturnValue")
+  }
+
+  func backingVariableIdentifier(variablePrefix: String) -> TokenSyntax {
+    .identifier("_" + variableIdentifier(variablePrefix: variablePrefix).text)
   }
 }

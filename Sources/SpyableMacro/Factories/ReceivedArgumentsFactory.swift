@@ -38,14 +38,27 @@ import SwiftSyntaxBuilder
 struct ReceivedArgumentsFactory {
   func variableDeclaration(
     variablePrefix: String,
-    parameterList: FunctionParameterListSyntax
+    parameterList: FunctionParameterListSyntax,
+    threadSafe: Bool = false
   ) throws -> VariableDeclSyntax {
+    let type = variableType(parameterList: parameterList)
+
+    if threadSafe {
+      let backingIdentifier = backingVariableIdentifier(
+        variablePrefix: variablePrefix,
+        parameterList: parameterList
+      )
+      return try VariableDeclSyntax(
+        """
+        private var \(backingIdentifier): \(type)
+        """
+      )
+    }
+
     let identifier = variableIdentifier(
       variablePrefix: variablePrefix,
       parameterList: parameterList
     )
-    let type = variableType(parameterList: parameterList)
-
     return try VariableDeclSyntax(
       """
       var \(identifier): \(type)
@@ -114,12 +127,13 @@ struct ReceivedArgumentsFactory {
 
   func assignValueToVariableExpression(
     variablePrefix: String,
-    parameterList: FunctionParameterListSyntax
+    parameterList: FunctionParameterListSyntax,
+    threadSafe: Bool = false
   ) -> ExprSyntax {
-    let identifier = variableIdentifier(
-      variablePrefix: variablePrefix,
-      parameterList: parameterList
-    )
+    let identifier =
+      threadSafe
+      ? backingVariableIdentifier(variablePrefix: variablePrefix, parameterList: parameterList)
+      : variableIdentifier(variablePrefix: variablePrefix, parameterList: parameterList)
 
     let tuple = TupleExprSyntax {
       for parameter in parameterList {
@@ -138,7 +152,7 @@ struct ReceivedArgumentsFactory {
     )
   }
 
-  private func variableIdentifier(
+  func variableIdentifier(
     variablePrefix: String,
     parameterList: FunctionParameterListSyntax
   ) -> TokenSyntax {
@@ -152,5 +166,12 @@ struct ReceivedArgumentsFactory {
     } else {
       return .identifier(variablePrefix + "ReceivedArguments")
     }
+  }
+
+  func backingVariableIdentifier(
+    variablePrefix: String,
+    parameterList: FunctionParameterListSyntax
+  ) -> TokenSyntax {
+    .identifier("_" + variableIdentifier(variablePrefix: variablePrefix, parameterList: parameterList).text)
   }
 }
