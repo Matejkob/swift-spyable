@@ -13,7 +13,9 @@ final class AccessLevelModifierRewriter: SyntaxRewriter {
   }
 
   override func visit(_ node: DeclModifierListSyntax) -> DeclModifierListSyntax {
-    if node.parent?.is(FunctionParameterSyntax.self) == true {
+    if node.parent?.is(FunctionParameterSyntax.self) == true
+      || node.parent?.is(AccessorDeclSyntax.self) == true
+    {
       return node
     }
 
